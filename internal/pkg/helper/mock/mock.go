@@ -118,7 +118,7 @@ func InitJsRuntime(tenantId consts.TenantId) {
 	mockRequire = registry.Enable(mockVm.JsRuntime)
 
 	// import deeptest lib
-	tmpPath := fmt.Sprintf("%smock.js", consts.TmpDirRelatedServer)
+	tmpPath := fmt.Sprintf("%smock.js", consts.TmpDirRelativeServer)
 	tmpContent := scriptHelper.GetScript(scriptHelper.ScriptMock)
 	fileUtils.WriteFileIfNotExist(tmpPath, tmpContent)
 

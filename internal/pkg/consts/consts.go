@@ -57,9 +57,9 @@ const (
 
 	INVALID_VALUE = "N/A"
 
-	TmpDirRelated       = "tmp"
-	TmpDirRelatedServer = TmpDirRelated + "/server"
-	TmpDirRelatedAgent  = TmpDirRelated + "/agent"
+	TmpDirRelative       = "tmp"
+	TmpDirRelativeServer = TmpDirRelative + "/server"
+	TmpDirRelativeAgent  = TmpDirRelative + "/agent"
 )
 
 var (

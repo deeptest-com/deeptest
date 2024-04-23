@@ -39,7 +39,7 @@ func Init() *AgentServer {
 	consts.RunFrom = consts.FromAgent
 	consts.WorkDir = commUtils.GetWorkDir()
 
-	fileUtils.RmDir(consts.TmpDirRelatedAgent)
+	fileUtils.RmDir(consts.TmpDirRelativeAgent)
 	config.Init()
 	zapLog.Init()
 	_i118Utils.Init(consts.Language, "")

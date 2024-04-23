@@ -71,7 +71,7 @@ func InitJsRuntime(tenantId consts.TenantId, projectId uint, execUuid string) {
 	defineGoFuncs(tenantId, projectId)
 
 	// load global script
-	tmpPath := fmt.Sprintf("%s/deeptest.js", consts.TmpDirRelatedAgent)
+	tmpPath := fmt.Sprintf("%s/deeptest.js", consts.TmpDirRelativeAgent)
 	tmpContent := scriptHelper.GetScript(scriptHelper.ScriptDeepTest)
 	fileUtils.WriteFileIfNotExist(tmpPath, tmpContent)
 

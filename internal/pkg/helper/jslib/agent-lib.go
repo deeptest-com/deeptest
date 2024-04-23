@@ -64,7 +64,7 @@ func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireMod
 
 		jsFileName := fmt.Sprintf("%d-%s-%d.js", id, tenantId, lib.UpdatedAt.Unix())
 
-		tmpPath := fmt.Sprintf("%s/%s", consts.TmpDirRelatedAgent, jsFileName)
+		tmpPath := fmt.Sprintf("%s/%s", consts.TmpDirRelativeAgent, jsFileName)
 		tmpContent := lib.Script
 		fileUtils.WriteFileIfNotExist(tmpPath, tmpContent)
 

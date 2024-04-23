@@ -23,7 +23,7 @@ func LoadServerJslibs(tenantId consts.TenantId, runtime *goja.Runtime, require *
 			return true
 		}
 
-		tmpPath := fmt.Sprintf("%s/%d-%s-%d.js", consts.TmpDirRelatedServer, id, tenantId, lib.UpdatedAt.Unix())
+		tmpPath := fmt.Sprintf("%s/%d-%s-%d.js", consts.TmpDirRelativeServer, id, tenantId, lib.UpdatedAt.Unix())
 		tmpContent := lib.Script
 		fileUtils.WriteFileIfNotExist(tmpPath, tmpContent)
 

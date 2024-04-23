@@ -61,6 +61,8 @@ ly-win32: prepare compile_ly_ui_client build_gui_win32 compile_ly_launcher_win32
 ly-linux: prepare compile_ly_ui_client build_gui_linux                        compile_server_linux copy_files_linux zip_linux zip_linux_upgrade
 ly-mac:   prepare compile_ly_ui_client build_gui_mac                          compile_server_mac   copy_files_mac   zip_mac zip_mac_upgrade
 
+build_agent: compile_agent_win64 compile_agent_win32 compile_agent_linux compile_agent_mac
+
 prepare: init_client_project update_version
 
 # 初始化客户端项目

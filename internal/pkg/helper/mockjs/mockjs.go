@@ -2,13 +2,11 @@ package mockjsHelper
 
 import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
-	"path/filepath"
 )
 
 var (
@@ -44,11 +42,14 @@ func initJsRuntime() {
 
 	mockJsRequire = registry.Enable(mockJsVm.JsRuntime)
 
-	module := "mockjs.js"
-	pth := filepath.Join(consts.TmpDir, module)
+	module := "tmp/mockjs.js"
+	pth := module
 	fileUtils.WriteFile(pth, scriptHelper.GetModule(module))
-	//pth = "./res/goja/module/mockjs.js"
-	mock, err := mockJsRequire.Require(pth)
+
+	mock, err := mockJsRequire.Require("./" + pth)
+	if err != nil {
+		_logUtils.Infof("goja require failed, path: %s, err: %s.", pth, err.Error())
+	}
 
 	mockJsVm.JsRuntime.Set("mock", mock)
 

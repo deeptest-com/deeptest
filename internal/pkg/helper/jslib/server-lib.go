@@ -7,7 +7,6 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
-	"path/filepath"
 	"sync"
 	"time"
 )
@@ -29,14 +28,15 @@ func LoadServerJslibs(tenantId consts.TenantId, runtime *goja.Runtime, require *
 
 		updateTime, ok := GetServerCache(id)
 		if !ok || updateTime.Before(lib.UpdatedAt) {
-			pth := filepath.Join(consts.TmpDir, fmt.Sprintf("%d.js", id))
+			pth := fmt.Sprintf("tmp/%d.js", id)
 			if tenantId != "" {
-				pth = filepath.Join(consts.TmpDir, fmt.Sprintf("%s_%d.js", tenantId, id))
+				pth = fmt.Sprintf("tmp/%s_%d.js", tenantId, id)
 			}
 			fileUtils.WriteFile(pth, lib.Script)
-			module, err := require.Require(pth)
+
+			module, err := require.Require("./" + pth)
 			if err != nil {
-				logUtils.Info(err.Error())
+				logUtils.Infof("goja require failed, path: %s, err: %s.", pth, err.Error())
 			}
 
 			runtime.Set(lib.Name, module)

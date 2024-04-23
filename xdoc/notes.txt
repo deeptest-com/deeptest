@@ -68,6 +68,7 @@ scp -r ~/work/qiniu/deeptest/* lighthouse@111.231.16.35:~/work/qiniu/deeptest
 nohup light-server -s ~/work/qiniu/deeptest > ~/light-server.log 2>&1 &
 
 git push -f github dt:main
+git push -f gitee dt:master
 
 make compile_ui_demo
 ENV=dp make compile_server_linux

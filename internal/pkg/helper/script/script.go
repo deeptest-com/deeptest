@@ -148,6 +148,8 @@ const (
 	DeclareDeepTestScenarioCustomCode = "deeptest-scenario-custom-code.d"
 	DeclareChai                       = "chai.d"
 
+	ModuleMockJs = "mockjs.js"
+
 	ScriptMock  = "mock"
 	DeclareMock = "mock.d"
 

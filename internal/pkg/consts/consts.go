@@ -56,6 +56,10 @@ const (
 	KEY_MOCKJS = "x-mock-type"
 
 	INVALID_VALUE = "N/A"
+
+	TmpDirRelative       = "tmp"
+	TmpDirRelativeServer = TmpDirRelative + "/server"
+	TmpDirRelativeAgent  = TmpDirRelative + "/agent"
 )
 
 var (

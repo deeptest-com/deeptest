@@ -75,6 +75,7 @@ func inits() {
 	consts.RunFrom = consts.FromServer
 	consts.WorkDir = commUtils.GetWorkDir()
 
+	fileUtils.RmDir(consts.TmpDirRelativeServer)
 	config.Init()
 	zapLog.Init()
 	_i118Utils.Init(consts.Language, "")

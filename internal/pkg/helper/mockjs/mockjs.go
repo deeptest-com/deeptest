@@ -45,7 +45,8 @@ func initJsRuntime() {
 	mockJsRequire = registry.Enable(mockJsVm.JsRuntime)
 
 	moduleName := scriptHelper.ModuleMockJs
-	tmpPath := fmt.Sprintf("%s/%s", consts.TmpDirRelativeServer, "tmp/"+moduleName)
+	tmpFile := "tmp/" + moduleName
+	tmpPath := fmt.Sprintf("%s/%s", consts.TmpDirRelativeServer, tmpFile)
 	fileUtils.WriteFileIfNotExist(tmpPath, scriptHelper.GetModule(moduleName))
 
 	mock, err := mockJsRequire.Require("./" + tmpPath)

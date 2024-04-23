@@ -31,17 +31,17 @@ func (s *SysAgentSource) GetSources(tenantId consts.TenantId) (configs []model.S
 		}
 	}
 
-	isFree := tenant.NewTenant().ForFree(tenantId)
-
-	if config.CONFIG.Saas.Switch && !isFree {
+	if config.CONFIG.Saas.Switch {
+		isFree := tenant.NewTenant().ForFree(tenantId)
 		configs = []model.SysAgent{
 			{
-				BaseModel: model.BaseModel{ID: 1},
+				BaseModel: model.BaseModel{ID: 1, Deleted: isFree},
 				Name:      "默认代理",
 				Url:       "/lya/api/v1",
 				Desc:      "付费版本免费代理",
 			},
 		}
+
 	}
 
 	return

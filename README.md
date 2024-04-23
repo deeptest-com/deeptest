@@ -9,15 +9,22 @@
 
 ```bash
 # 拉取后端的配置项目
+git clone git@gitlab.nancalcloud.com:leyanapi/leyanapi-backend.git
+
+# 拉取后端的配置项目
+cd leyanapi-backend
 git clone git@gitlab.nancalcloud.com:leyanapi/backend-config.git
 
-# 执行命令，初始化项目
-sh ./init.project.sh
+# 启动server服务
+go rum cmd/server/main.go
+
+# 启动agent服务
+go rum cmd/agent/main.go
 ```
 
 
 ### 打包客户端
-
+sh ./init.project.sh
 ```bash
 # 打包客户端 mac
 sudo make ly-mac

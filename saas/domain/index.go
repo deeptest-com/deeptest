@@ -29,12 +29,16 @@ type Tenant struct {
 type temp struct {
 	Id       int64    `json:"id"`
 	DbConfig DbConfig `json:"leyanapiDB"`
+	SpecCode string   `json:"specCode"`
+	SkuCode  string   `json:"skuCode"`
 }
 
 func (tenant *Tenant) MarshalJSON() (res []byte, err error) {
 	x := temp{}
 	x.Id, _ = strconv.ParseInt(string(tenant.Id), 10, 64)
 	x.DbConfig = tenant.DbConfig
+	x.SpecCode = tenant.SpecCode
+	x.SkuCode = tenant.SkuCode
 	return json.Marshal(x)
 }
 
@@ -48,6 +52,8 @@ func (tenant *Tenant) UnmarshalJSON(data []byte) error {
 
 	tenant.Id = consts.TenantId(fmt.Sprintf("%d", x.Id))
 	tenant.DbConfig = x.DbConfig
+	tenant.SkuCode = x.SkuCode
+	tenant.SpecCode = x.SpecCode
 
 	return nil
 }

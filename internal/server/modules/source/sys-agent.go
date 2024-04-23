@@ -48,9 +48,11 @@ func (s *SysAgentSource) GetSources(tenantId consts.TenantId) (configs []model.S
 }
 
 func (s *SysAgentSource) Init(tenantId consts.TenantId) (err error) {
-	if config.CONFIG.System.SysEnv != "deeptest_demo" {
-		return
-	}
+	/*
+		if config.CONFIG.System.SysEnv != "deeptest_demo" {
+			return
+		}
+	*/
 
 	//db := s.AgentRepo.GetDB(tenantId)
 	//db.Delete(&model.SysAgent{}, "1=1")

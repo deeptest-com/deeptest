@@ -433,9 +433,9 @@ func (s *ProjectService) SaasUserLimit(tenantId consts.TenantId, projectId uint)
 }
 
 func (s *ProjectService) randomMember(tenantId consts.TenantId, projectId uint, members map[string]integrationDomain.UserRoleInfo) (randomMembers map[string]integrationDomain.UserRoleInfo) {
-	randomMembers = map[string]integrationDomain.UserRoleInfo{}
 	isFree := tenant.NewTenant().ForFree(tenantId)
 	if isFree {
+		randomMembers = map[string]integrationDomain.UserRoleInfo{}
 		count, _ := s.GetProjectMemberCount(tenantId, projectId)
 		for _, member := range members {
 			if count < 3 {
@@ -443,6 +443,8 @@ func (s *ProjectService) randomMember(tenantId consts.TenantId, projectId uint, 
 			}
 			count++
 		}
+
+		return randomMembers
 	}
-	return
+	return members
 }

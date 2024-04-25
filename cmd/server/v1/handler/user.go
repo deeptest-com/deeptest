@@ -103,6 +103,7 @@ func (c *UserCtrl) Invite(ctx iris.Context) {
 	//TODO  Saas免费版限制使用人数
 	if tenantId != "" && c.IntegrationProjectService.SaasUserLimit(tenantId, uint(req.ProjectId)) {
 		ctx.JSON(_domain.Response{Code: _domain.ErrUserProjectLimit.Code, Msg: _domain.ErrUserProjectLimit.Msg})
+		return
 	}
 
 	projectId, err := ctx.URLParamInt("currProjectId")

@@ -436,7 +436,13 @@ func (s *ProjectService) randomMember(tenantId consts.TenantId, projectId uint, 
 	isFree := tenant.NewTenant().ForFree(tenantId)
 	if isFree {
 		randomMembers = map[string]integrationDomain.UserRoleInfo{}
-		count, _ := s.GetProjectMemberCount(tenantId, projectId)
+		list, _ := s.GetProjectMemberList(tenantId, projectId)
+		count := len(list)
+
+		for _, item := range list {
+			delete(members, item.Username)
+		}
+
 		for _, member := range members {
 			if count < 3 {
 				randomMembers[member.Username] = member
@@ -447,4 +453,18 @@ func (s *ProjectService) randomMember(tenantId consts.TenantId, projectId uint, 
 		return randomMembers
 	}
 	return members
+}
+
+func (s *ProjectService) GetProjectMemberList(tenantId consts.TenantId, projectId uint) (ret []model.SysUser, err error) {
+	list, err := s.ProjectRepo.GetProjectMemberList(tenantId, projectId)
+	if err != nil {
+		return
+	}
+	userIds := make([]uint, 0)
+	for _, v := range list {
+		userIds = append(userIds, v.UserId)
+	}
+
+	return s.UserRepo.GetUserByIds(tenantId, userIds)
+
 }

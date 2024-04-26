@@ -15,7 +15,6 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/dop251/goja"
 	"github.com/kataras/iris/v12"
-	"path/filepath"
 	"reflect"
 )
 
@@ -72,13 +71,13 @@ func InitJsRuntime(tenantId consts.TenantId, projectId uint, execUuid string) {
 	defineGoFuncs(tenantId, projectId)
 
 	// load global script
-	pth := filepath.Join(consts.TmpDir, "deeptest.js")
-	//pth = "./res/goja/module/deeptest.js"
-	fileUtils.WriteFile(pth, scriptHelper.GetScript(scriptHelper.ScriptDeepTest))
-	dt, err := execRequire.Require(pth)
+	tmpPath := fmt.Sprintf("%s/deeptest.js", consts.TmpDirRelativeAgent)
+	tmpContent := scriptHelper.GetScript(scriptHelper.ScriptDeepTest)
+	fileUtils.WriteFileIfNotExist(tmpPath, tmpContent)
+
+	dt, err := execRequire.Require("./" + tmpPath)
 	if err != nil {
-		logUtils.Info(err.Error())
-		return
+		logUtils.Infof("goja require failed, path: %s, err: %s.", tmpPath, err.Error())
 	}
 
 	execRuntime.Set("dt", dt)

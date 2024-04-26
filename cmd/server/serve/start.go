@@ -11,7 +11,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/middleware"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
 	"github.com/aaronchen2k/deeptest/internal/pkg/log"
-	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
@@ -73,8 +72,9 @@ func Start() {
 
 func inits() {
 	consts.RunFrom = consts.FromServer
-	consts.WorkDir = commUtils.GetWorkDir()
+	//consts.WorkDir = commUtils.GetWorkDir()
 
+	fileUtils.RmDir(consts.TmpDirRelativeServer)
 	config.Init()
 	zapLog.Init()
 	_i118Utils.Init(consts.Language, "")

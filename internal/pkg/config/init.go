@@ -13,6 +13,7 @@ import (
 	"github.com/snowlyg/helper/dir"
 	"github.com/spf13/viper"
 	"os"
+	"path"
 	"path/filepath"
 )
 
@@ -36,7 +37,7 @@ func Init() {
 		agentConfigPath := filepath.Join(consts.WorkDir, consts.AgentConfigFileName)
 
 		if !dir.IsExist(agentConfigPath) { // create config if not exist
-			configRes := filepath.Join("res", consts.AgentConfigFileName)
+			configRes := path.Join("res", consts.AgentConfigFileName)
 			yamlDefault, _ := deeptest.ReadResData(configRes)
 
 			if err := VIPER.ReadConfig(bytes.NewBuffer(yamlDefault)); err != nil {

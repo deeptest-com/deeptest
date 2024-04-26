@@ -6,83 +6,83 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
-	"path/filepath"
+	"path"
 )
 
 func GetScript(name ScriptType) string {
 	if name == ScriptDeepTest {
 		if DeepTestScript == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "deeptest.js"))
+			bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "export", "deeptest.js"))
 			DeepTestScript = string(bytes)
 		}
 		return DeepTestScript
 
 	} else if name == DeclareDeepTest {
 		if DeepTestDeclare == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "deeptest.d.ts"))
+			bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "export", "deeptest.d.ts"))
 			DeepTestDeclare = string(bytes)
 		}
 		return DeepTestDeclare
 
 	} else if name == DeclareDeepTestPost {
 		if DeepTestDeclarePost == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "deeptest-post.d.ts"))
+			bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "export", "deeptest-post.d.ts"))
 			DeepTestDeclarePost = string(bytes)
 		}
 		return DeepTestDeclarePost
 
 	} else if name == DeclareDeepTestScenarioCustomCode {
 		if DeepTestScenarioCustomCode == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "deeptest-scenario-custom-code.d.ts"))
+			bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "export", "deeptest-scenario-custom-code.d.ts"))
 			DeepTestScenarioCustomCode = string(bytes)
 		}
 		return DeepTestScenarioCustomCode
 
 	} else if name == DeclareChai {
 		if DeepTestDeclareChai == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "chai.d.ts"))
+			bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "export", "chai.d.ts"))
 			DeepTestDeclareChai = string(bytes)
 		}
 		return DeepTestDeclareChai
 
 	} else if name == ScriptMock {
 		if MockScript == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "mock.js"))
+			bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "export", "mock.js"))
 			MockScript = string(bytes)
 		}
 		return MockScript
 
 	} else if name == DeclareMock {
 		if MockDeclare == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "mock.d.ts"))
+			bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "export", "mock.d.ts"))
 			MockDeclare = string(bytes)
 		}
 		return MockDeclare
 
 	} else if name == SnippetDatapoolGet {
 		if DatapoolGetScript == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "datapool_get.txt"))
+			bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "snippet", "datapool_get.txt"))
 			DatapoolGetScript = string(bytes)
 		}
 		return DatapoolGetScript
 
 	} else if name == SnippetVariablesGet {
 		if VariablesGet == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "variables_get.txt"))
+			bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "snippet", "variables_get.txt"))
 			VariablesGet = string(bytes)
 		}
 		return VariablesGet
 
 	} else if name == SnippetVariablesSet {
 		if VariablesSet == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "variables_set.txt"))
+			bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "snippet", "variables_set.txt"))
 			VariablesSet = string(bytes)
 		}
 		return VariablesSet
 
 	} else if name == SnippetVariablesClear {
 		if VariablesClear == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "variables_clear.txt"))
+			bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "snippet", "variables_clear.txt"))
 			VariablesClear = string(bytes)
 		}
 		return VariablesClear
@@ -93,7 +93,7 @@ func GetScript(name ScriptType) string {
 }
 
 func GetModule(name string) (ret string) {
-	bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "module", name))
+	bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "module", name))
 	ret = string(bytes)
 
 	return

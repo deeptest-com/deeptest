@@ -10,7 +10,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
 	"github.com/aaronchen2k/deeptest/internal/pkg/log"
 	"github.com/aaronchen2k/deeptest/internal/pkg/service"
-	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	"github.com/facebookgo/inject"
@@ -37,7 +36,7 @@ var client *tests.Client
 // Init 初始化web服务
 func Init() *AgentServer {
 	consts.RunFrom = consts.FromAgent
-	consts.WorkDir = commUtils.GetWorkDir()
+	//consts.WorkDir = commUtils.GetWorkDir()
 
 	fileUtils.RmDir(consts.TmpDirRelativeAgent)
 	config.Init()

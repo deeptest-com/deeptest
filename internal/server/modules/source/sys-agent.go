@@ -38,7 +38,7 @@ func (s *SysAgentSource) GetSources(tenantId consts.TenantId) (configs []model.S
 				BaseModel: model.BaseModel{ID: 1, Deleted: isFree},
 				Name:      "默认代理",
 				Url:       "/lya/api/v1",
-				Desc:      "付费版本免费代理",
+				Desc:      "默认代理由平台提供运行资源，可调用外网接口",
 			},
 		}
 

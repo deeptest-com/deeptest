@@ -701,11 +701,14 @@ func (s *EndpointService) SchemaConv(tenantId consts.TenantId, interf *model.End
 	schema2conv := schemaHelper.NewSchema2conv()
 	schema2conv.Components = s.ServeService.Components(tenantId, projectId)
 
+	interf.RequestBody.SchemaItem.Content = s.ServeService.FillSchemaRefId(tenantId, projectId, interf.RequestBody.SchemaItem.Content, schema2conv.Components)
+
 	for k, response := range interf.ResponseBodies {
 		schema := new(schemaHelper.SchemaRef)
 		_commUtils.JsonDecode(response.SchemaItem.Content, schema)
 		if schema.Value != nil && len(schema.Value.AllOf) > 0 {
 			schema2conv.CombineSchemas(schema)
+			schema2conv.FillRefId(schema)
 		}
 		interf.ResponseBodies[k].SchemaItem.Content = _commUtils.JsonEncode(schema)
 	}

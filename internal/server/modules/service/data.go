@@ -37,6 +37,7 @@ type DataService struct {
 	ProjectRoleMenuSource  *source.ProjectRoleMenuSource  `inject:""`
 	MockJsExpressionSource *source.MockJsExpressionSource `inject:""`
 	ProjectRolePermService *ProjectRolePermService        `inject:""`
+	SampleSource           *source.SampleSource           `inject:""`
 }
 
 // writeConfig 写入配置文件
@@ -117,6 +118,7 @@ func (s *DataService) InitDB(tenantId consts.TenantId, req v1.DataReq) error {
 			s.ProjectMenuSource,
 			s.ProjectRoleMenuSource,
 			s.MockJsExpressionSource,
+			s.SampleSource,
 		)
 		if err != nil {
 			logUtils.Errorf("填充数据错误", zap.String("错误:", err.Error()))

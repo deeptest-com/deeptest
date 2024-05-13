@@ -1,18 +1,26 @@
 package source
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
+	"github.com/gookit/color"
+	"strings"
 )
 
 type SampleSource struct {
 }
 
-func (s *SampleSource) GetSources() (serve *model.Serve, endpoint *model.Endpoint, err error) {
-	serveJson := _fileUtils.ReadFile("./config/sample/serve.json")
-	_commUtils.JsonDecode(serveJson, serve)
-	endpointJson := _fileUtils.ReadFile("./config/sample/endpoint.json")
-	_commUtils.JsonDecode(endpointJson, endpoint)
+func (s *SampleSource) Init(tenantId consts.TenantId) (err error) {
+
+	sqlStr := _fileUtils.ReadFile("./config/sample/demo.sql")
+
+	sqls := strings.Split(sqlStr, "\n")
+
+	for _, sql := range sqls {
+		dao.GetDB(tenantId).Exec(sql)
+	}
+
+	color.Info.Printf("\n[Mysql] --> 租户%s初始数据成功!", tenantId)
 	return
 }

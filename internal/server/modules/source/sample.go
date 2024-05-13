@@ -1,6 +1,7 @@
 package source
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
@@ -12,6 +13,16 @@ type SampleSource struct {
 }
 
 func (s *SampleSource) Init(tenantId consts.TenantId) (err error) {
+
+	if !config.CONFIG.Saas.Switch {
+		return nil
+	}
+
+	var ids []uint
+	dao.GetDB(tenantId).Table("biz_project").Pluck("id", &ids)
+	if len(ids) > 0 {
+		return nil
+	}
 
 	sqlStr := _fileUtils.ReadFile("./config/sample/demo.sql")
 

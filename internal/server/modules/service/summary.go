@@ -51,6 +51,7 @@ func (s *SummaryService) CollectionBugs(tenantId consts.TenantId) (err error) {
 	//请求对应系统,获取bug信息
 	//bug转化,配置字段映射关系
 	//调用存储
+	s.SummaryBugsService.GetNewBugs(tenantId)
 	//s.SummaryBugsService.CreateBug(bugs)
 
 	return

@@ -116,3 +116,7 @@ func (s *SummaryBugsService) CountByProjectId(tenantId consts.TenantId, projectI
 
 	return s.HandlerSummaryBugsRepo().CountByProjectId(tenantId, projectId)
 }
+
+func (s *SummaryBugsService) GetNewBugs(tenantId consts.TenantId) (bugIds []string, err error) {
+	return s.HandlerSummaryBugsRepo().GetNewBugs(tenantId)
+}

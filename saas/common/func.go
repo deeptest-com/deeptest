@@ -16,7 +16,7 @@ func GetTenantId(ctx *context.Context) consts.TenantId {
 	//根据域名获取租户
 	tenantId := consts.TenantId(ret)
 	if config.CONFIG.Saas.Switch && ret == "" {
-		fmt.Println(ctx.Domain(), "++++++++++++++++")
+		fmt.Println(ctx.Host(), "++++++++++++++++")
 		domain := ctx.Domain()
 		array := strings.Split(domain, ".")
 		prefix := strings.ReplaceAll(array[0], "dev-", "")

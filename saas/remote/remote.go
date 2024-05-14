@@ -15,7 +15,7 @@ import (
 type Remote struct {
 }
 
-func (s *Remote) GetTenant(tenantId consts.TenantId) (ret domain.Tenant) {
+func (s *Remote) GetTenant(tenantId consts.TenantId, prefix string) (ret domain.Tenant) {
 	url := fmt.Sprintf("%s/api/v1/tenant", config.CONFIG.Saas.Url)
 
 	headers := pkg.GetHeaders("")
@@ -23,8 +23,8 @@ func (s *Remote) GetTenant(tenantId consts.TenantId) (ret domain.Tenant) {
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
 		Headers:  &headers,
-		//QueryParams: &[]v1.Param{{Name: "id", Value: string(tenantId)}, {Name: "env", Value: "local"}},
-		QueryParams: &[]v1.Param{{Name: "id", Value: string(tenantId)}},
+		//QueryParams: &[]v1.Param{{Name: "id", Value: string(tenantId)}, {Name: "customDomainPrefix", Value: prefix}, {Name: "env", Value: "local"}},
+		QueryParams: &[]v1.Param{{Name: "id", Value: string(tenantId)}, {Name: "customDomainPrefix", Value: prefix}},
 	}
 
 	resp, err := httpHelper.Get(httpReq)

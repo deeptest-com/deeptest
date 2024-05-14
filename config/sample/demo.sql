@@ -280,9 +280,7 @@ INSERT INTO `biz_debug_interface_param` (`id`, `created_at`, `updated_at`, `dele
 INSERT INTO `biz_debug_interface_param` (`id`, `created_at`, `updated_at`, `deleted`, `disabled`, `name`, `value`, `type`, `param_in`, `desc`, `interface_id`) VALUES (17, '2024-05-13 10:43:32', '2024-05-13 10:43:32', 0, 0, 'petId', '10000', '', 'path', '', 5);
 
 #场景相关
-
 INSERT INTO `biz_scenario` (`id`, `created_at`, `updated_at`, `deleted`, `disabled`, `version`, `name`, `desc`, `category_id`, `serve_id`, `project_id`, `serial_number`, `status`, `create_user_id`, `create_user_name`, `update_user_id`, `update_user_name`, `priority`, `type`, `curr_env_id`) VALUES (1, '2024-05-13 10:45:54', '2024-05-13 15:49:25', 0, 0, 0, '宠物操作', '', 32, 0, 1, 'Demo-TS-1', 'draft', 2, 'sys_demo', 0, '', '', '', 2);
-
 
 INSERT INTO `biz_processor` (`id`, `created_at`, `updated_at`, `deleted`, `disabled`, `created_by`, `name`, `comments`, `method`, `parent_id`, `scenario_id`, `project_id`, `entity_category`, `entity_type`, `entity_id`, `endpoint_interface_id`, `processor_interface_src`, `ordr`) VALUES (1, '2024-05-13 10:45:54', '2024-05-13 10:45:54', 0, 0, 2, 'root', '', '', 0, 1, 1, 'processor_root', 'processor_root_default', 0, 0, '', 0);
 INSERT INTO `biz_processor` (`id`, `created_at`, `updated_at`, `deleted`, `disabled`, `created_by`, `name`, `comments`, `method`, `parent_id`, `scenario_id`, `project_id`, `entity_category`, `entity_type`, `entity_id`, `endpoint_interface_id`, `processor_interface_src`, `ordr`) VALUES (2, '2024-05-13 10:46:07', '2024-05-13 10:46:20', 0, 0, 2, '宠物列表-before', '', 'GET', 1, 1, 1, 'processor_interface', 'processor_interface_default', 8, 7, 'define', 0);

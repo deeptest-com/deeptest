@@ -19,8 +19,8 @@ func (s *SampleSource) Init(tenantId consts.TenantId) (err error) {
 	}
 
 	var ids []uint
-	dao.GetDB(tenantId).Table("biz_project").Pluck("id", &ids)
-	if len(ids) > 0 {
+	dao.GetDB(tenantId).Table("biz_endpoint").Pluck("id", &ids)
+	if len(ids) > 1 {
 		return nil
 	}
 

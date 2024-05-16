@@ -20,11 +20,11 @@ func (s *Remote) GetTenant(tenantId consts.TenantId, prefix string) (ret domain.
 
 	headers := pkg.GetHeaders("")
 	httpReq := v1.BaseRequest{
-		Url:      url,
-		BodyType: consts.ContentTypeJSON,
-		Headers:  &headers,
-		//QueryParams: &[]v1.Param{{Name: "id", Value: string(tenantId)}, {Name: "customDomainPrefix", Value: prefix}, {Name: "env", Value: "local"}},
-		QueryParams: &[]v1.Param{{Name: "id", Value: string(tenantId)}, {Name: "customDomainPrefix", Value: prefix}},
+		Url:         url,
+		BodyType:    consts.ContentTypeJSON,
+		Headers:     &headers,
+		QueryParams: &[]v1.Param{{Name: "id", Value: string(tenantId)}, {Name: "customDomainPrefix", Value: prefix}, {Name: "env", Value: "local"}},
+		//QueryParams: &[]v1.Param{{Name: "id", Value: string(tenantId)}, {Name: "customDomainPrefix", Value: prefix}},
 	}
 
 	resp, err := httpHelper.Get(httpReq)

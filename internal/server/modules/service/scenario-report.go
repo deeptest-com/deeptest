@@ -57,5 +57,5 @@ func (s *ScenarioReportService) CreatePlanReport(tenantId consts.TenantId, id ui
 }
 
 func (s *ScenarioReportService) ReferBug(tenantId consts.TenantId, req v1.ReferBugReq) (err error) {
-	return s.ScenarioReportRepo.ReferBug(tenantId, req.ReportId, req.BugId, req.BugType)
+	return s.ScenarioReportRepo.ReferBug(tenantId, req.ReportId, req.BugId, req.BugType, req.Severity)
 }

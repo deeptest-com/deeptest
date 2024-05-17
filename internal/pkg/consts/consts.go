@@ -26,7 +26,7 @@ const (
 	WsChatEvent        = "OnChat"
 
 	WebCheckInterval         = 60 * 60
-	SummaryDataCheckInterval = 60 * 60
+	SummaryDataCheckInterval = 60
 	MaxNum                   = 10000
 
 	AgentConfigFileName  = "agent.yaml"

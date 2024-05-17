@@ -17,4 +17,5 @@ type ReferBugReq struct {
 	ReportId uint   `json:"reportId"`
 	BugId    string `json:"bugId"`
 	BugType  uint   `json:"bugType"`
+	Severity uint   `json:"severity"`
 }

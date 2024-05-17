@@ -43,6 +43,9 @@ func (s *SummaryBugsService) Bugs(tenantId consts.TenantId, projectId int64) (re
 			case "minor":
 				res.Minor = DecimalPer(result.Count, res.Total)
 				res.Minor, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", res.Minor), 64)
+			case "suggest":
+				res.Suggest = DecimalPer(result.Count, res.Total)
+				res.Suggest, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", res.Suggest), 64)
 			default:
 				errors.New("Bug严重程度错误,请检查数据")
 			}
@@ -117,6 +120,20 @@ func (s *SummaryBugsService) CountByProjectId(tenantId consts.TenantId, projectI
 	return s.HandlerSummaryBugsRepo().CountByProjectId(tenantId, projectId)
 }
 
-func (s *SummaryBugsService) GetNewBugs(tenantId consts.TenantId) (bugIds []string, err error) {
-	return s.HandlerSummaryBugsRepo().GetNewBugs(tenantId)
+func (s *SummaryBugsService) CreateBugs(tenantId consts.TenantId) {
+	bugs, err := s.HandlerSummaryBugsRepo().GetNewBugs(tenantId)
+	if err != nil {
+		return
+	}
+
+	var data []model.SummaryBugs
+	for _, bug := range bugs {
+		data = append(data, model.SummaryBugs{
+			ProjectId:   int64(bug.ProjectId),
+			BugId:       int64(bug.ID),
+			BugSeverity: bug.Severity.String(),
+		})
+	}
+	s.HandlerSummaryBugsRepo().Creates(tenantId, data)
+	return
 }

@@ -394,8 +394,8 @@ func (r *ScenarioReportRepo) BatchDelete(tenantId consts.TenantId, planReportId 
 	return
 }
 
-func (r *ScenarioReportRepo) ReferBug(tenantId consts.TenantId, id uint, bugId string, bugType uint) (err error) {
+func (r *ScenarioReportRepo) ReferBug(tenantId consts.TenantId, id uint, bugId string, bugType, Severity uint) (err error) {
 	err = r.GetDB(tenantId).Model(&model.ScenarioReport{}).Where("id = ?", id).
-		Updates(map[string]interface{}{"bug_id": bugId, "bug_type": bugType}).Error
+		Updates(map[string]interface{}{"bug_id": bugId, "bug_type": bugType, "severity": Severity}).Error
 	return
 }

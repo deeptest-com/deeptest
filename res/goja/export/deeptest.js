@@ -18,6 +18,8 @@ variables.set.prototype = {};
 variables.clear = clearVariable;
 variables.clear.prototype = {};
 
+const _url_encode = encodeURIComponent;
+
 module.exports = { // under dt.
     datapool,
     variables,

@@ -55,7 +55,7 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 
 	detail := map[string]interface{}{"name": entity.Name, "cookieName": cookieName}
 	if typ == consts.ProcessorCookieSet {
-		variableValue := ReplaceVariableValue(rightValue, session.ExecUuid)
+		variableValue := ReplaceVariableValue(rightValue, session.TenantId, session.ProjectId, session.ExecUuid)
 
 		SetCookie(processor.ParentId, cookieName, variableValue, domain, expireTime, session.ExecUuid) // set in parent scope
 

@@ -115,16 +115,8 @@ func parseSingleVariableToken(str string) (isFunc bool, name string, params []To
 func replaceVariableToken(str string) (ret string) {
 	ret = str
 
-	regx0 := regexp.MustCompile(`(?U)\${(\+?[A-Za-z0-9]+)}`)
-
-	arr0 := regx0.FindAllStringSubmatch(str, -1)
-	if len(arr0) > 0 {
-		for _, item := range arr0 {
-			ret = strings.Replace(ret,
-				fmt.Sprintf("${%s}", item[1]),
-				fmt.Sprintf("#[%s]", item[1]), 1)
-		}
-	}
+	reg := regexp.MustCompile(`(?U)\${(\+?[A-Za-z0-9]+)}`)
+	ret = reg.ReplaceAllString(ret, "#[$1]")
 
 	return
 }

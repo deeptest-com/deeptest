@@ -84,7 +84,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, localVarsCache iris.Map, wsMsg 
 	agentExec.InitJsRuntime(tenantId, projectId, execUuid)
 
 	agentExec.ExecPreConditions(caseInterfaceExecObj, execUuid) // must before PreRequest, since it will update the vari in script
-	originalReqUri, _ := PreRequest(&caseInterfaceExecObj.DebugData, execUuid)
+	originalReqUri, _ := PreRequest(&caseInterfaceExecObj.DebugData, tenantId, projectId, execUuid)
 
 	agentExec.SetReqValueToGoja(&caseInterfaceExecObj.DebugData.BaseRequest)
 	agentExec.GetReqValueFromGoja(execUuid, tenantId, projectId)

@@ -30,7 +30,7 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	agentExec.SetReqValueToGoja(&req.DebugData.BaseRequest)
 
 	agentExec.ExecPreConditions(&req, call.ExecUuid) // must before PreRequest, since it will update the vari in script
-	originalReqUri, _ := PreRequest(&req.DebugData, call.ExecUuid)
+	originalReqUri, _ := PreRequest(&req.DebugData, call.TenantId, call.Data.ProjectId, call.ExecUuid)
 
 	agentExec.GetReqValueFromGoja(call.ExecUuid, call.TenantId, call.Data.ProjectId)
 
@@ -60,9 +60,9 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	return
 }
 
-func PreRequest(req *domain.DebugData, execUuid string) (originalReqUri string, err error) {
+func PreRequest(req *domain.DebugData, tenantId consts.TenantId, projectId uint, execUuid string) (originalReqUri string, err error) {
 	// replace variables
-	agentExec.ReplaceVariables(&req.BaseRequest, execUuid)
+	agentExec.ReplaceVariables(&req.BaseRequest, tenantId, projectId, execUuid)
 
 	// gen url
 	req.BaseRequest.Url, originalReqUri = UpdateUrl(*req)

@@ -15,19 +15,19 @@ type MockjsGenerator struct {
 func (g *MockjsGenerator) GenerateDataBySchema(ctx context.Context, schema *openapi3.Schema) (value Data, err error) {
 	expr := mockjsHelper.GetMockJsSchemaExpression(schema)
 
-	value, _ = g.GenerateByMockJsExpression(expr, schema)
+	value, _ = g.GenerateByMockJsExpression(expr, schema.Type)
 
 	return
 }
 
-func (g *MockjsGenerator) GenerateByMockJsExpression(expr string, schema *openapi3.Schema) (ret interface{}, err error) {
+func (g *MockjsGenerator) GenerateByMockJsExpression(expr string, schemaType string) (ret interface{}, err error) {
 	req := serverDomain.MockJsExpression{
 		Expression: expr,
 	}
 
 	result, err := mockjsHelper.EvaluateExpression(req)
 
-	ret = mockjsHelper.ConvertData(result.Result, schema.Type)
+	ret = mockjsHelper.ConvertData(result.Result, schemaType)
 
 	return
 }

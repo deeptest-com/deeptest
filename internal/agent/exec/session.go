@@ -15,6 +15,7 @@ type Session struct {
 	ScenarioId uint
 	Name       string
 	TenantId   consts.TenantId `json:"tenantId"`
+	ProjectId  uint            `json:"projectId"`
 
 	HttpClient  *http.Client
 	Http2Client *http.Client
@@ -35,6 +36,9 @@ func NewSession(req *ScenarioExecObj, failfast bool, wsMsg *websocket.Message) (
 		RootProcessor: root,
 		Failfast:      failfast,
 		WsMsg:         wsMsg,
+
+		TenantId:  req.TenantId,
+		ProjectId: req.RootProcessor.ProjectId,
 	}
 
 	jar, _ := cookiejar.New(nil)

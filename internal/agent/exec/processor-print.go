@@ -42,7 +42,7 @@ func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err er
 		Round:             processor.Round,
 	}
 
-	value := ReplaceVariableValue(entity.RightValue, session.ExecUuid)
+	value := ReplaceVariableValue(entity.RightValue, session.TenantId, session.ProjectId, session.ExecUuid)
 	value = strings.TrimSpace(value)
 
 	//processor.Result.Summary = strings.ReplaceAll(fmt.Sprintf("%s为\"%v\"。", entity.RightValue, value), "<nil>", "空")

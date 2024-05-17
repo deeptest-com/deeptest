@@ -87,6 +87,13 @@ func GetScript(name ScriptType) string {
 		}
 		return VariablesClear
 
+	} else if name == ScriptFuncs {
+		if FuncsScript == "" {
+			bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "export", "funcs.js"))
+			DeepTestScript = string(bytes)
+		}
+		return DeepTestScript
+
 	}
 
 	return ""
@@ -137,6 +144,7 @@ var (
 	VariablesGet      = ""
 	VariablesSet      = ""
 	VariablesClear    = ""
+	FuncsScript       = ""
 )
 
 type ScriptType string
@@ -154,6 +162,8 @@ const (
 	DeclareMock = "mock.d"
 
 	DeclareJslibs = "jslibs"
+
+	ScriptFuncs = "funcs"
 
 	SnippetDatapoolGet    = "datapool_get"
 	SnippetVariablesGet   = "variables_get"

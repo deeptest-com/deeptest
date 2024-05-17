@@ -3,12 +3,14 @@ package agentExec
 import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	mockData "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"regexp"
 	"strings"
 )
 
-func ReplaceVariableValueInBody(value string, execUuid string) (ret string) {
+func ReplaceVariableValueInBody(value string, tenantId consts.TenantId, projectId uint, execUuid string) (ret string) {
 	// add a plus to set field vale as a number
 	// {"id": "${+dev_env_var1}"} => {"id": 2}
 
@@ -30,31 +32,47 @@ func ReplaceVariableValueInBody(value string, execUuid string) (ret string) {
 	return
 }
 
-func ReplaceVariableValue(value string, execUuid string) (ret string) {
+func ReplaceVariableValue(value string, tenantId consts.TenantId, projectId uint, execUuid string) (ret string) {
 	ret = value
 
 	value1 := replaceVariableToken(value)
 	variablePlaceholders := commUtils.GetVariablesInExpressionPlaceholder(value1)
 
-	for _, placeholder := range variablePlaceholders {
-		isFunc, name, _ := parseSingleVariableToken(placeholder)
+	for _, token := range variablePlaceholders {
+		isFunc, name, params := parseSingleVariableToken(token)
 		if name == "" { // not a valid token
 			continue
 		}
 
 		if isFunc {
 			if name == "_mock" { // mock func
+				if len(params) > 0 {
+					result, err := (&mockData.MockjsGenerator{}).GenerateByMockJsExpression(params[0].Name, "string")
+					if err == nil {
+						newVal := _stringUtils.InterfToStr(result)
+
+						oldVal := fmt.Sprintf("${%s}", token)
+						ret = strings.Replace(ret, oldVal, newVal, -1)
+					}
+				}
 
 			} else if strings.HasPrefix(name, "_") { // buildin func
+				expr := strings.TrimPrefix(token, "_")
+
+				result := ExecJsFuncSimple(expr, tenantId, projectId, execUuid, false)
+				newVal := _stringUtils.InterfToStr(result)
+
+				oldVal := fmt.Sprintf("${%s}", token)
+				ret = strings.Replace(ret, oldVal, newVal, -1)
 
 			} else { // custom func
 
 			}
 
 		} else { // variable ref like ${var_name}
-			oldVal := fmt.Sprintf("${%s}", name)
 			newVal := getPlaceholderVariableValue(strings.TrimLeft(name, "+"), execUuid)
 
+			oldVal := fmt.Sprintf("${%s}", name)
 			ret = strings.ReplaceAll(ret, oldVal, newVal)
 		}
 	}
@@ -88,16 +106,7 @@ func getPlaceholderType(placeholder string) (ret consts.PlaceholderType) {
 	return consts.PlaceholderTypeVariable
 }
 
-func parseSingleVariableToken(str string) (isFunc bool, name string, params []TokenParam) {
-
-	regx1 := regexp.MustCompile(`\${(\+?.+)}`)
-	arr1 := regx1.FindAllStringSubmatch(str, -1)
-	if len(arr1) == 0 {
-		return
-	}
-
-	token := strings.TrimSpace(arr1[0][1])
-
+func parseSingleVariableToken(token string) (isFunc bool, name string, params []TokenParam) {
 	regx2 := regexp.MustCompile(`^((?U).+)\((\+?.+)\)$`)
 	arr2 := regx2.FindAllStringSubmatch(token, -1)
 
@@ -150,16 +159,8 @@ func parseSingleVariableToken(str string) (isFunc bool, name string, params []To
 func replaceVariableToken(str string) (ret string) {
 	ret = str
 
-	regx0 := regexp.MustCompile(`(?U)\${(\+?[A-Za-z0-9]+)}`)
-
-	arr0 := regx0.FindAllStringSubmatch(str, -1)
-	if len(arr0) > 0 {
-		for _, item := range arr0 {
-			ret = strings.Replace(ret,
-				fmt.Sprintf("${%s}", item[1]),
-				fmt.Sprintf("#[%s]", item[1]), 1)
-		}
-	}
+	reg := regexp.MustCompile(`(?U)\${(\+?[A-Za-z0-9]+)}`)
+	ret = reg.ReplaceAllString(ret, "#[$1]")
 
 	return
 }

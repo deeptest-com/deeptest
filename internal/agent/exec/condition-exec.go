@@ -22,7 +22,7 @@ func ExecPreConditions(execObj *InterfaceExecObj, execUuid string) (err error) {
 				execUuid, false, execObj.TenantId)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
-			DealwithDatabaseCondition(condition, &preConditions, execUuid)
+			DealwithDatabaseCondition(condition, &preConditions, execObj.TenantId, execObj.DebugData.ProjectId, execUuid)
 
 		}
 	}
@@ -42,7 +42,7 @@ func ExecPostConditions(execObj *InterfaceExecObj, resp domain.DebugResponse, ex
 				execUuid, true, execObj.TenantId)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
-			DealwithDatabaseCondition(condition, &postConditions, execUuid)
+			DealwithDatabaseCondition(condition, &postConditions, execObj.TenantId, execObj.DebugData.ProjectId, execUuid)
 
 		} else if condition.Type == consts.ConditionTypeExtractor {
 			DealwithExtractorCondition(condition, resp, &postConditions, execUuid)
@@ -91,7 +91,7 @@ func DealwithScriptCondition(condition domain.InterfaceExecCondition, resultStat
 }
 
 func DealwithDatabaseCondition(condition domain.InterfaceExecCondition,
-	postConditions *[]domain.InterfaceExecCondition, execUuid string) {
+	postConditions *[]domain.InterfaceExecCondition, tenantId consts.TenantId, projectId uint, execUuid string) {
 
 	status := consts.Pass
 
@@ -101,7 +101,7 @@ func DealwithDatabaseCondition(condition domain.InterfaceExecCondition,
 		return
 	}
 
-	databaseOptBase.Sql = ReplaceVariableValue(databaseOptBase.Sql, execUuid)
+	databaseOptBase.Sql = ReplaceVariableValue(databaseOptBase.Sql, tenantId, projectId, execUuid)
 
 	err := ExecDbOpt(&databaseOptBase)
 	if err != nil || databaseOptBase.ResultStatus == consts.Fail {

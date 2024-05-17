@@ -70,7 +70,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	entity.ExecPreConditions(processor, session)
 
 	// dealwith variables
-	ReplaceVariables(&baseRequest, session.ExecUuid)
+	ReplaceVariables(&baseRequest, session.TenantId, session.ProjectId, session.ExecUuid)
 	GetReqValueFromGoja(session.ExecUuid, session.TenantId, processor.ProjectId)
 
 	// add cookies
@@ -125,7 +125,7 @@ func (entity *ProcessorInterface) ExecPreConditions(processor *Processor, sessio
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
 			entity.DealwithDatabaseOptCondition(condition, processor.ID, processor.ParentId, &processor.Result.PreConditions,
-				session.ExecUuid)
+				session.TenantId, session.ProjectId, session.ExecUuid)
 		}
 	}
 
@@ -141,7 +141,8 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 				session.ExecUuid, true)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
-			entity.DealwithDatabaseOptCondition(condition, processor.ID, processor.ParentId, &processor.Result.PostConditions, session.ExecUuid)
+			entity.DealwithDatabaseOptCondition(condition, processor.ID, processor.ParentId, &processor.Result.PostConditions,
+				session.TenantId, session.ProjectId, session.ExecUuid)
 
 		} else if condition.Type == consts.ConditionTypeExtractor {
 			entity.DealwithExtractorCondition(condition,
@@ -194,7 +195,7 @@ func (entity *ProcessorInterface) DealwithScriptCondition(condition domain.Inter
 }
 
 func (entity *ProcessorInterface) DealwithDatabaseOptCondition(condition domain.InterfaceExecCondition,
-	processorId, parentId uint, conditions *[]domain.InterfaceExecCondition, execUuid string) {
+	processorId, parentId uint, conditions *[]domain.InterfaceExecCondition, tenantId consts.TenantId, projectId uint, execUuid string) {
 
 	var databaseOptBase domain.DatabaseOptBase
 	json.Unmarshal(condition.Raw, &databaseOptBase)
@@ -202,7 +203,7 @@ func (entity *ProcessorInterface) DealwithDatabaseOptCondition(condition domain.
 		return
 	}
 
-	databaseOptBase.Sql = ReplaceVariableValue(databaseOptBase.Sql, execUuid)
+	databaseOptBase.Sql = ReplaceVariableValue(databaseOptBase.Sql, tenantId, projectId, execUuid)
 
 	conditionStatus := true
 	err := ExecDbOpt(&databaseOptBase)

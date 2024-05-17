@@ -33,41 +33,50 @@ func ReplaceVariableValueInBody(value string, tenantId consts.TenantId, projectI
 }
 
 func ReplaceVariableValue(value string, tenantId consts.TenantId, projectId uint, execUuid string) (ret string) {
-	ret = value
-
-	value1 := replaceVariableToken(value)
-	variablePlaceholders := commUtils.GetVariablesInExpressionPlaceholder(value1)
+	ret = replaceVariableToken(value)
+	variablePlaceholders := commUtils.GetVariablesInExpressionPlaceholder(ret)
 
 	for _, token := range variablePlaceholders {
-		isFunc, name, params := parseSingleVariableToken(token)
+		isFunc, isExpr, name, params, variables := parseSingleVariableToken(token)
 		if name == "" { // not a valid token
 			continue
 		}
 
-		if isFunc {
-			if name == "_mock" { // mock func
-				if len(params) > 0 {
-					result, err := (&mockData.MockjsGenerator{}).GenerateByMockJsExpression(params[0].Name, "string")
-					if err == nil {
-						newVal := _stringUtils.InterfToStr(result)
+		if name == "_mock" { // mock
+			if len(params) > 0 {
+				result, err := (&mockData.MockjsGenerator{}).GenerateByMockJsExpression(params[0].Name, "string")
+				if err == nil {
+					newVal := _stringUtils.InterfToStr(result)
 
-						oldVal := fmt.Sprintf("${%s}", token)
-						ret = strings.Replace(ret, oldVal, newVal, -1)
-					}
+					oldVal := fmt.Sprintf("${%s}", token)
+					ret = strings.Replace(ret, oldVal, newVal, -1)
 				}
+			}
 
-			} else if strings.HasPrefix(name, "_") { // buildin func
+		} else if isFunc {
+			if strings.HasPrefix(name, "_") { // buildin func
 				expr := strings.TrimPrefix(token, "_")
 
-				result := ExecJsFuncSimple(expr, tenantId, projectId, execUuid, false)
+				result := ExecJsFuncSimple(expr, tenantId, projectId, execUuid, variables, false)
 				newVal := _stringUtils.InterfToStr(result)
 
 				oldVal := fmt.Sprintf("${%s}", token)
 				ret = strings.Replace(ret, oldVal, newVal, -1)
 
-			} else { // custom func
+			} else if strings.Contains(name, ".") { // custom func
+				result := ExecJsFuncSimple(token, tenantId, projectId, execUuid, variables, true)
+				newVal := _stringUtils.InterfToStr(result)
 
+				oldVal := fmt.Sprintf("${%s}", token)
+				ret = strings.Replace(ret, oldVal, newVal, -1)
 			}
+
+		} else if isExpr { // expression
+			result := ExecJsFuncSimple(token, tenantId, projectId, execUuid, variables, true)
+			newVal := _stringUtils.InterfToStr(result)
+
+			oldVal := fmt.Sprintf("${%s}", token)
+			ret = strings.Replace(ret, oldVal, newVal, -1)
 
 		} else { // variable ref like ${var_name}
 			newVal := getPlaceholderVariableValue(strings.TrimLeft(name, "+"), execUuid)
@@ -106,12 +115,26 @@ func getPlaceholderType(placeholder string) (ret consts.PlaceholderType) {
 	return consts.PlaceholderTypeVariable
 }
 
-func parseSingleVariableToken(token string) (isFunc bool, name string, params []TokenParam) {
-	regx2 := regexp.MustCompile(`^((?U).+)\((\+?.+)\)$`)
+func parseSingleVariableToken(token string) (isFunc, isExpr bool, name string, params []TokenParam, variables []string) {
+	regx2 := regexp.MustCompile(`^((?U).+)\((\+?.*)\)$`)
 	arr2 := regx2.FindAllStringSubmatch(token, -1)
 
 	if len(arr2) == 0 { // is not func
 		name = token
+
+		if !regexp.MustCompile(`"[_A-Za-z][_A-Za-z0-9]*"`).MatchString(token) { // is expression
+			isExpr = true
+
+			regx0 := regexp.MustCompile(`#\[(\+?[_A-Za-z0-9]+)\]`)
+			arr0 := regx0.FindAllStringSubmatch(token, -1)
+
+			if len(arr0) > 0 { // has variable in it
+				for _, item := range arr0 {
+					variables = append(variables, item[1])
+				}
+			}
+		}
+
 		return
 	}
 
@@ -130,37 +153,54 @@ func parseSingleVariableToken(token string) (isFunc bool, name string, params []
 		if name == "_mock" {
 			paramType = "mock"
 			paramName = strings.Trim(paramName, `"'`)
+
+			params = append(params, TokenParam{
+				Name: paramName,
+				Type: paramType,
+			})
+
 		} else {
-			regx4 := regexp.MustCompile(`#\[(\+?[A-Za-z0-9]+)\]`)
+			regx4 := regexp.MustCompile(`#\[(\+?[_A-Za-z0-9]+)\]`)
 			arr4 := regx4.FindAllStringSubmatch(item, -1)
 
-			if len(arr4) > 0 {
-				paramType = TokenParamTypeVariable
-				paramName = arr4[0][1]
-			} else {
+			if len(arr4) == 0 { // has no variable in it
 				paramNameTrim := strings.Trim(paramName, `"'`)
 				if paramNameTrim == paramName { // number
 					paramType = TokenParamTypeNumber
 				}
+
+				params = append(params, TokenParam{
+					Name: paramName,
+					Type: paramType,
+				})
+
+				continue
+			}
+
+			for _, item := range arr4 {
+				variables = append(variables, item[1])
 			}
 		}
-
-		p := TokenParam{
-			Name: paramName,
-			Type: paramType,
-		}
-
-		params = append(params, p)
 	}
 
 	return
 }
 
 func replaceVariableToken(str string) (ret string) {
-	ret = str
+	if len(str) > 2 && str[:2] == "${" && str[len(str)-1] == '}' {
+		part := str[2 : len(str)-1]
 
-	reg := regexp.MustCompile(`(?U)\${(\+?[A-Za-z0-9]+)}`)
-	ret = reg.ReplaceAllString(ret, "#[$1]")
+		reg := regexp.MustCompile(`(?U)\${(\+?[_A-Za-z0-9]+)}`)
+		part = reg.ReplaceAllString(part, "#[$1]")
+
+		ret = fmt.Sprintf("${%s}", part)
+
+	} else {
+		ret = str
+
+		reg := regexp.MustCompile(`(?U)\${(\+?[_A-Za-z0-9]+)}`)
+		ret = reg.ReplaceAllString(ret, "#[$1]")
+	}
 
 	return
 }

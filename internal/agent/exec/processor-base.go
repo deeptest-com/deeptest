@@ -16,7 +16,7 @@ type ProcessorEntityBase struct {
 }
 
 type IProcessorEntity interface {
-	Run(*Processor, *Session) error
+	Run(*Processor, *ExecSession) error
 }
 
 func getPreviousBrother(processor Processor) (brother Processor, ok bool) {

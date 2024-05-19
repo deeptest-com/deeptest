@@ -11,12 +11,12 @@ import (
 	"strings"
 )
 
-func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse, processorId uint, execUuid string) (err error) {
+func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse, processorId uint, session *ExecSession) (err error) {
 	checkpoint.ResultStatus = consts.Pass
 
 	// Judgement 表达式
 	if checkpoint.Type == consts.Judgement {
-		result, variablesArr := computerExpr(checkpoint.Expression, execUuid, processorId)
+		result, variablesArr := computerExpr(checkpoint.Expression, processorId, session)
 
 		checkpoint.Variables = getVariableArrDesc(variablesArr)
 		checkpoint.ActualResult = fmt.Sprintf("%v", result)
@@ -32,7 +32,7 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 	}
 
 	// 计算表达式
-	checkpointValue, variablesArr := computerExpr(checkpoint.Value, execUuid, processorId)
+	checkpointValue, variablesArr := computerExpr(checkpoint.Value, processorId, session)
 	checkpointValue = _stringUtils.InterfToStr(checkpointValue)
 	checkpoint.Variables = getVariableArrDesc(variablesArr)
 
@@ -98,7 +98,7 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 
 	// ExtractorVari
 	if checkpoint.Type == consts.ExtractorVari {
-		variable, _ := GetVariable(GetCurrScenarioProcessorId(execUuid), checkpoint.ExtractorVariable, execUuid)
+		variable, _ := GetVariable(checkpoint.ExtractorVariable, session.ScenarioDebug.CurrProcessorId, session)
 
 		checkpoint.ActualResult = fmt.Sprintf("%v", variable.Value)
 
@@ -125,14 +125,14 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 	return
 }
 
-func computerExpr(expression, execUuid string, processorId uint) (result interface{}, variablesArr domain.VarKeyValuePair) {
-	expr := ReplaceDatapoolVariInGovaluateExpress(expression, execUuid)
+func computerExpr(expression string, processorId uint, session *ExecSession) (result interface{}, variablesArr domain.VarKeyValuePair) {
+	expr := ReplaceDatapoolVariInGovaluateExpress(expression, session)
 
 	var err error
 	if processorId > 0 { // exec interface processor in scenario
-		result, variablesArr, err = EvaluateGovaluateExpressionByProcessorScope(expr, processorId, execUuid)
+		result, variablesArr, err = EvaluateGovaluateExpressionByProcessorScope(expr, processorId, session)
 	} else { // exec by interface invocation
-		result, variablesArr, err = EvaluateGovaluateExpressionWithDebugVariables(expr, execUuid)
+		result, variablesArr, err = EvaluateGovaluateExpressionWithDebugVariables(expr, session)
 	}
 
 	if err != nil {

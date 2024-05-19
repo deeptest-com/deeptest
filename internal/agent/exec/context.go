@@ -29,15 +29,14 @@ func InitScenarioExecContext(execObj *ScenarioExecObj) (variables []domain.ExecV
 	return
 }
 
-func GetValidScopeIds(processorId uint, execUuid string) (ret *[]uint) {
+func GetValidScopeIds(processorId uint, session *ExecSession) (ret *[]uint) {
 	if processorId == 0 { // return an arr with single 0
 		arr := []uint{processorId}
 		ret = &arr
 		return
 	}
 
-	scopeHierarchy := GetScopeHierarchy(execUuid)
-	ret = scopeHierarchy[processorId]
+	ret = session.ScenarioDebug.ScopeHierarchy[processorId]
 
 	return
 }

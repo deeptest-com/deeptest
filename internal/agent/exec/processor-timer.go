@@ -18,7 +18,7 @@ type ProcessorTimer struct {
 	SleepTime int `json:"sleepTime" yaml:"sleepTime"`
 }
 
-func (entity ProcessorTimer) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorTimer) Run(processor *Processor, session *ExecSession) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)
@@ -45,7 +45,7 @@ func (entity ProcessorTimer) Run(processor *Processor, session *Session) (err er
 	processor.AddResultToParent()
 	detail := map[string]interface{}{"name": entity.Name, "sleepTime": entity.SleepTime}
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
-	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.ScenarioDebug.WsMsg)
 
 	<-time.After(time.Duration(entity.SleepTime) * time.Second)
 

@@ -17,7 +17,7 @@ type ProcessorLogic struct {
 	Expression string `json:"expression" yaml:"expression"`
 }
 
-func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorLogic) Run(processor *Processor, session *ExecSession) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)
@@ -45,7 +45,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 	detail := map[string]interface{}{"name": entity.Name, "expression": entity.Expression}
 	if typ == consts.ProcessorLogicIf {
 		var result interface{}
-		result, _, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, entity.ProcessorID, session.ExecUuid)
+		result, _, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, entity.ProcessorID, session)
 		if err != nil {
 			pass = false
 		} else {
@@ -66,13 +66,13 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 	processor.Result.ResultStatus, processor.Result.Summary = getResultStatus(pass)
 	detail["result"] = pass
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
-	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.ScenarioDebug.WsMsg)
 	processor.AddResultToParent()
 
 	executedProcessorIds := map[uint]bool{}
 	if pass {
 		for _, child := range processor.Children {
-			if GetForceStopExec(session.ExecUuid) {
+			if session.ForceStop {
 				break
 			}
 			if child.Disable {
@@ -89,7 +89,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 	processor.Result.EndTime = &endTime
 
 	stat := CountSkip(session.ExecUuid, executedProcessorIds, processor.Children)
-	execUtils.SendStatMsg(stat, session.WsMsg)
+	execUtils.SendStatMsg(stat, session.ScenarioDebug.WsMsg)
 
 	return
 }

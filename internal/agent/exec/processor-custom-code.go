@@ -20,7 +20,7 @@ type ProcessorCustomCode struct {
 	Desc     string          `json:"desc" yaml:"desc"`
 }
 
-func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorCustomCode) Run(processor *Processor, session *ExecSession) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)

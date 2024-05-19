@@ -13,16 +13,15 @@ import (
 	"strings"
 )
 
-func ExecPreConditions(execObj *InterfaceExecObj, execUuid string) (err error) {
+func ExecPreConditions(execObj *InterfaceExecObj, session *ExecSession) (err error) {
 	preConditions := make([]domain.InterfaceExecCondition, 0) // will be changed and append items to it
 
 	for _, condition := range execObj.PreConditions {
 		if condition.Type == consts.ConditionTypeScript {
-			DealwithScriptCondition(condition, nil, execObj.DebugData.ProjectId, &preConditions,
-				execUuid, false, execObj.TenantId)
+			DealwithScriptCondition(condition, nil, &preConditions, false, session)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
-			DealwithDatabaseCondition(condition, &preConditions, execObj.TenantId, execObj.DebugData.ProjectId, execUuid)
+			DealwithDatabaseCondition(condition, &preConditions, session)
 
 		}
 	}
@@ -32,20 +31,19 @@ func ExecPreConditions(execObj *InterfaceExecObj, execUuid string) (err error) {
 	return
 }
 
-func ExecPostConditions(execObj *InterfaceExecObj, resp domain.DebugResponse, execUuid string) (resultStatus consts.ResultStatus, err error) {
+func ExecPostConditions(execObj *InterfaceExecObj, resp domain.DebugResponse, session *ExecSession) (resultStatus consts.ResultStatus, err error) {
 	resultStatus = consts.Pass
 	postConditions := make([]domain.InterfaceExecCondition, 0) // will be changed and append items to it
 
 	for _, condition := range execObj.PostConditions {
 		if condition.Type == consts.ConditionTypeScript {
-			DealwithScriptCondition(condition, &resultStatus, execObj.DebugData.ProjectId, &postConditions,
-				execUuid, true, execObj.TenantId)
+			DealwithScriptCondition(condition, &resultStatus, &postConditions, true, session)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
-			DealwithDatabaseCondition(condition, &postConditions, execObj.TenantId, execObj.DebugData.ProjectId, execUuid)
+			DealwithDatabaseCondition(condition, &postConditions, session)
 
 		} else if condition.Type == consts.ConditionTypeExtractor {
-			DealwithExtractorCondition(condition, resp, &postConditions, execUuid)
+			DealwithExtractorCondition(condition, resp, &postConditions, session)
 
 		} else if condition.Type == consts.ConditionTypeResponseDefine {
 			//DealwithResponseDefineCondition(condition, resp, &resultStatus, &postConditions)
@@ -54,7 +52,7 @@ func ExecPostConditions(execObj *InterfaceExecObj, resp domain.DebugResponse, ex
 
 	for _, condition := range execObj.PostConditions {
 		if condition.Type == consts.ConditionTypeCheckpoint {
-			DealwithDealwithCheckPointCondition(condition, resp, &resultStatus, &postConditions, execUuid)
+			DealwithDealwithCheckPointCondition(condition, resp, &resultStatus, &postConditions, session)
 
 		}
 	}
@@ -65,25 +63,25 @@ func ExecPostConditions(execObj *InterfaceExecObj, resp domain.DebugResponse, ex
 }
 
 func DealwithScriptCondition(condition domain.InterfaceExecCondition, resultStatus *consts.ResultStatus,
-	projectId uint, conditions *[]domain.InterfaceExecCondition, execUuid string, isPostCondition bool, tenantId consts.TenantId) {
+	conditions *[]domain.InterfaceExecCondition, isPostCondition bool, session *ExecSession) {
 
 	var scriptBase domain.ScriptBase
 	json.Unmarshal(condition.Raw, &scriptBase)
 	if scriptBase.Disabled {
 		return
 	}
-	err := ExecScript(&scriptBase, tenantId, projectId, execUuid)
+	err := ExecScript(&scriptBase, session)
 	if err != nil {
 		_logUtils.Info("script exec failed")
 	}
 
 	scriptHelper.GenResultMsg(&scriptBase)
-	scriptBase.VariableSettings = *GetGojaVariables(execUuid)
+	scriptBase.VariableSettings = *session.GojaVariables
 
 	condition.Raw, _ = json.Marshal(scriptBase)
 	*conditions = append(*conditions, condition)
 
-	for _, item := range *GetGojaLogs(execUuid) {
+	for _, item := range *session.GojaLogs {
 		if isPostCondition {
 			createAssertFromScriptResult(item, conditions, resultStatus, scriptBase.ConditionId, scriptBase.ConditionEntityId)
 		}
@@ -91,7 +89,7 @@ func DealwithScriptCondition(condition domain.InterfaceExecCondition, resultStat
 }
 
 func DealwithDatabaseCondition(condition domain.InterfaceExecCondition,
-	postConditions *[]domain.InterfaceExecCondition, tenantId consts.TenantId, projectId uint, execUuid string) {
+	postConditions *[]domain.InterfaceExecCondition, session *ExecSession) {
 
 	status := consts.Pass
 
@@ -101,7 +99,7 @@ func DealwithDatabaseCondition(condition domain.InterfaceExecCondition,
 		return
 	}
 
-	databaseOptBase.Sql = ReplaceVariableValue(databaseOptBase.Sql, tenantId, projectId, execUuid)
+	databaseOptBase.Sql = ReplaceVariableValue(databaseOptBase.Sql, session)
 
 	err := ExecDbOpt(&databaseOptBase)
 	if err != nil || databaseOptBase.ResultStatus == consts.Fail {
@@ -112,7 +110,7 @@ func DealwithDatabaseCondition(condition domain.InterfaceExecCondition,
 
 	if databaseOptBase.JsonPath != "" && databaseOptBase.Variable != "" && status == consts.Pass {
 		SetVariable(0, databaseOptBase.Variable, databaseOptBase.Result, databaseOptBase.ResultType,
-			consts.Public, execUuid)
+			consts.Public, session)
 	}
 
 	condition.Raw, _ = json.Marshal(databaseOptBase)
@@ -120,7 +118,7 @@ func DealwithDatabaseCondition(condition domain.InterfaceExecCondition,
 }
 
 func DealwithExtractorCondition(condition domain.InterfaceExecCondition, resp domain.DebugResponse,
-	postConditions *[]domain.InterfaceExecCondition, execUuid string) {
+	postConditions *[]domain.InterfaceExecCondition, session *ExecSession) {
 
 	var extractorBase domain.ExtractorBase
 	json.Unmarshal(condition.Raw, &extractorBase)
@@ -137,7 +135,7 @@ func DealwithExtractorCondition(condition domain.InterfaceExecCondition, resp do
 	extractorHelper.GenResultMsg(&extractorBase)
 
 	if extractorBase.ResultStatus == consts.Pass {
-		SetVariable(0, extractorBase.Variable, extractorBase.Result, extractorBase.ResultType, extractorBase.Scope, execUuid)
+		SetVariable(0, extractorBase.Variable, extractorBase.Result, extractorBase.ResultType, extractorBase.Scope, session)
 	}
 
 	condition.Raw, _ = json.Marshal(extractorBase)
@@ -145,7 +143,7 @@ func DealwithExtractorCondition(condition domain.InterfaceExecCondition, resp do
 }
 
 func DealwithDealwithCheckPointCondition(condition domain.InterfaceExecCondition, resp domain.DebugResponse,
-	status *consts.ResultStatus, postConditions *[]domain.InterfaceExecCondition, execUuid string) {
+	status *consts.ResultStatus, postConditions *[]domain.InterfaceExecCondition, session *ExecSession) {
 
 	var checkpointBase domain.CheckpointBase
 	json.Unmarshal(condition.Raw, &checkpointBase)
@@ -153,7 +151,7 @@ func DealwithDealwithCheckPointCondition(condition domain.InterfaceExecCondition
 		return
 	}
 
-	err := ExecCheckPoint(&checkpointBase, resp, 0, execUuid)
+	err := ExecCheckPoint(&checkpointBase, resp, 0, session)
 	if err != nil || checkpointBase.ResultStatus == consts.Fail {
 		*status = consts.Fail
 	}

@@ -18,7 +18,7 @@ type ProcessorAssertion struct {
 	Expression string `json:"expression" yaml:"expression"`
 }
 
-func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorAssertion) Run(processor *Processor, session *ExecSession) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)
@@ -41,8 +41,8 @@ func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (er
 		Round:             processor.Round,
 	}
 
-	expr := ReplaceDatapoolVariInGovaluateExpress(entity.Expression, session.ExecUuid)
-	ret, params, err := EvaluateGovaluateExpressionByProcessorScope(expr, processor.ID, session.ExecUuid)
+	expr := ReplaceDatapoolVariInGovaluateExpress(entity.Expression, session)
+	ret, params, err := EvaluateGovaluateExpressionByProcessorScope(expr, processor.ID, session)
 
 	pass, _ := ret.(bool)
 
@@ -62,7 +62,7 @@ func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (er
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	processor.AddResultToParent()
-	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.ScenarioDebug.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime

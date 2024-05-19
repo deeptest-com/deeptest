@@ -15,7 +15,7 @@ type ProcessorGroup struct {
 	ProcessorEntityBase
 }
 
-func (entity ProcessorGroup) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorGroup) Run(processor *Processor, session *ExecSession) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)

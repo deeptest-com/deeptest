@@ -60,7 +60,7 @@ func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
 			RunMessage(&req.MessageReq, wsMsg)
 		}
 
-		agentExec.ClearExecContext(execUuid)
+		agentExec.ClearUserExecContext(execUuid)
 	}()
 
 	return

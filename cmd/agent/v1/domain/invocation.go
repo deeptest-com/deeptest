@@ -7,12 +7,15 @@ import (
 )
 
 type InterfaceCall struct {
-	ExecUuid       string           `json:"execUuid"`
-	ServerUrl      string           `json:"serverUrl"`
-	Token          string           `json:"token"`
-	TenantId       consts.TenantId  `json:"tenantId"`
-	Data           domain.DebugData `json:"data"`
-	LocalVarsCache iris.Map         `json:"localVarsCache"`
+	ExecUuid  string          `json:"execUuid"`
+	ServerUrl string          `json:"serverUrl"`
+	Token     string          `json:"token"`
+	TenantId  consts.TenantId `json:"tenantId"`
+
+	LocalVarsCache iris.Map `json:"localVarsCache"`
+
+	Data      domain.DebugData `json:"data"`
+	ExecScene domain.ExecScene `json:"execScene"`
 }
 
 type InvokeRequest struct {

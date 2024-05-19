@@ -19,7 +19,7 @@ type ProcessorVariable struct {
 	Expression   string `json:"expression" yaml:"expression"`
 }
 
-func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorVariable) Run(processor *Processor, session *ExecSession) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)
@@ -44,7 +44,7 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 	detail := map[string]interface{}{"name": entity.Name, "variableName": entity.VariableName}
 	if entity.ProcessorType == consts.ProcessorVariableSet {
 		var variableValue interface{}
-		variableValue, _, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, processor.ID, session.ExecUuid)
+		variableValue, _, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, processor.ID, session)
 
 		if err != nil {
 			panic(err)
@@ -52,18 +52,18 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 		}
 
 		SetVariable(processor.ParentId, entity.VariableName, variableValue, consts.ExtractorResultTypeString,
-			consts.Public, session.ExecUuid) // set in parent scope
+			consts.Public, session) // set in parent scope
 		processor.Result.Summary = fmt.Sprintf("\"%s\"为\"%v\"。", entity.VariableName, variableValue)
 		detail["variableValue"] = variableValue
 
 	} else if entity.ProcessorType == consts.ProcessorVariableClear {
-		ClearVariable(processor.ParentId, entity.VariableName, session.ExecUuid)
+		ClearVariable(processor.ParentId, entity.VariableName, session)
 		processor.Result.Summary = fmt.Sprintf("\"%s\"成功。", entity.VariableName)
 	}
 
 	processor.AddResultToParent()
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
-	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.ScenarioDebug.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime

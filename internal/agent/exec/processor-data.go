@@ -37,7 +37,7 @@ type ProcessorData struct {
 	VariableName string `json:"variableName,omitempty" yaml:"variableName,omitempty"`
 }
 
-func (entity ProcessorData) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorData) Run(processor *Processor, session *ExecSession) (err error) {
 	logUtils.Infof("data entity")
 
 	startTime := time.Now()

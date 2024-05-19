@@ -41,7 +41,7 @@ func GetProjectContext(tenantId consts.TenantId, projectId uint) (val *ProjectCo
 	return
 }
 
-func InitGojaRuntime(tenantId consts.TenantId, projectId uint) (execRuntime *goja.Runtime, execRequire *require.RequireModule) {
+func InitProjectGojaRuntime(tenantId consts.TenantId, projectId uint) (execRuntime *goja.Runtime, execRequire *require.RequireModule) {
 	projectContext := GetProjectContext(tenantId, projectId)
 
 	projectContext.GojaRuntime = goja.New()
@@ -56,7 +56,7 @@ func InitGojaRuntime(tenantId consts.TenantId, projectId uint) (execRuntime *goj
 	return
 }
 
-func GetGojaRuntime(tenantId consts.TenantId, projectId uint) (execRuntime *goja.Runtime, execRequire *require.RequireModule) {
+func GetProjectGojaRuntime(tenantId consts.TenantId, projectId uint) (execRuntime *goja.Runtime, execRequire *require.RequireModule) {
 	projectContext := GetProjectContext(tenantId, projectId)
 	execRuntime = projectContext.GojaRuntime
 	execRequire = projectContext.GojaRequire

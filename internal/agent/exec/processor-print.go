@@ -19,7 +19,7 @@ type ProcessorPrint struct {
 	RightValue string `json:"rightValue" yaml:"rightValue"`
 }
 
-func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorPrint) Run(processor *Processor, session *ExecSession) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)
@@ -42,7 +42,7 @@ func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err er
 		Round:             processor.Round,
 	}
 
-	value := ReplaceVariableValue(entity.RightValue, session.TenantId, session.ProjectId, session.ExecUuid)
+	value := ReplaceVariableValue(entity.RightValue, session)
 	value = strings.TrimSpace(value)
 
 	//processor.Result.Summary = strings.ReplaceAll(fmt.Sprintf("%s为\"%v\"。", entity.RightValue, value), "<nil>", "空")
@@ -51,7 +51,7 @@ func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err er
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	processor.AddResultToParent()
-	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.ScenarioDebug.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime

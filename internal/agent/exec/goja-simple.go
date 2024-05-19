@@ -2,33 +2,28 @@ package agentExec
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	jslibHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/dop251/goja"
-	"strings"
 )
 
-func ExecJsFuncSimple(expr string, tenantId consts.TenantId, projectId uint, execUuid string,
-	variables []string, loadCustom bool) (ret string) {
+func ExecJsFuncSimple(nameWithProp string, session *ExecSession, loadCustom bool) (
+	ret string) {
 
-	InitJsRuntimeSimple(tenantId, projectId, execUuid, loadCustom)
-	execRuntime, _ := jslibHelper.GetGojaRuntime(tenantId, projectId)
+	InitProjectJsRuntimeSimple(session, loadCustom)
+	execRuntime, _ := jslibHelper.GetProjectGojaRuntime(session.TenantId, session.ProjectId)
 
 	defineGoFuncsSimple(execRuntime)
 
-	for _, varName := range variables {
-		// replace placeholder
-		expr = strings.Replace(expr, fmt.Sprintf("#[%s]", varName),
-			fmt.Sprintf("dt_temp.%s", varName), 1)
+	variables, _ := GetAllVariables(nameWithProp, session)
 
+	for _, variable := range variables {
 		// add variable to goja runtime
-		varValue := getPlaceholderVariableValue(strings.TrimLeft(varName, "+"), execUuid)
-		setValueToGojaSimple(varName, varValue)
+		setValueToGojaSimple(variable.Name, variable.Value)
 	}
 
-	resultVal, err := execRuntime.RunString(expr)
+	resultVal, err := execRuntime.RunString(nameWithProp)
 	if err != nil {
 		ret = err.Error()
 		return
@@ -42,28 +37,21 @@ func ExecJsFuncSimple(expr string, tenantId consts.TenantId, projectId uint, exe
 	return
 }
 
-func InitJsRuntimeSimple(tenantId consts.TenantId, projectId uint, execUuid string, loadCustom bool) {
-	jslibHelper.InitGojaRuntime(tenantId, projectId)
-	execRuntime, execRequire := jslibHelper.GetGojaRuntime(tenantId, projectId)
-
-	// define a temp obj
-	script := `const dt_temp = {}`
-	_, err := execRuntime.RunString(script)
-	if err != nil {
-		logUtils.Infof(err.Error())
-	}
+func InitProjectJsRuntimeSimple(session *ExecSession, loadCustom bool) {
+	jslibHelper.InitProjectGojaRuntime(session.TenantId, session.ProjectId)
+	execRuntime, execRequire := jslibHelper.GetProjectGojaRuntime(session.TenantId, session.ProjectId)
 
 	// load buildin funcs
 	content := scriptHelper.GetScript(scriptHelper.ScriptCustom)
 
-	_, err = execRuntime.RunString(content)
+	_, err := execRuntime.RunString(content)
 	if err != nil {
 		logUtils.Infof("goja require buildin funcs failed, path: %s, err: %s.", scriptHelper.ScriptCustom, err.Error())
 	}
 
 	// import other custom libs
 	if loadCustom {
-		jslibHelper.RefreshRemoteAgentJslibs(execRuntime, execRequire, tenantId, projectId, GetServerUrl(execUuid), GetServerToken(execUuid))
+		jslibHelper.RefreshRemoteAgentJslibs(execRuntime, execRequire, session.VuNo, session.TenantId, session.ProjectId, session.ServerUrl, session.ServerToken)
 	}
 }
 

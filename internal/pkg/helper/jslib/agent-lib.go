@@ -53,16 +53,15 @@ func LoadChaiJslibs(runtime *goja.Runtime) {
 	runtime.Set("expect", chaiInst.Exports().Named["expect"])
 }
 
-func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireModule, tenantId consts.TenantId, projectId uint, serverUrl, token string) {
+func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireModule, vuNo int, tenantId consts.TenantId, projectId uint, serverUrl, token string) {
 	libs := getJslibsFromServer(tenantId, projectId, serverUrl, token)
 
 	for _, lib := range libs {
-		id := lib.Id
 		if tenantId == "" {
 			tenantId = "NA"
 		}
 
-		tmpFile := fmt.Sprintf("%d-%s-%d.js", id, tenantId, lib.UpdatedAt.Unix())
+		tmpFile := fmt.Sprintf("%d-%d-%s-%d.js", lib.Id, vuNo, tenantId, lib.UpdatedAt.Unix())
 		tmpPath := fmt.Sprintf("%s/%s", consts.TmpDirRelativeAgent, tmpFile)
 		tmpContent := lib.Script
 		fileUtils.WriteFileIfNotExist(tmpPath, tmpContent)
@@ -78,7 +77,7 @@ func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireMod
 		}
 
 		//SetAgentCache(projectId, id, lib.UpdatedAt)
-		logUtils.Infof("更新第三方库，projectId：%v,id:%v,lib.Name:%v", projectId, id, lib.Name)
+		logUtils.Infof("更新第三方库，projectId：%v,id:%v,lib.Name:%v", projectId, lib.Id, lib.Name)
 		//}
 	}
 }

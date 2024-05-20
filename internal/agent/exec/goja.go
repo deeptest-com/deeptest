@@ -25,7 +25,7 @@ func InitGojaRuntimeWithSession(session *ExecSession, vuNo int, tenantId consts.
 
 	defineJsFuncs(session.GojaRuntime, session.GojaRequire, session, false)
 
-	loadDeeptestScript(session.GojaRuntime, session.GojaRequire, session, "v1", false)
+	loadDeeptestScript(session.GojaRuntime, session.GojaRequire, session, false)
 
 	defineGoFuncs(session)
 
@@ -38,7 +38,9 @@ func InitGojaRuntimeWithSession(session *ExecSession, vuNo int, tenantId consts.
 }
 
 func loadDeeptestScript(runtime *goja.Runtime, require *require.RequireModule, session *ExecSession,
-	version string, isSimple bool) (err error) {
+	isSimple bool) (err error) {
+
+	version := "v1"
 
 	script := scriptHelper.ScriptDeepTest
 	if isSimple {

@@ -60,8 +60,6 @@ func SetVariable(processorId uint, variableName string, variableValue interface{
 
 	found := false
 
-	//value, valueType := commUtils.GetValueInfo(variableValue)
-
 	newVariable = domain.ExecVariable{
 		Name:      variableName,
 		Value:     variableValue,

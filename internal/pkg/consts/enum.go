@@ -656,7 +656,6 @@ type PlaceholderPrefix string
 
 const (
 	PlaceholderPrefixDatapool PlaceholderPrefix = "_dp"
-	PlaceholderPrefixFunction PlaceholderPrefix = "_func"
 )
 
 func (e PlaceholderPrefix) String() string {

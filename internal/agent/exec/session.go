@@ -99,6 +99,9 @@ func NewInterfaceExecSession(call domain.InterfaceCall) (session *ExecSession) {
 			CurrRequest:      domain.BaseRequest{},
 			CurrResponse:     domain.DebugResponse{},
 		},
+		ScenarioDebug: &ScenarioDebugSession{ // just put an empty
+			ScopedVariables: map[uint][]domain.ExecVariable{},
+		},
 	}
 
 	InitGojaRuntimeWithSession(session, session.VuNo, session.TenantId)
@@ -139,6 +142,7 @@ func NewScenarioExecSession(vuNo int, req *ScenarioExecObj, environmentId uint, 
 
 			WsMsg: wsMsg,
 		},
+		InterfaceDebug: &InterfaceDebugSession{}, // just put an empty
 	}
 
 	InitGojaRuntimeWithSession(session, session.VuNo, session.TenantId)

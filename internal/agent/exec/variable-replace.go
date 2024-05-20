@@ -15,17 +15,6 @@ func ReplaceVariableValue(value string, session *ExecSession) (ret string) {
 	placeholders := parseStatement(value)
 
 	for _, placeholder := range placeholders {
-		// variable
-		if placeholder.Type == PlaceholderTypeVariable {
-			placeholderWithoutPlus := strings.TrimLeft(placeholder.Content, "+")
-
-			newVal := getPlaceholderVariableValue(placeholderWithoutPlus, session)
-			oldVal := placeholder.Whole
-			ret = strings.ReplaceAll(ret, oldVal, newVal)
-
-			return
-		}
-
 		// mock
 		if placeholder.Type == PlaceholderTypeMock {
 			result, err := (&mockData.MockjsGenerator{}).GenerateByMockJsExpression(placeholder.Content, "string")
@@ -39,12 +28,27 @@ func ReplaceVariableValue(value string, session *ExecSession) (ret string) {
 			return
 		}
 
-		// expression
-		result := ExecJsFuncSimple(placeholder.Whole, session, true)
-		newVal := _stringUtils.InterfToStr(result)
+		// variable
+		if placeholder.Type == PlaceholderTypeVariable {
+			placeholderWithoutPlus := strings.TrimLeft(placeholder.Content, "+")
 
-		oldVal := placeholder.Whole
-		ret = strings.Replace(ret, oldVal, newVal, -1)
+			newVal := getPlaceholderVariableValue(placeholderWithoutPlus, session)
+			oldVal := placeholder.Whole
+			ret = strings.ReplaceAll(ret, oldVal, newVal)
+
+			return
+		}
+
+		// expression
+		if placeholder.Type == PlaceholderTypeExpression {
+			en := GojaSimple{}
+			result := en.ExecJsFuncSimple(placeholder.Content, session, true)
+
+			newVal := _stringUtils.InterfToStr(result)
+
+			oldVal := placeholder.Whole
+			ret = strings.Replace(ret, oldVal, newVal, -1)
+		}
 	}
 
 	return
@@ -73,33 +77,32 @@ func ReplaceVariableValueInBody(value string, session *ExecSession) (ret string)
 }
 
 func parseStatement(statement string) (ret []Placeholder) {
-	reg := regexp.MustCompile(`\${(\+?[_A-Za-z][_A-Za-z0-9]*)}|(?U:{{(.+)}})`)
-
+	reg := regexp.MustCompile(`(?U)\$\{(.+)}`)
 	arr := reg.FindAllStringSubmatch(statement, -1)
+
 	for _, items := range arr {
 		placeholder := Placeholder{
-			Whole: items[0],
+			Whole:   items[0],
+			Content: items[1],
 		}
 
-		if items[1] != "" {
+		if isVariable(placeholder.Content) {
 			placeholder.Type = PlaceholderTypeVariable
-			placeholder.Content = items[1]
-
 			ret = append(ret, placeholder)
 
 			return
 		}
 
 		reg1 := regexp.MustCompile(`_mock\("(.+)"\)`)
-		arr1 := reg1.FindAllStringSubmatch(items[2], -1)
+		arr1 := reg1.FindAllStringSubmatch(placeholder.Content, -1)
 
 		if len(arr1) > 0 {
 			placeholder.Type = PlaceholderTypeMock
 		} else {
-			placeholder.Type = PlaceholderExpression
+			placeholder.Type = PlaceholderTypeExpression
 		}
 
-		placeholder.Content = items[2]
+		ret = append(ret, placeholder)
 	}
 
 	return
@@ -122,11 +125,20 @@ func getPlaceholderVariableValue(name string, session *ExecSession) (ret string)
 func getPlaceholderType(placeholder string) (ret consts.PlaceholderType) {
 	if strings.HasPrefix(placeholder, consts.PlaceholderPrefixDatapool.String()) {
 		return consts.PlaceholderTypeDatapool
-	} else if strings.HasPrefix(placeholder, consts.PlaceholderPrefixFunction.String()) {
-		return consts.PlaceholderTypeFunction
 	}
 
 	return consts.PlaceholderTypeVariable
+}
+
+func isVariable(str string) (ret bool) {
+	reg := regexp.MustCompile(`^\+?[_A-Za-z][_A-Za-z0-9]*$`)
+	arr := reg.FindAllStringSubmatch(str, -1)
+
+	if len(arr) > 0 {
+		ret = true
+	}
+
+	return
 }
 
 type Placeholder struct {
@@ -138,7 +150,7 @@ type Placeholder struct {
 type PlaceholderType string
 
 const (
-	PlaceholderExpression   PlaceholderType = "expression"
-	PlaceholderTypeMock     PlaceholderType = "mock"
-	PlaceholderTypeVariable PlaceholderType = "variable"
+	PlaceholderTypeExpression PlaceholderType = "expression"
+	PlaceholderTypeMock       PlaceholderType = "mock"
+	PlaceholderTypeVariable   PlaceholderType = "variable"
 )

@@ -25,7 +25,7 @@ func InitGojaRuntimeWithSession(session *ExecSession, vuNo int, tenantId consts.
 
 	defineJsFuncs(session.GojaRuntime, session.GojaRequire, session, false)
 
-	loadDeeptestScript(session.GojaRuntime, session.GojaRequire, session)
+	loadDeeptestScript(session.GojaRuntime, session.GojaRequire, session, "v1", false)
 
 	defineGoFuncs(session)
 
@@ -37,12 +37,18 @@ func InitGojaRuntimeWithSession(session *ExecSession, vuNo int, tenantId consts.
 	return
 }
 
-func loadDeeptestScript(runtime *goja.Runtime, require *require.RequireModule, session *ExecSession) (err error) {
-	script := scriptHelper.GetScript(scriptHelper.ScriptDeepTestSimple)
+func loadDeeptestScript(runtime *goja.Runtime, require *require.RequireModule, session *ExecSession,
+	version string, isSimple bool) (err error) {
 
-	pth := filepath.Join(consts.TmpDir, fmt.Sprintf("deeptest-%s-%d.js", session.ExecUuid, session.VuNo))
-	fileUtils.RmDir(pth)
-	fileUtils.WriteFile(pth, script)
+	script := scriptHelper.ScriptDeepTest
+	if isSimple {
+		script = scriptHelper.ScriptDeepTestSimple
+	}
+
+	content := scriptHelper.GetScript(script)
+
+	pth := filepath.Join(consts.TmpDir, fmt.Sprintf("%s-%s.js", script, version))
+	fileUtils.WriteFileIfNotExist(pth, content)
 
 	dt, err := require.Require(pth)
 	if err != nil {

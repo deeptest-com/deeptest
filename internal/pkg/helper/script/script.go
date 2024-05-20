@@ -106,8 +106,8 @@ func GetScript(name ScriptType) string {
 	return ""
 }
 
-func GetModule(name string) (ret string) {
-	bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "module", name))
+func GetModule(name ScriptType) (ret string) {
+	bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "module", name.String()))
 	ret = string(bytes)
 
 	return
@@ -158,26 +158,26 @@ var (
 type ScriptType string
 
 const (
-	ScriptDeepTest                    = "deeptest"
-	ScriptDeepTestSimple              = "deeptest-simple"
-	DeclareDeepTest                   = "deeptest.d"
-	DeclareDeepTestPost               = "deeptest-post.d"
-	DeclareDeepTestScenarioCustomCode = "deeptest-scenario-custom-code.d"
-	DeclareChai                       = "chai.d"
+	ScriptDeepTest                    ScriptType = "deeptest"
+	ScriptDeepTestSimple              ScriptType = "deeptest-simple"
+	DeclareDeepTest                   ScriptType = "deeptest.d"
+	DeclareDeepTestPost               ScriptType = "deeptest-post.d"
+	DeclareDeepTestScenarioCustomCode ScriptType = "deeptest-scenario-custom-code.d"
+	DeclareChai                       ScriptType = "chai.d"
 
-	ModuleMockJs = "mockjs.js"
+	ModuleMockJs ScriptType = "mockjs.js"
 
-	ScriptMock  = "mock"
-	DeclareMock = "mock.d"
+	ScriptMock  ScriptType = "mock"
+	DeclareMock ScriptType = "mock.d"
 
-	DeclareJslibs = "jslibs"
+	DeclareJslibs ScriptType = "jslibs"
 
-	ScriptCustom = "custom"
+	ScriptCustom ScriptType = "custom"
 
-	SnippetDatapoolGet    = "datapool_get"
-	SnippetVariablesGet   = "variables_get"
-	SnippetVariablesSet   = "variables_set"
-	SnippetVariablesClear = "variables_clear"
+	SnippetDatapoolGet    ScriptType = "datapool_get"
+	SnippetVariablesGet   ScriptType = "variables_get"
+	SnippetVariablesSet   ScriptType = "variables_set"
+	SnippetVariablesClear ScriptType = "variables_clear"
 )
 
 func (e ScriptType) String() string {

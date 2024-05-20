@@ -94,7 +94,7 @@ func SetVariable(processorId uint, variableName string, variableValue interface{
 	return
 }
 
-func ClearVariable(processorId uint, variableName string, session *ExecSession) (err error) {
+func ClearVariable(scopeId uint, variableName string, session *ExecSession) (err error) {
 	scopeHierarchy := session.ScenarioDebug.ScopeHierarchy
 	scopedVariables := session.ScenarioDebug.ScopedVariables
 
@@ -102,10 +102,10 @@ func ClearVariable(processorId uint, variableName string, session *ExecSession) 
 
 	targetScopeId := uint(0)
 
-	allValidIds := scopeHierarchy[processorId]
+	allValidIds := scopeHierarchy[scopeId]
 	if allValidIds != nil {
-		if scopeHierarchy[processorId] != nil {
-			for _, id := range *scopeHierarchy[processorId] {
+		if scopeHierarchy[scopeId] != nil {
+			for _, id := range *scopeHierarchy[scopeId] {
 				for index, item := range scopedVariables[id] {
 					if item.Name == variableName {
 						deleteIndex = index

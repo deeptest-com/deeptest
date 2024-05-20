@@ -3,7 +3,6 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	v1 "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -16,7 +15,7 @@ import (
 )
 
 // for interface invocation in both endpoint and scenario
-func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
+func GetInterfaceToExec(req domain.InterfaceCall) (ret agentExec.InterfaceExecObj) {
 	url := fmt.Sprintf("debugs/interface/loadForExec?currProjectId=%d", req.Data.ProjectId)
 	body, err := json.Marshal(req.Data)
 	if err != nil {
@@ -139,7 +138,7 @@ func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioE
 			},
 			{
 				Name:  "environmentId",
-				Value: _stringUtils.IntToStr(req.EnvironmentId),
+				Value: _stringUtils.IntToStr(int(req.EnvironmentId)),
 			},
 		},
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
@@ -206,7 +205,7 @@ func GetScenarioNormalData(req *agentExec.ScenarioExecReq) (ret agentDomain.Repo
 			},
 			{
 				Name:  "environmentId",
-				Value: _stringUtils.IntToStr(req.EnvironmentId),
+				Value: _stringUtils.IntToStr(int(req.EnvironmentId)),
 			},
 		},
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
@@ -300,7 +299,7 @@ func GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExec.PlanExecObj) {
 			},
 			{
 				Name:  "environmentId",
-				Value: _stringUtils.IntToStr(req.EnvironmentId),
+				Value: _stringUtils.IntToStr(int(req.EnvironmentId)),
 			},
 		},
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
@@ -354,7 +353,7 @@ func GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.Report, err 
 			},
 			{
 				Name:  "environmentId",
-				Value: _stringUtils.IntToStr(req.EnvironmentId),
+				Value: _stringUtils.IntToStr(int(req.EnvironmentId)),
 			},
 		},
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
@@ -389,7 +388,7 @@ func GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.Report, err 
 
 	return
 }
-func SubmitPlanResult(result agentDomain.PlanExecResult, planId int, serverUrl, token string, tenantId consts.TenantId) (
+func SubmitPlanResult(result agentDomain.PlanExecResult, planId uint, serverUrl, token string, tenantId consts.TenantId) (
 	report agentDomain.Report, err error) {
 	bodyBytes, _ := json.Marshal(result)
 	req := domain.BaseRequest{

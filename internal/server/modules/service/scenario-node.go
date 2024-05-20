@@ -50,8 +50,6 @@ func (s *ScenarioNodeService) GetTree(tenantId consts.TenantId, scenario model.S
 
 	s.ScenarioNodeRepo.MakeTree(tenantId, tos[1:], root)
 
-	root.Session = agentExec.Session{}
-
 	root.ScenarioId = scenario.ID
 	root.ProjectId = scenario.ProjectId
 
@@ -62,7 +60,6 @@ func (s *ScenarioNodeService) ToTos(tenantId consts.TenantId, pos []*model.Proce
 	for _, po := range pos {
 		to := agentExec.Processor{
 			ProcessorBase: agentExec.ProcessorBase{
-				Session:    agentExec.Session{},
 				ScenarioId: po.ScenarioId,
 			},
 		}

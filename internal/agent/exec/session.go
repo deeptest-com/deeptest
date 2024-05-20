@@ -1,9 +1,7 @@
 package agentExec
 
 import (
-	"context"
 	"crypto/tls"
-	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	agentExecDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -24,10 +22,7 @@ type ExecSession struct {
 	ProjectId     uint
 	TenantId      consts.TenantId
 
-	// exec context and status
-	ExecContext context.Context
-	ExecCancel  context.CancelFunc
-
+	// exec status
 	ExecScene domain.ExecScene
 	IsRunning bool
 	ForceStop bool
@@ -76,24 +71,20 @@ type ScenarioDebugSession struct {
 
 	HttpClient  *http.Client
 	Http2Client *http.Client
-	Failfast    bool
 }
 
-func NewInterfaceExecSession(call agentDomain.InterfaceCall) (session *ExecSession) {
-	ctx, cancel := context.WithCancel(context.Background())
-
+func NewInterfaceExecSession(call domain.InterfaceCall) (session *ExecSession) {
 	session = &ExecSession{
-		ExecContext: ctx,
-		ExecCancel:  cancel,
-		Name:        call.Data.Name,
-		VuNo:        0,
-		ExecUuid:    call.ExecUuid,
+		Name:     call.Data.Name,
+		VuNo:     0,
+		ExecUuid: call.ExecUuid,
 
 		EnvironmentId: call.Data.EnvironmentId,
 		ProjectId:     call.Data.ProjectId,
 		TenantId:      call.TenantId,
 
-		ExecScene: call.ExecScene,
+		ExecScene:     call.ExecScene,
+		InterfaceStat: agentExecDomain.InterfaceStat{},
 
 		GojaVariables: &[]domain.ExecVariable{},
 		GojaLogs:      &[]string{},
@@ -115,13 +106,8 @@ func NewInterfaceExecSession(call agentDomain.InterfaceCall) (session *ExecSessi
 	return
 }
 
-func NewScenarioExecSession(vuNo int, req *ScenarioExecObj, failfast bool, environmentId uint, wsMsg *websocket.Message) (session *ExecSession) {
-	ctx, cancel := context.WithCancel(context.Background())
-
+func NewScenarioExecSession(vuNo int, req *ScenarioExecObj, environmentId uint, wsMsg *websocket.Message) (session *ExecSession) {
 	session = &ExecSession{
-		ExecContext: ctx,
-		ExecCancel:  cancel,
-
 		Name:     req.Name,
 		VuNo:     vuNo,
 		ExecUuid: req.ExecUuid,
@@ -129,6 +115,9 @@ func NewScenarioExecSession(vuNo int, req *ScenarioExecObj, failfast bool, envir
 		EnvironmentId: environmentId,
 		ProjectId:     req.RootProcessor.ProjectId,
 		TenantId:      req.TenantId,
+
+		ExecScene:     req.ExecScene,
+		InterfaceStat: agentExecDomain.InterfaceStat{},
 
 		ServerUrl:   req.ServerUrl,
 		ServerToken: req.Token,
@@ -142,7 +131,6 @@ func NewScenarioExecSession(vuNo int, req *ScenarioExecObj, failfast bool, envir
 
 			RootProcessor: req.RootProcessor,
 
-			Failfast:       failfast,
 			DatapoolCursor: map[string]int{},
 
 			ScopedVariables: map[uint][]domain.ExecVariable{},

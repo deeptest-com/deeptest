@@ -2,6 +2,7 @@ package agentExec
 
 import (
 	"context"
+	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"sync"
 )
 
@@ -21,10 +22,6 @@ func InitUserExecContext(execUuid string) {
 	}
 
 	ExecContextStore.Store(execUuid, &val)
-}
-
-func ClearUserExecContext(execUuid string) {
-	ExecContextStore.Store(execUuid, nil)
 }
 
 func GetUserExecContext(execUuid string) (val *UserContext) {
@@ -49,7 +46,42 @@ func GetExecCtx(execUuid string) (ctx context.Context, cancel context.CancelFunc
 	return
 }
 
+func CancelExecCtx(execUuid string) {
+	userContext := GetUserExecContext(execUuid)
+
+	if userContext.ExecCancel != nil {
+		userContext.ExecCancel()
+	}
+
+	userContext.ExecCtx = nil
+	userContext.ExecCancel = nil
+
+	ExecContextStore.Store(execUuid, nil)
+
+	return
+}
+func IsExecCtxCancel(execUuid string) (ret bool) {
+	userContext := GetUserExecContext(execUuid)
+
+	ret = userContext.ExecCtx == nil
+
+	return
+}
+
+func SetInterfaceStat(execUuid string, val *agentDomain.InterfaceStat) {
+	entity := GetUserExecContext(execUuid)
+	entity.InterfaceStat = val
+}
+func GetInterfaceStat(execUuid string) (ret *agentDomain.InterfaceStat) {
+	userContext := GetUserExecContext(execUuid)
+	ret = userContext.InterfaceStat
+
+	return
+}
+
 type UserContext struct {
 	ExecCtx    context.Context
 	ExecCancel context.CancelFunc
+
+	InterfaceStat *agentDomain.InterfaceStat // for report data
 }

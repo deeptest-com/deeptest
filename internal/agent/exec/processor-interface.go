@@ -71,13 +71,13 @@ func (entity ProcessorInterface) Run(processor *Processor, session *ExecSession)
 
 	// dealwith variables
 	ReplaceVariables(&baseRequest, session)
-	GetReqValueFromGoja(session.ExecUuid, session.TenantId, processor.ProjectId)
+	GetReqValueFromGoja(session)
 
 	// add cookies
 	DealwithCookies(&baseRequest, entity.ProcessorID, session)
 
 	// gen request url
-	GenRequestUrlWithBaseUrlAndPathParam(&baseRequest, processor.EntityId, entity.BaseUrl, session.ExecUuid)
+	GenRequestUrlWithBaseUrlAndPathParam(&baseRequest, processor.EntityId, entity.BaseUrl, session)
 
 	// send request
 	requestStartTime := time.Now()
@@ -85,9 +85,9 @@ func (entity ProcessorInterface) Run(processor *Processor, session *ExecSession)
 	requestEndTime := time.Now()
 
 	// exec post-condition
-	SetRespValueToGoja(&entity.Response)
+	SetRespValueToGoja(&entity.Response, session)
 	processor.Result.ResultStatus, _ = entity.ExecPostConditions(processor, &detail, session)
-	GetRespValueFromGoja(session.ExecUuid, session.TenantId, processor.ProjectId)
+	GetRespValueFromGoja(session)
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	// get the response data updated by script post-condition
@@ -110,7 +110,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *ExecSession)
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
 
-	stat := CountInterfaceStat(session.ExecUuid, processor.Result)
+	stat := CountInterfaceStat(processor.Result, session.ExecUuid)
 	execUtils.SendStatMsg(stat, session.ScenarioDebug.WsMsg)
 	processor.AddResultToParent()
 

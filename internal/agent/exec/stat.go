@@ -13,8 +13,8 @@ func ResetStat(session ExecSession) {
 	session.InterfaceStat = agentDomain.InterfaceStat{}
 }
 
-func CountInterfaceStat(result *agentDomain.ScenarioExecResult, session ExecSession) agentDomain.InterfaceStat {
-	stat := session.InterfaceStat
+func CountInterfaceStat(result *agentDomain.ScenarioExecResult, execUuid string) agentDomain.InterfaceStat {
+	stat := GetInterfaceStat(execUuid)
 
 	stat.InterfaceCount += 1
 	stat.InterfaceDurationTotal += result.Cost
@@ -56,13 +56,13 @@ func CountInterfaceStat(result *agentDomain.ScenarioExecResult, session ExecSess
 		stat.InterfaceFail += 1
 	}
 
-	session.InterfaceStat = stat
+	SetInterfaceStat(execUuid, stat)
 
-	return session.InterfaceStat
+	return *stat
 }
 
-func CountScriptAssertionStat(output string, result *agentDomain.ScenarioExecResult, session ExecSession) agentDomain.InterfaceStat {
-	stat := session.InterfaceStat
+func CountScriptAssertionStat(output string, result *agentDomain.ScenarioExecResult, execUuid string) agentDomain.InterfaceStat {
+	stat := GetInterfaceStat(execUuid)
 
 	arr := []string{}
 	json.Unmarshal([]byte(output), &arr)
@@ -79,19 +79,19 @@ func CountScriptAssertionStat(output string, result *agentDomain.ScenarioExecRes
 		}
 	}
 
-	session.InterfaceStat = stat
+	SetInterfaceStat(execUuid, stat)
 
-	return session.InterfaceStat
+	return *stat
 }
 
-func CountSkip(executedProcessorIds map[uint]bool, skippedChildren []*Processor, session ExecSession) agentDomain.InterfaceStat {
+func CountSkip(executedProcessorIds map[uint]bool, skippedChildren []*Processor, session *ExecSession) agentDomain.InterfaceStat {
 	countedProcessorIds := map[uint]bool{}
 	countSkipInterface(executedProcessorIds, skippedChildren, &countedProcessorIds, session)
 
 	return session.InterfaceStat
 }
 
-func countSkipInterface(executedProcessorIds map[uint]bool, skippedChildren []*Processor, countedProcessorIds *map[uint]bool, session ExecSession) agentDomain.InterfaceStat {
+func countSkipInterface(executedProcessorIds map[uint]bool, skippedChildren []*Processor, countedProcessorIds *map[uint]bool, session *ExecSession) agentDomain.InterfaceStat {
 	stat := session.InterfaceStat
 
 	for _, child := range skippedChildren {

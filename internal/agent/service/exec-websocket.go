@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -12,7 +11,7 @@ import (
 	"runtime/debug"
 )
 
-func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
+func StartExec(req agentExec.WsReq, wsMsg *websocket.Message) (err error) {
 	act := req.Act
 	execUuid := getExecUuid(req)
 	if execUuid == "" {
@@ -21,28 +20,25 @@ func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
 		return
 	}
 
-	isRunning := agentExec.GetIsRunning(execUuid)
-
 	// stop exec
 	if act == consts.ExecStop {
 		StopExec(execUuid, wsMsg)
-
 		return
 	}
 
-	// already running
-	if isRunning && (strings.Include([]string{
-		consts.ExecScenario.String(),
-		consts.ExecPlan.String(),
-		consts.ExecCase.String(),
-	}, act.String())) {
-		execUtils.SendAlreadyRunningMsg(consts.Processor, wsMsg)
+	// is running
+	ctx, _ := agentExec.GetExecCtx(execUuid)
+	if ctx != nil && (strings.Include([]string{consts.ExecScenario.String(), consts.ExecPlan.String(), consts.ExecCase.String()}, act.String())) {
+		execUtils.SendAlreadyRunningMsg(wsMsg)
 		return
 	}
 
 	// exec task
 	go func() {
 		defer errDefer(wsMsg)
+
+		agentExec.InitUserExecContext(execUuid)
+
 		if act == consts.ExecScenario {
 			req.ScenarioExecReq.TenantId = req.TenantId
 			RunScenario(&req.ScenarioExecReq, req.LocalVarsCache, wsMsg)
@@ -60,13 +56,13 @@ func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
 			RunMessage(&req.MessageReq, wsMsg)
 		}
 
-		agentExec.ClearUserExecContext(execUuid)
+		agentExec.CancelExecCtx(execUuid)
 	}()
 
 	return
 }
 
-func getExecUuid(req agentDomain.WsReq) (ret string) {
+func getExecUuid(req agentExec.WsReq) (ret string) {
 	if req.ScenarioExecReq.ExecUuid != "" {
 		ret = req.ScenarioExecReq.ExecUuid
 
@@ -82,9 +78,7 @@ func getExecUuid(req agentDomain.WsReq) (ret string) {
 }
 
 func StopExec(execUuid string, wsMsg *websocket.Message) (err error) {
-	agentExec.SetForceStopExec(execUuid, true)
-
-	agentExec.SetIsRunning(execUuid, false)
+	agentExec.CancelExecCtx(execUuid)
 	execUtils.SendCancelMsg(wsMsg)
 
 	return

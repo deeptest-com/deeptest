@@ -104,11 +104,11 @@ func defineJsFuncs(session *ExecSession) (err error) {
 	})
 	err = execRuntime.Set("setVariable", func(name string, val interface{}) {
 		var scopeId uint
-		if session.CurrScenarioProcessor != nil {
-			scopeId = session.CurrScenarioProcessor.ParentId
+		if session.ScenarioDebug.CurrProcessor != nil {
+			scopeId = session.ScenarioDebug.CurrProcessor.ParentId
 		}
 
-		ret, err := SetVariable(session, scopeId, name, val, commUtils.ValueType(val), consts.Public)
+		ret, err := SetVariable(scopeId, name, val, commUtils.ValueType(val), consts.Public, session)
 
 		if err == nil {
 			session.AppendGojaVariables(ret)
@@ -120,11 +120,11 @@ func defineJsFuncs(session *ExecSession) (err error) {
 	})
 	err = execRuntime.Set("clearVariable", func(name string) {
 		var scopeId uint
-		if session.CurrScenarioProcessor != nil {
-			scopeId = session.CurrScenarioProcessor.ParentId
+		if session.ScenarioDebug.CurrProcessor != nil {
+			scopeId = session.ScenarioDebug.CurrProcessor.ParentId
 		}
 
-		err := ClearVariable(session, scopeId, name)
+		err := ClearVariable(scopeId, name, session)
 		if err != nil {
 			session.AppendGojaLog(jsErrMsg(err.Error(), "clearVariable", false))
 		}

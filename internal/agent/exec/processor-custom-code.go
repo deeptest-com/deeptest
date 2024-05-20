@@ -47,12 +47,12 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *ExecSession
 		Content: entity.Content,
 	}
 
-	err = ExecScript(&scriptBase, session.TenantId, processor.ProjectId, session.ExecUuid)
+	err = ExecScript(&scriptBase, session)
 	scriptHelper.GenResultMsg(&scriptBase)
 	//scriptBase.VariableSettings = VariableSettings
 
-	for _, item := range *GetGojaVariables(session.ExecUuid) {
-		SetVariable(processor.ParentId, item.Name, item.Value, item.ValueType, consts.Public, session.ExecUuid)
+	for _, item := range *session.GojaVariables {
+		SetVariable(processor.ParentId, item.Name, item.Value, item.ValueType, consts.Public, session)
 	}
 
 	processor.Result.Summary = scriptBase.ResultStatus.String()
@@ -64,10 +64,10 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *ExecSession
 	}
 	detail := map[string]interface{}{"name": entity.Name, "content": entity.Content, "result": result, "output": scriptBase.Output}
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
-	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.ScenarioDebug.WsMsg)
 
-	stat := CountScriptAssertionStat(session.ExecUuid, scriptBase.Output, processor.Result)
-	execUtils.SendStatMsg(stat, session.WsMsg)
+	stat := CountScriptAssertionStat(scriptBase.Output, processor.Result, session.ExecUuid)
+	execUtils.SendStatMsg(stat, session.ScenarioDebug.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime

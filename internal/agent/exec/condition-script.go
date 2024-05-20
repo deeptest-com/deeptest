@@ -6,7 +6,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
-	jslibHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/kataras/iris/v12"
 )
@@ -54,46 +53,24 @@ func ExecScript(scriptObj *domain.ScriptBase, session *ExecSession) (err error) 
 	return
 }
 
-//func InitJsRuntime(tenantId consts.TenantId, projectId uint, execUuid string) {
-//	jslibHelper.InitProjectGojaRuntime(tenantId, projectId)
-//	execRuntime, execRequire := jslibHelper.GetProjectGojaRuntime(tenantId, projectId)
-//
-//	jslibHelper.LoadChaiJslibs(execRuntime)
-//
-//	defineJsFuncs(execUuid, tenantId, projectId)
-//	defineGoFuncs(tenantId, projectId)
-//
-//	// load global script
-//	tmpPath := fmt.Sprintf("%s/deeptest.js", consts.TmpDirRelativeAgent)
-//	tmpContent := scriptHelper.GetScript(scriptHelper.ScriptDeepTest)
-//	fileUtils.WriteFileIfNotExist(tmpPath, tmpContent)
-//
-//	dt, err := execRequire.Require("./" + tmpPath)
-//	if err != nil {
-//		logUtils.Infof("goja require failed, path: %s, err: %s.", tmpPath, err.Error())
-//	}
-//
-//	execRuntime.Set("dt", dt)
-//
-//	// import other custom libs
-//	jslibHelper.RefreshRemoteAgentJslibs(execRuntime, execRequire, tenantId, projectId, GetServerUrl(execUuid), GetServerToken(execUuid))
-//}
+func GetReqValueFromGoja(session *ExecSession) (err error) {
+	execRuntime := session.GojaRuntime
 
-func GetReqValueFromGoja(execUuid string, tenantId consts.TenantId, projectId uint) (err error) {
-	execRuntime, _ := jslibHelper.GetProjectGojaRuntime(tenantId, projectId)
-	_, err = execRuntime.RunString(fmt.Sprintf("getReqValueFromGoja('%s', dt.request);", execUuid))
+	_, err = execRuntime.RunString(fmt.Sprintf("getReqValueFromGoja('%s', dt.request);", session.ExecUuid))
+
 	return
 }
-func GetRespValueFromGoja(execUuid string, tenantId consts.TenantId, projectId uint) (err error) {
-	execRuntime, _ := jslibHelper.GetProjectGojaRuntime(tenantId, projectId)
-	_, err = execRuntime.RunString(fmt.Sprintf("getRespValueFromGoja('%s', dt.response);", execUuid))
+func GetRespValueFromGoja(session *ExecSession) (err error) {
+	execRuntime := session.GojaRuntime
+
+	_, err = execRuntime.RunString(fmt.Sprintf("getRespValueFromGoja('%s', dt.response);", session.ExecUuid))
 	return
 }
 
 func SetReqValueToGoja(req *domain.BaseRequest, session *ExecSession) {
 	session.GojaSetValueFunc("request", req)
 }
-func SetRespValueToGoja(resp *domain.DebugResponse) {
+func SetRespValueToGoja(resp *domain.DebugResponse, session *ExecSession) {
 	// set resp.Data to json object for goja edit
 	if httpHelper.IsJsonResp(*resp) {
 		var data interface{}
@@ -108,16 +85,7 @@ func SetRespValueToGoja(resp *domain.DebugResponse) {
 		resp.Data = resp.Content
 	}
 
-	SetValueToGoja("response", resp)
-}
-
-// call go SetValueToGoja = call js _setData
-var (
-	_setValueFunc func(name string, value interface{})
-)
-
-func SetValueToGoja(name string, value interface{}) {
-	_setValueFunc(name, value)
+	session.GojaSetValueFunc("response", resp)
 }
 
 func jsErrMsg(msg string, category string, success bool) (ret string) {

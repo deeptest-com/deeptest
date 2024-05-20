@@ -1,7 +1,6 @@
 package service
 
 import (
-	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -10,10 +9,11 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
-func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, resultResp domain.DebugResponse, err error) {
+func RunInterface(call domain.InterfaceCall) (resultReq domain.DebugData, resultResp domain.DebugResponse, err error) {
 	req := GetInterfaceToExec(call)
 	call.ExecScene = req.ExecScene
 	updateLocalValues(&req.ExecScene, call.LocalVarsCache)
+
 	session := agentExec.NewInterfaceExecSession(call)
 
 	agentExec.SetReqValueToGoja(&req.DebugData.BaseRequest, session)
@@ -49,9 +49,9 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	return
 }
 
-func PreRequest(req *domain.DebugData, session *Exec) (originalReqUri string, err error) {
+func PreRequest(req *domain.DebugData, session *agentExec.ExecSession) (originalReqUri string, err error) {
 	// replace variables
-	agentExec.ReplaceVariables(&req.BaseRequest, tenantId, projectId, execUuid)
+	agentExec.ReplaceVariables(&req.BaseRequest, session)
 
 	// gen url
 	req.BaseRequest.Url, originalReqUri = UpdateUrl(*req)
@@ -62,7 +62,7 @@ func PreRequest(req *domain.DebugData, session *Exec) (originalReqUri string, er
 	if req.BodyFormData != nil {
 		for index, item := range *req.BodyFormData {
 			if item.Type == consts.FormDataTypeFile {
-				(*req.BodyFormData)[index].Value, err = agentExec.DownloadUploadedFile(item.Value, execUuid)
+				(*req.BodyFormData)[index].Value, err = agentExec.DownloadUploadedFile(item.Value, session)
 			}
 		}
 	}

@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/aaronchen2k/deeptest/saas/common"
 	"github.com/kataras/iris/v12"
@@ -14,7 +14,7 @@ type ExecInterfaceCtrl struct {
 
 // Call
 func (c *ExecInterfaceCtrl) Call(ctx iris.Context) {
-	req := agentDomain.InterfaceCall{}
+	req := domain.InterfaceCall{}
 	req.TenantId = c.getTenantId(ctx)
 	err := ctx.ReadJSON(&req)
 	if err != nil {

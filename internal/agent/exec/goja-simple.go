@@ -12,7 +12,7 @@ func ExecJsFuncSimple(nameWithProp string, session *ExecSession, loadCustom bool
 	ret string) {
 
 	InitProjectJsRuntimeSimple(session, loadCustom)
-	execRuntime, _ := jslibHelper.GetProjectGojaRuntime(session.TenantId, session.ProjectId)
+	execRuntime := session.GojaRuntime
 
 	defineGoFuncsSimple(execRuntime)
 
@@ -38,20 +38,19 @@ func ExecJsFuncSimple(nameWithProp string, session *ExecSession, loadCustom bool
 }
 
 func InitProjectJsRuntimeSimple(session *ExecSession, loadCustom bool) {
-	jslibHelper.InitProjectGojaRuntime(session.TenantId, session.ProjectId)
-	execRuntime, execRequire := jslibHelper.GetProjectGojaRuntime(session.TenantId, session.ProjectId)
+	gojaRuntime, execRequire := GenerateGojaRuntime()
 
 	// load buildin funcs
 	content := scriptHelper.GetScript(scriptHelper.ScriptCustom)
 
-	_, err := execRuntime.RunString(content)
+	_, err := gojaRuntime.RunString(content)
 	if err != nil {
 		logUtils.Infof("goja require buildin funcs failed, path: %s, err: %s.", scriptHelper.ScriptCustom, err.Error())
 	}
 
 	// import other custom libs
 	if loadCustom {
-		jslibHelper.RefreshRemoteAgentJslibs(execRuntime, execRequire, session.VuNo, session.TenantId, session.ProjectId, session.ServerUrl, session.ServerToken)
+		jslibHelper.RefreshRemoteAgentJslibs(gojaRuntime, execRequire, session.VuNo, session.TenantId, session.ProjectId, session.ServerUrl, session.ServerToken)
 	}
 }
 

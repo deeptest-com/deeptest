@@ -76,28 +76,14 @@ func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireMod
 			logUtils.Errorf(err.Error())
 		}
 
-		//SetAgentCache(projectId, id, lib.UpdatedAt)
 		logUtils.Infof("更新第三方库，projectId：%v,id:%v,lib.Name:%v", projectId, lib.Id, lib.Name)
-		//}
 	}
-}
-
-func GetAgentCache(tenantId consts.TenantId, projectId uint, id uint) (val time.Time, ok bool) {
-	mp := GetAgentLoadedLibs(tenantId, projectId)
-	val, ok = (*mp)[id]
-
-	return
-}
-
-func SetAgentCache(tenantId consts.TenantId, projectId uint, id uint, val time.Time) {
-	mp := GetAgentLoadedLibs(tenantId, projectId)
-	(*mp)[id] = val
 }
 
 func getJslibsFromServer(tenantId consts.TenantId, projectId uint, serverUrl, token string) (libs []Jslib) {
 	url := fmt.Sprintf("snippets/getJslibsForAgent?projectId=%d", projectId)
 
-	loadedLibs := &map[uint]time.Time{} // GetAgentLoadedLibs(projectId)
+	loadedLibs := &map[uint]time.Time{} // get all if loaded libs is empty
 
 	body, err := json.Marshal(loadedLibs)
 

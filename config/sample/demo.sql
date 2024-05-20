@@ -1,5 +1,5 @@
 #用户示例
-INSERT INTO `sys_user` (`id`, `created_at`, `updated_at`, `deleted`, `disabled`, `username`, `name`, `email`, `intro`, `avatar`, `im_account`, `password`, `type`, `vcode`) VALUES (2, '2024-05-11 10:33:34', '2024-05-11 10:33:34', 0, 0, 'sys_demo', '示例用户', 'sys_demo', '', '', 'sys_demo', '$2a$10$pIfy0pdivE3U2Ah.IY3hKuJ78gqncRoMzY2NEHiLI9cUoxdIx1ozK', 0, '');
+INSERT INTO `sys_user` (`id`, `created_at`, `updated_at`, `deleted`, `disabled`, `username`, `name`, `email`, `intro`, `avatar`, `im_account`, `password`, `type`, `vcode`) VALUES (2, '2024-05-11 10:33:34', '2024-05-11 10:33:34', 0, 0, 'sys', 'sys', 'sys', '', '', 'sys', '$2a$10$pIfy0pdivE3U2Ah.IY3hKuJ78gqncRoMzY2NEHiLI9cUoxdIx1ozK', 0, '');
 
 
 #初始化分类

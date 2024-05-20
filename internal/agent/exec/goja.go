@@ -27,7 +27,7 @@ func InitGojaRuntimeWithSession(session *ExecSession, vuNo int, tenantId consts.
 
 	// load global script
 	script := scriptHelper.GetScript(scriptHelper.ScriptDeepTest)
-	pth := filepath.Join(consts.TmpDir, fmt.Sprintf("deeptest-%d.js", vuNo))
+	pth := filepath.Join(consts.TmpDir, fmt.Sprintf("deeptest-%s-%d.js", session.ExecUuid, vuNo))
 	fileUtils.RmDir(pth)
 	fileUtils.WriteFile(pth, script)
 	dt, err := session.GojaRequire.Require(pth)
@@ -36,7 +36,12 @@ func InitGojaRuntimeWithSession(session *ExecSession, vuNo int, tenantId consts.
 		return
 	}
 
-	session.GojaRuntime.Set("dt", dt)
+	err = session.GojaRuntime.Set("dt", dt)
+	if err != nil {
+		logUtils.Info(err.Error())
+		return
+	}
+
 	defineGoFuncs(session)
 
 	// import other custom libs
@@ -48,10 +53,8 @@ func InitGojaRuntimeWithSession(session *ExecSession, vuNo int, tenantId consts.
 }
 
 func defineJsFuncs(session *ExecSession) (err error) {
-	execRuntime := session.GojaRuntime
-
 	/* START: called by js */
-	err = execRuntime.Set("getDatapoolVariable", func(dpName, field, seq string) (ret interface{}) {
+	err = session.GojaRuntime.Set("getDatapoolVariable", func(dpName, field, seq string) (ret interface{}) {
 		rowIndex := getDatapoolRow(dpName, seq, session.ExecScene.Datapools, session.ScenarioDebug.DatapoolCursor)
 
 		if session.ExecScene.Datapools[dpName] == nil {
@@ -77,7 +80,7 @@ func defineJsFuncs(session *ExecSession) (err error) {
 		return
 	})
 
-	err = execRuntime.Set("getVariable", func(name string) interface{} {
+	err = session.GojaRuntime.Set("getVariable", func(name string) interface{} {
 		var scopeId uint
 		if session.ScenarioDebug.CurrProcessor != nil {
 			scopeId = session.ScenarioDebug.CurrProcessor.ParentId
@@ -102,7 +105,7 @@ func defineJsFuncs(session *ExecSession) (err error) {
 
 		return vari.Value
 	})
-	err = execRuntime.Set("setVariable", func(name string, val interface{}) {
+	err = session.GojaRuntime.Set("setVariable", func(name string, val interface{}) {
 		var scopeId uint
 		if session.ScenarioDebug.CurrProcessor != nil {
 			scopeId = session.ScenarioDebug.CurrProcessor.ParentId
@@ -118,7 +121,7 @@ func defineJsFuncs(session *ExecSession) (err error) {
 
 		return
 	})
-	err = execRuntime.Set("clearVariable", func(name string) {
+	err = session.GojaRuntime.Set("clearVariable", func(name string) {
 		var scopeId uint
 		if session.ScenarioDebug.CurrProcessor != nil {
 			scopeId = session.ScenarioDebug.CurrProcessor.ParentId
@@ -131,8 +134,8 @@ func defineJsFuncs(session *ExecSession) (err error) {
 	})
 
 	// http request
-	err = execRuntime.Set("sendRequest", func(data goja.Value, cb func(interface{}, interface{})) {
-		req := gojaUtils.GenRequest(data, execRuntime)
+	err = session.GojaRuntime.Set("sendRequest", func(data goja.Value, cb func(interface{}, interface{})) {
+		req := gojaUtils.GenRequest(data, session.GojaRuntime)
 
 		errOfCallbackParam := ""
 
@@ -146,7 +149,7 @@ func defineJsFuncs(session *ExecSession) (err error) {
 	})
 
 	// log
-	err = execRuntime.Set("log", func(value interface{}) {
+	err = session.GojaRuntime.Set("log", func(value interface{}) {
 		if value == nil {
 			session.AppendGojaLog("空")
 			return
@@ -164,10 +167,10 @@ func defineJsFuncs(session *ExecSession) (err error) {
 	/* END: called by js */
 
 	/* START: called by go */
-	err = execRuntime.Set("getReqValueFromGoja", func(value domain.BaseRequest) {
+	err = session.GojaRuntime.Set("getReqValueFromGoja", func(value domain.BaseRequest) {
 		session.SetCurrRequest(value)
 	})
-	err = execRuntime.Set("getRespValueFromGoja", func(value domain.DebugResponse) {
+	err = session.GojaRuntime.Set("getRespValueFromGoja", func(value domain.DebugResponse) {
 		if httpHelper.IsJsonResp(value) {
 			bytes, _ := json.Marshal(value.Data)
 			value.Content = string(bytes)

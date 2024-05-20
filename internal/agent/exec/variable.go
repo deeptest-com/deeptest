@@ -72,7 +72,7 @@ func addValidExecVariables(srcVar domain.ExecVariable, ret *map[string]domain.Ex
 
 	(*ret)[srcVar.Name] = domain.ExecVariable{
 		Name:  srcVar.Name,
-		Value: srcVar,
+		Value: srcVar.Value,
 	}
 
 	return

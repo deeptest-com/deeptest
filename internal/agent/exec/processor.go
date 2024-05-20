@@ -68,20 +68,18 @@ func (p *Processor) Run(s *ExecSession) (err error) {
 }
 
 func (p *Processor) Error(s *ExecSession, err interface{}) {
-
 	var detail map[string]interface{}
 	commonUtils.JsonDecode(p.Result.Detail, &detail)
 	if detail == nil {
 		detail = map[string]interface{}{}
 	}
 
-	detail["exception"] = fmt.Sprintf("错误：%v", err)
+	detail["exception"] = fmt.Sprintf("Processor %s exec error: %v", p.Name, err)
 	p.Result.Detail = commonUtils.JsonEncode(detail)
 	fmt.Printf("err=%v, stack=%s\n", err, string(debug.Stack()))
 	p.AddResultToParent()
-	execUtils.SendExecMsg(p.Result, consts.Processor, s.ScenarioDebug.WsMsg)
 
-	//execUtils.SendExceptionMsg(s.WsMsg)
+	execUtils.SendExecMsg(p.Result, consts.Exception, s.ScenarioDebug.WsMsg)
 }
 
 func (p *Processor) AddResultToParent() (err error) {

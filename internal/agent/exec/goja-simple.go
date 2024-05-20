@@ -1,7 +1,7 @@
 package agentExec
 
 import (
-	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	jslibHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -16,8 +16,16 @@ type GojaSimple struct {
 	_setValueFuncSimple func(name string, value interface{})
 }
 
+func NewGojaSimple() (ret *GojaSimple) {
+	s := GojaSimple{}
+	ret = &s
+
+	return
+}
+
 func (e *GojaSimple) ExecJsFuncSimple(content string, session *ExecSession, loadCustom bool) (
-	ret string) {
+	ret interface{}, params domain.VarKeyValuePair) {
+	params = domain.VarKeyValuePair{}
 
 	e.InitJsRuntimeSimple(session, loadCustom)
 
@@ -25,6 +33,8 @@ func (e *GojaSimple) ExecJsFuncSimple(content string, session *ExecSession, load
 	variables := GetAllValidVariables(session)
 	for _, variable := range variables {
 		e.execRuntime.Set(variable.Name, variable.Value)
+
+		params[variable.Name] = variable.Value
 	}
 
 	resultVal, err := e.execRuntime.RunString(content)
@@ -33,8 +43,8 @@ func (e *GojaSimple) ExecJsFuncSimple(content string, session *ExecSession, load
 		return
 	}
 
-	ret = fmt.Sprintf("%v", resultVal.Export())
-	if ret == "undefined" {
+	ret = resultVal.Export()
+	if ret == nil {
 		ret = "空"
 	}
 

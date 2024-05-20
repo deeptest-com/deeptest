@@ -17,8 +17,9 @@ var (
 func InitUserExecContext(execUuid string) {
 	ctx, cancel := context.WithCancel(context.Background())
 	val := UserContext{
-		ExecCtx:    ctx,
-		ExecCancel: cancel,
+		ExecCtx:       ctx,
+		ExecCancel:    cancel,
+		InterfaceStat: &agentDomain.InterfaceStat{},
 	}
 
 	ExecContextStore.Store(execUuid, &val)
@@ -27,10 +28,9 @@ func InitUserExecContext(execUuid string) {
 func GetUserExecContext(execUuid string) (val *UserContext) {
 	inf, ok := ExecContextStore.Load(execUuid)
 	if !ok {
-		InitUserExecContext(execUuid)
+		return
 	}
 
-	inf, _ = ExecContextStore.Load(execUuid)
 	val = inf.(*UserContext)
 
 	return

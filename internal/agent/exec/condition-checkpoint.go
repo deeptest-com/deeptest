@@ -16,7 +16,7 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 
 	// Judgement 表达式
 	if checkpoint.Type == consts.Judgement {
-		result, variablesArr := computerExpr(checkpoint.Expression, processorId, session)
+		result, variablesArr := computerExpr(checkpoint.Expression, session)
 
 		checkpoint.Variables = getVariableArrDesc(variablesArr)
 		checkpoint.ActualResult = fmt.Sprintf("%v", result)
@@ -32,7 +32,7 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 	}
 
 	// 计算表达式
-	checkpointValue, variablesArr := computerExpr(checkpoint.Value, processorId, session)
+	checkpointValue, variablesArr := computerExpr(checkpoint.Value, session)
 	checkpointValue = _stringUtils.InterfToStr(checkpointValue)
 	checkpoint.Variables = getVariableArrDesc(variablesArr)
 
@@ -125,19 +125,10 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 	return
 }
 
-func computerExpr(expression string, processorId uint, session *ExecSession) (result interface{}, variablesArr domain.VarKeyValuePair) {
+func computerExpr(expression string, session *ExecSession) (result interface{}, params domain.VarKeyValuePair) {
 	expr := ReplaceDatapoolVariInGovaluateExpress(expression, session)
 
-	var err error
-	if processorId > 0 { // exec interface processor in scenario
-		result, variablesArr, err = EvaluateGovaluateExpressionByProcessorScope(expr, processorId, session)
-	} else { // exec by interface invocation
-		result, variablesArr, err = EvaluateGovaluateExpressionWithDebugVariables(expr, session)
-	}
-
-	if err != nil {
-		result = expr
-	}
+	result, params = NewGojaSimple().ExecJsFuncSimple(expr, session, true)
 
 	return
 }

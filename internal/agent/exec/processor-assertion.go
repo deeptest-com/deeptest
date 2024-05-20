@@ -42,9 +42,8 @@ func (entity ProcessorAssertion) Run(processor *Processor, session *ExecSession)
 	}
 
 	expr := ReplaceDatapoolVariInGovaluateExpress(entity.Expression, session)
-	ret, params, err := EvaluateGovaluateExpressionByProcessorScope(expr, processor.ID, session)
-
-	pass, _ := ret.(bool)
+	result, params := NewGojaSimple().ExecJsFuncSimple(expr, session, true)
+	pass, _ := result.(bool)
 
 	var status string
 	processor.Result.ResultStatus, status = getResultStatus(pass)

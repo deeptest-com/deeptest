@@ -90,9 +90,9 @@ func GetScript(name ScriptType) string {
 	} else if name == ScriptCustom {
 		if CustomScript == "" {
 			bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "export", "custom.js"))
-			DeepTestScript = string(bytes)
+			CustomScript = string(bytes)
 		}
-		return DeepTestScript
+		return CustomScript
 
 	}
 

@@ -35,6 +35,7 @@ type ResSummaryBugs struct {
 	Deadly   float64 `gorm:"default:0" json:"deadly"`
 	Major    float64 `gorm:"default:0" json:"major"`
 	Minor    float64 `gorm:"default:0" json:"minor"`
+	Suggest  float64 `gorm:"default:0" json:"suggest"`
 }
 
 type ResSummaryCard struct {

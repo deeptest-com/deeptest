@@ -12,3 +12,10 @@ type ReportReqPaginate struct {
 	Keywords         string `json:"keywords"`
 	ScenarioId       int    `json:"scenarioId"`
 }
+
+type ReferBugReq struct {
+	ReportId uint   `json:"reportId"`
+	BugId    string `json:"bugId"`
+	BugType  uint   `json:"bugType"`
+	Severity uint   `json:"severity"`
+}

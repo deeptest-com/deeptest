@@ -23,9 +23,9 @@ func InitGojaRuntimeWithSession(session *ExecSession, vuNo int, tenantId consts.
 
 	jslibHelper.LoadChaiJslibs(session.GojaRuntime)
 
-	defineJsFuncs(session, false)
+	defineJsFuncs(session.GojaRuntime, session.GojaRequire, session, false)
 
-	loadDeeptestScript(session)
+	loadDeeptestScript(session.GojaRuntime, session.GojaRequire, session)
 
 	defineGoFuncs(session)
 
@@ -37,20 +37,20 @@ func InitGojaRuntimeWithSession(session *ExecSession, vuNo int, tenantId consts.
 	return
 }
 
-func loadDeeptestScript(session *ExecSession) (err error) {
-	script := scriptHelper.GetScript(scriptHelper.ScriptDeepTest)
+func loadDeeptestScript(runtime *goja.Runtime, require *require.RequireModule, session *ExecSession) (err error) {
+	script := scriptHelper.GetScript(scriptHelper.ScriptDeepTestSimple)
 
 	pth := filepath.Join(consts.TmpDir, fmt.Sprintf("deeptest-%s-%d.js", session.ExecUuid, session.VuNo))
 	fileUtils.RmDir(pth)
 	fileUtils.WriteFile(pth, script)
 
-	dt, err := session.GojaRequire.Require(pth)
+	dt, err := require.Require(pth)
 	if err != nil {
 		logUtils.Info(err.Error())
 		return
 	}
 
-	err = session.GojaRuntime.Set("dt", dt)
+	err = runtime.Set("dt", dt)
 	if err != nil {
 		logUtils.Info(err.Error())
 		return
@@ -59,9 +59,9 @@ func loadDeeptestScript(session *ExecSession) (err error) {
 	return
 }
 
-func defineJsFuncs(session *ExecSession, isSimple bool) (err error) {
+func defineJsFuncs(runtime *goja.Runtime, require *require.RequireModule, session *ExecSession, isSimple bool) (err error) {
 	/* START: called by js */
-	err = session.GojaRuntime.Set("getDatapoolVariable", func(dpName, field, seq string) (ret interface{}) {
+	err = runtime.Set("getDatapoolVariable", func(dpName, field, seq string) (ret interface{}) {
 		rowIndex := getDatapoolRow(dpName, seq, session.ExecScene.Datapools, session.ScenarioDebug.DatapoolCursor)
 
 		if session.ExecScene.Datapools[dpName] == nil {
@@ -91,7 +91,7 @@ func defineJsFuncs(session *ExecSession, isSimple bool) (err error) {
 		return
 	}
 
-	err = session.GojaRuntime.Set("getVariable", func(name string) interface{} {
+	err = runtime.Set("getVariable", func(name string) interface{} {
 		var scopeId uint
 		if session.ScenarioDebug.CurrProcessor != nil {
 			scopeId = session.ScenarioDebug.CurrProcessor.ParentId
@@ -116,7 +116,7 @@ func defineJsFuncs(session *ExecSession, isSimple bool) (err error) {
 
 		return vari.Value
 	})
-	err = session.GojaRuntime.Set("setVariable", func(name string, val interface{}) {
+	err = runtime.Set("setVariable", func(name string, val interface{}) {
 		var scopeId uint
 		if session.ScenarioDebug.CurrProcessor != nil {
 			scopeId = session.ScenarioDebug.CurrProcessor.ParentId
@@ -132,7 +132,7 @@ func defineJsFuncs(session *ExecSession, isSimple bool) (err error) {
 
 		return
 	})
-	err = session.GojaRuntime.Set("clearVariable", func(name string) {
+	err = runtime.Set("clearVariable", func(name string) {
 		var scopeId uint
 		if session.ScenarioDebug.CurrProcessor != nil {
 			scopeId = session.ScenarioDebug.CurrProcessor.ParentId
@@ -145,8 +145,8 @@ func defineJsFuncs(session *ExecSession, isSimple bool) (err error) {
 	})
 
 	// http request
-	err = session.GojaRuntime.Set("sendRequest", func(data goja.Value, cb func(interface{}, interface{})) {
-		req := gojaUtils.GenRequest(data, session.GojaRuntime)
+	err = runtime.Set("sendRequest", func(data goja.Value, cb func(interface{}, interface{})) {
+		req := gojaUtils.GenRequest(data, runtime)
 
 		errOfCallbackParam := ""
 
@@ -160,7 +160,7 @@ func defineJsFuncs(session *ExecSession, isSimple bool) (err error) {
 	})
 
 	// log
-	err = session.GojaRuntime.Set("log", func(value interface{}) {
+	err = runtime.Set("log", func(value interface{}) {
 		if value == nil {
 			session.AppendGojaLog("空")
 			return
@@ -178,10 +178,10 @@ func defineJsFuncs(session *ExecSession, isSimple bool) (err error) {
 	/* END: called by js */
 
 	/* START: called by go */
-	err = session.GojaRuntime.Set("getReqValueFromGoja", func(value domain.BaseRequest) {
+	err = runtime.Set("getReqValueFromGoja", func(value domain.BaseRequest) {
 		session.SetCurrRequest(value)
 	})
-	err = session.GojaRuntime.Set("getRespValueFromGoja", func(value domain.DebugResponse) {
+	err = runtime.Set("getRespValueFromGoja", func(value domain.DebugResponse) {
 		if httpHelper.IsJsonResp(value) {
 			bytes, _ := json.Marshal(value.Data)
 			value.Content = string(bytes)
@@ -215,6 +215,7 @@ func defineGoFuncs(session *ExecSession) {
 func GenerateGojaRuntime() (execRuntime *goja.Runtime, execRequire *require.RequireModule) {
 	execRuntime = goja.New()
 	execRuntime.SetFieldNameMapper(goja.TagFieldNameMapper("json", true))
+
 	registry := new(require.Registry) // registry 能夠被多个goja.Runtime共用
 	execRequire = registry.Enable(execRuntime)
 

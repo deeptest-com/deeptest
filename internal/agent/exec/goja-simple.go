@@ -55,8 +55,9 @@ func (e *GojaSimple) ExecJsFuncSimple(content string, session *ExecSession, load
 func (e *GojaSimple) InitJsRuntimeSimple(session *ExecSession, loadCustom bool) {
 	e.execRuntime, e.execRequire = GenerateGojaRuntime()
 
-	loadDeeptestScript(session)
-	defineJsFuncs(session, true)
+	// init e.execRuntime, not session.GojaRuntime
+	defineJsFuncs(e.execRuntime, e.execRequire, session, true)
+	loadDeeptestScript(e.execRuntime, e.execRequire, session)
 
 	// load buildin functions
 	content := scriptHelper.GetScript(scriptHelper.ScriptCustom)

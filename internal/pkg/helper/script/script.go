@@ -17,6 +17,13 @@ func GetScript(name ScriptType) string {
 		}
 		return DeepTestScript
 
+	} else if name == ScriptDeepTestSimple {
+		if DeepTestScriptSimple == "" {
+			bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "export", "deeptest-simple.js"))
+			DeepTestScriptSimple = string(bytes)
+		}
+		return DeepTestScriptSimple
+
 	} else if name == DeclareDeepTest {
 		if DeepTestDeclare == "" {
 			bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "export", "deeptest.d.ts"))
@@ -130,6 +137,7 @@ func GenResultMsg(po *domain.ScriptBase) {
 
 var (
 	DeepTestScript             = ""
+	DeepTestScriptSimple       = ""
 	DeepTestDeclare            = ""
 	DeepTestDeclarePost        = ""
 	DeepTestScenarioCustomCode = ""
@@ -151,6 +159,7 @@ type ScriptType string
 
 const (
 	ScriptDeepTest                    = "deeptest"
+	ScriptDeepTestSimple              = "deeptest-simple"
 	DeclareDeepTest                   = "deeptest.d"
 	DeclareDeepTestPost               = "deeptest-post.d"
 	DeclareDeepTestScenarioCustomCode = "deeptest-scenario-custom-code.d"

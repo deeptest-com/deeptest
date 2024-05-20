@@ -44,17 +44,8 @@ func (entity ProcessorLogic) Run(processor *Processor, session *ExecSession) (er
 	pass := false
 	detail := map[string]interface{}{"name": entity.Name, "expression": entity.Expression}
 	if typ == consts.ProcessorLogicIf {
-		var result interface{}
-		result, _, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, entity.ProcessorID, session)
-		if err != nil {
-			pass = false
-		} else {
-			var ok bool
-			pass, ok = result.(bool)
-			if !ok {
-				pass = false
-			}
-		}
+		result, _ := NewGojaSimple().ExecJsFuncSimple(entity.Expression, session, true)
+		pass, _ = result.(bool)
 
 	} else if typ == consts.ProcessorLogicElse {
 		brother, ok := getPreviousBrother(*processor)

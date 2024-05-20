@@ -41,8 +41,7 @@ func (entity ProcessorAssertion) Run(processor *Processor, session *ExecSession)
 		Round:             processor.Round,
 	}
 
-	expr := ReplaceDatapoolVariInGovaluateExpress(entity.Expression, session)
-	result, params := NewGojaSimple().ExecJsFuncSimple(expr, session, true)
+	result, params := NewGojaSimple().ExecJsFuncSimple(entity.Expression, session, true)
 	pass, _ := result.(bool)
 
 	var status string

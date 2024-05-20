@@ -126,9 +126,7 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 }
 
 func computerExpr(expression string, session *ExecSession) (result interface{}, params domain.VarKeyValuePair) {
-	expr := ReplaceDatapoolVariInGovaluateExpress(expression, session)
-
-	result, params = NewGojaSimple().ExecJsFuncSimple(expr, session, true)
+	result, params = NewGojaSimple().ExecJsFuncSimple(expression, session, true)
 
 	return
 }

@@ -101,6 +101,7 @@ func NewInterfaceExecSession(call domain.InterfaceCall) (session *ExecSession) {
 		},
 		ScenarioDebug: &ScenarioDebugSession{ // just put an empty
 			ScopedVariables: map[uint][]domain.ExecVariable{},
+			DatapoolCursor:  map[string]int{},
 		},
 	}
 

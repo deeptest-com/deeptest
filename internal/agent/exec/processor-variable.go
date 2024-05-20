@@ -44,12 +44,8 @@ func (entity ProcessorVariable) Run(processor *Processor, session *ExecSession) 
 	detail := map[string]interface{}{"name": entity.Name, "variableName": entity.VariableName}
 	if entity.ProcessorType == consts.ProcessorVariableSet {
 		var variableValue interface{}
-		variableValue, _, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, processor.ID, session)
 
-		if err != nil {
-			panic(err)
-			//variableValue = err.Error()
-		}
+		variableValue, _ = NewGojaSimple().ExecJsFuncSimple(entity.Expression, session, true)
 
 		SetVariable(processor.ParentId, entity.VariableName, variableValue, consts.ExtractorResultTypeString,
 			consts.Public, session) // set in parent scope

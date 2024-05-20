@@ -153,9 +153,10 @@ func (entity *ProcessorLoop) runLoopUntil(processor *Processor, iterator agentDo
 		}
 		index += 1
 
-		result, _, err := EvaluateGovaluateExpressionByProcessorScope(expression, entity.ProcessorID, session)
+		result, _ := NewGojaSimple().ExecJsFuncSimple(expression, session, true)
 		pass, ok := result.(bool)
-		if err != nil || !ok || pass {
+
+		if !ok || pass {
 			result := agentDomain.ScenarioExecResult{
 				WillBreak: true,
 				Summary:   fmt.Sprintf("条件%s满足，跳出循环。", expression),
@@ -210,14 +211,11 @@ func (entity *ProcessorLoop) getBeak(session *ExecSession) (ret bool, msg string
 		return
 	}
 
-	expr := ReplaceDatapoolVariInGovaluateExpress(breakIfExpress, session)
-	result, _, _ := EvaluateGovaluateExpressionByProcessorScope(expr, entity.ProcessorID, session)
+	result, _ := NewGojaSimple().ExecJsFuncSimple(breakIfExpress, session, true)
+	pass, ok := result.(bool)
 
-	ret, ok := result.(bool)
-	pass := false
-	if ok && ret {
+	if ok && pass {
 		msg = "真"
-		pass = true
 	} else {
 		msg = "假"
 	}

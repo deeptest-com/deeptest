@@ -23,13 +23,27 @@ func InitGojaRuntimeWithSession(session *ExecSession, vuNo int, tenantId consts.
 
 	jslibHelper.LoadChaiJslibs(session.GojaRuntime)
 
-	defineJsFuncs(session)
+	defineJsFuncs(session, false)
 
-	// load global script
+	loadDeeptestScript(session)
+
+	defineGoFuncs(session)
+
+	// import other custom libs
+	jslibHelper.RefreshRemoteAgentJslibs(session.GojaRuntime, session.GojaRequire,
+		vuNo, tenantId, session.ProjectId,
+		session.ServerUrl, session.ServerToken)
+
+	return
+}
+
+func loadDeeptestScript(session *ExecSession) (err error) {
 	script := scriptHelper.GetScript(scriptHelper.ScriptDeepTest)
-	pth := filepath.Join(consts.TmpDir, fmt.Sprintf("deeptest-%s-%d.js", session.ExecUuid, vuNo))
+
+	pth := filepath.Join(consts.TmpDir, fmt.Sprintf("deeptest-%s-%d.js", session.ExecUuid, session.VuNo))
 	fileUtils.RmDir(pth)
 	fileUtils.WriteFile(pth, script)
+
 	dt, err := session.GojaRequire.Require(pth)
 	if err != nil {
 		logUtils.Info(err.Error())
@@ -42,17 +56,10 @@ func InitGojaRuntimeWithSession(session *ExecSession, vuNo int, tenantId consts.
 		return
 	}
 
-	defineGoFuncs(session)
-
-	// import other custom libs
-	jslibHelper.RefreshRemoteAgentJslibs(session.GojaRuntime, session.GojaRequire,
-		vuNo, tenantId, session.ProjectId,
-		session.ServerUrl, session.ServerToken)
-
 	return
 }
 
-func defineJsFuncs(session *ExecSession) (err error) {
+func defineJsFuncs(session *ExecSession, isSimple bool) (err error) {
 	/* START: called by js */
 	err = session.GojaRuntime.Set("getDatapoolVariable", func(dpName, field, seq string) (ret interface{}) {
 		rowIndex := getDatapoolRow(dpName, seq, session.ExecScene.Datapools, session.ScenarioDebug.DatapoolCursor)
@@ -79,6 +86,10 @@ func defineJsFuncs(session *ExecSession) (err error) {
 
 		return
 	})
+
+	if isSimple {
+		return
+	}
 
 	err = session.GojaRuntime.Set("getVariable", func(name string) interface{} {
 		var scopeId uint

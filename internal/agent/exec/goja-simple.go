@@ -39,6 +39,7 @@ func (e *GojaSimple) ExecJsFuncSimple(content string, session *ExecSession, load
 
 	resultVal, err := e.execRuntime.RunString(content)
 	if err != nil {
+		logUtils.Info(err.Error())
 		ret = err.Error()
 		return
 	}
@@ -54,9 +55,11 @@ func (e *GojaSimple) ExecJsFuncSimple(content string, session *ExecSession, load
 func (e *GojaSimple) InitJsRuntimeSimple(session *ExecSession, loadCustom bool) {
 	e.execRuntime, e.execRequire = GenerateGojaRuntime()
 
-	// load buildin funcs
-	content := scriptHelper.GetScript(scriptHelper.ScriptCustom)
+	loadDeeptestScript(session)
+	defineJsFuncs(session, true)
 
+	// load buildin functions
+	content := scriptHelper.GetScript(scriptHelper.ScriptCustom)
 	_, err := e.execRuntime.RunString(content)
 	if err != nil {
 		logUtils.Infof("goja require buildin funcs failed, path: %s, err: %s.", scriptHelper.ScriptCustom, err.Error())

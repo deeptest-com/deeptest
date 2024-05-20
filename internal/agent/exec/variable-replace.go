@@ -25,22 +25,11 @@ func ReplaceVariableValue(value string, session *ExecSession) (ret string) {
 				ret = strings.Replace(ret, oldVal, newVal, -1)
 			}
 
-			return
-		}
-
-		// variable
-		if placeholder.Type == PlaceholderTypeVariable {
-			placeholderWithoutPlus := strings.TrimLeft(placeholder.Content, "+")
-
-			newVal := getPlaceholderVariableValue(placeholderWithoutPlus, session)
-			oldVal := placeholder.Whole
-			ret = strings.ReplaceAll(ret, oldVal, newVal)
-
-			return
+			continue
 		}
 
 		// expression
-		if placeholder.Type == PlaceholderTypeExpression {
+		if placeholder.Type == PlaceholderTypeExpression || placeholder.Type == PlaceholderTypeVariable {
 			en := GojaSimple{}
 			result := en.ExecJsFuncSimple(placeholder.Content, session, true)
 
@@ -48,6 +37,8 @@ func ReplaceVariableValue(value string, session *ExecSession) (ret string) {
 
 			oldVal := placeholder.Whole
 			ret = strings.Replace(ret, oldVal, newVal, -1)
+
+			continue
 		}
 	}
 
@@ -90,7 +81,7 @@ func parseStatement(statement string) (ret []Placeholder) {
 			placeholder.Type = PlaceholderTypeVariable
 			ret = append(ret, placeholder)
 
-			return
+			continue
 		}
 
 		reg1 := regexp.MustCompile(`_mock\("(.+)"\)`)
@@ -98,6 +89,7 @@ func parseStatement(statement string) (ret []Placeholder) {
 
 		if len(arr1) > 0 {
 			placeholder.Type = PlaceholderTypeMock
+			placeholder.Content = arr1[0][1]
 		} else {
 			placeholder.Type = PlaceholderTypeExpression
 		}

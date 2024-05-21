@@ -40,7 +40,6 @@ func ReplaceVariableValue(value string, session *ExecSession) (ret string) {
 			continue
 		}
 	}
-
 	return
 }
 

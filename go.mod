@@ -3,6 +3,18 @@ module github.com/aaronchen2k/deeptest
 go 1.19
 
 require (
+	github.com/fullstorydev/grpcurl v1.9.1
+	github.com/jhump/protoreflect v1.16.0
+	google.golang.org/grpc v1.63.2
+)
+
+replace (
+	github.com/fullstorydev/grpcurl v1.9.1 => github.com/fullstorydev/grpcurl v1.3.2
+	github.com/jhump/protoreflect v1.16.0 => github.com/jhump/protoreflect v1.5.0
+	google.golang.org/grpc v1.63.2 => google.golang.org/grpc v1.21.0
+)
+
+require (
 	github.com/474420502/requests v1.35.0
 	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible
 	github.com/andybalholm/brotli v1.0.5
@@ -119,6 +131,7 @@ require (
 	github.com/golang/gddo v0.0.0-20210115222349-20d68f94ee1f // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/mock v1.6.0 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
@@ -204,6 +217,7 @@ require (
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.11.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
+	google.golang.org/genproto v0.0.0-20210602131652-f16073e35f0c // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect

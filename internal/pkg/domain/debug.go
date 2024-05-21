@@ -3,6 +3,7 @@ package domain
 import (
 	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/kataras/iris/v12"
 )
 
@@ -94,4 +95,58 @@ type InterfaceExecCondition struct {
 	Type consts.ConditionType `json:"type"`
 	Desc string               `json:"desc"`
 	Raw  json.RawMessage      `json:"raw"`
+}
+
+type WebsocketDebugData struct {
+	ID        uint   `json:"id"`
+	Name      string `json:"name"`
+	ExtMode   bool   `json:"extMode"`
+	Namespace string `json:"namespace"`
+	Room      string `json:"room"`
+	Event     string `json:"event"`
+	Message   string `json:"message"`
+
+	Address string `json:"address"`
+	Service string `json:"service"`
+	Method  string `json:"method"`
+
+	Params  *[]Param  ` json:"params"`
+	Headers *[]Header ` json:"headers"`
+
+	UsedBy consts.UsedBy                      `json:"usedBy"`
+	Type   serverConsts.DiagnoseInterfaceType `json:"type"`
+
+	DiagnoseInterfaceId uint `json:"diagnoseInterfaceId"`
+	EnvironmentId       uint `json:"environmentId"`
+	ServeId             uint `json:"serveId"`
+	ServerId            uint `json:"serverId"`
+	ProjectId           uint `json:"projectId"`
+}
+
+type GrpcDebugData struct {
+	ID              uint   `json:"id"`
+	Address         string `json:"address"`
+	UseTls          *bool  `json:"useTls"`
+	RestartConn     *bool  `json:"restartConn"`
+	RequestMetadata string `json:"requestMetadata"`
+
+	ProtoSrc string `json:"protoSrc"`
+	Service  string `json:"service"`
+	Method   string `json:"method"`
+
+	Template string `json:"template"`
+	Message  string `json:"message"`
+
+	ProtoName string `json:"protoName"`
+	ProtoPath string `json:"protoPath"`
+	// ProtoContent    string `json:"protoContent"`
+
+	UsedBy consts.UsedBy                      `json:"usedBy"`
+	Type   serverConsts.DiagnoseInterfaceType `json:"type"`
+
+	DiagnoseInterfaceId uint `json:"diagnoseInterfaceId"`
+	EnvironmentId       uint `json:"environmentId"`
+	ServeId             uint `json:"serveId"`
+	ServerId            uint `json:"serverId"`
+	ProjectId           uint `json:"projectId"`
 }

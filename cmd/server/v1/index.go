@@ -24,6 +24,9 @@ type IndexModule struct {
 	DebugInvokeModule       *router.DebugInvokeModule       `inject:""`
 	DiagnoseInterfaceModule *router.DiagnoseInterfaceModule `inject:""`
 
+	WebsocketInterfaceModule *router.WebsocketInterfaceModule `inject:""`
+	GrpcInterfaceModule      *router.GrpcInterfaceModule      `inject:""`
+
 	ProjectModule     *router.ProjectModule     `inject:""`
 	ProjectPerModule  *router.ProjectPermModule `inject:""`
 	ProjectMenuModule *router.ProjectMenuModule `inject:""`
@@ -158,7 +161,11 @@ func (m *IndexModule) ApiParty() module.WebModule {
 
 		m.DebugInterfaceModule.Party(),
 		m.DebugInvokeModule.Party(),
+
 		m.DiagnoseInterfaceModule.Party(),
+		m.WebsocketInterfaceModule.Party(),
+		m.GrpcInterfaceModule.Party(),
+
 		m.MessageModule.Party(),
 		m.DocumentModule.Party(),
 		m.HealthzModule.Party(),

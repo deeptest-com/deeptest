@@ -595,6 +595,13 @@ const (
 	ExecPlan     ExecType = "execPlan"
 	ExecCase     ExecType = "execCases"
 	ExecMessage  ExecType = "execMessage"
+
+	ExecWebsocketConnect    ExecType = "execWebsocketConnect"
+	ExecWebsocketDisconnect ExecType = "execWebsocketDisconnect"
+	ExecWebsocketSendMsg    ExecType = "execWebsocketSendMsg"
+
+	StartExecGrpc ExecType = "startExecGrpc"
+	StopExecGrpc  ExecType = "stopExecGrpc"
 )
 
 func (e ExecType) String() string {

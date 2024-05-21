@@ -708,8 +708,8 @@ func (s *EndpointService) SchemaConv(tenantId consts.TenantId, interf *model.End
 		_commUtils.JsonDecode(response.SchemaItem.Content, schema)
 		if schema.Value != nil && len(schema.Value.AllOf) > 0 {
 			schema2conv.CombineSchemas(schema)
-			schema2conv.FillRefId(schema)
 		}
+		schema2conv.FillRefId(schema)
 		interf.ResponseBodies[k].SchemaItem.Content = _commUtils.JsonEncode(schema)
 	}
 }

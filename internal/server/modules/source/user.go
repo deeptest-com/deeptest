@@ -33,7 +33,7 @@ func (s *UserSource) GetSources(tenantId consts.TenantId) ([]v1.UserReq, v1.Proj
 		},
 	}
 
-	project := v1.ProjectReq{ProjectBase: v1.ProjectBase{Name: "默认项目", AdminId: 1, ShortName: "T"}}
+	project := v1.ProjectReq{ProjectBase: v1.ProjectBase{Name: "示例项目", AdminId: 1, Logo: "default_logo1", ShortName: "Demo", Desc: "示例项目包含样例数据，用于展示API管理基本功能和使用"}}
 
 	return users, project, nil
 }

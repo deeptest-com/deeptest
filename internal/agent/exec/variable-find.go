@@ -48,7 +48,7 @@ func getVariableFromEnvVar(name string, session *ExecSession) (ret domain.ExecVa
 
 	envId := session.EnvironmentId
 	if envId == 0 {
-		envId = execScene.DebugInterfaceToEnvMap[session.InterfaceDebug.DebugInterfaceId]
+		envId = execScene.DebugInterfaceToEnvMap[session.GetCurrDebugInterfaceId()]
 	}
 
 	vars := execScene.EnvToVariables[envId]

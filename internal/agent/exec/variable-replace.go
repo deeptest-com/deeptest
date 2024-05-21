@@ -102,7 +102,7 @@ func getPlaceholderVariableValue(name string, session *ExecSession) (ret string)
 	typ := getPlaceholderType(name)
 
 	if typ == consts.PlaceholderTypeVariable {
-		variable, _ := GetVariable(name, session.ScenarioDebug.CurrProcessorId, session)
+		variable, _ := GetVariable(name, session.GetCurrScenarioProcessorId(), session)
 		ret, _ = commUtils.ConvertValueForPersistence(variable.Value)
 
 	} else if typ == consts.PlaceholderTypeDatapool {

@@ -211,7 +211,7 @@ func (entity *ProcessorInterface) DealwithDatabaseOptCondition(condition domain.
 	if databaseOptBase.JsonPath != "" && databaseOptBase.Variable != "" && conditionStatus { // will set vari
 		scopeId := parentId
 		if databaseOptBase.Scope == consts.Private { // put vari in its own scope if Private
-			scopeId = session.ScenarioDebug.CurrProcessorId
+			scopeId = session.GetCurrScenarioProcessorId()
 		}
 
 		SetVariable(scopeId, databaseOptBase.Variable, databaseOptBase.Result, databaseOptBase.ResultType,
@@ -244,7 +244,7 @@ func (entity *ProcessorInterface) DealwithExtractorCondition(condition domain.In
 	if extractorBase.ResultStatus == consts.Pass {
 		scopeId := parentId
 		if extractorBase.Scope == consts.Private { // put vari in its own scope if Private
-			scopeId = session.ScenarioDebug.CurrProcessorId
+			scopeId = session.GetCurrScenarioProcessorId()
 		}
 
 		SetVariable(scopeId, extractorBase.Variable, extractorBase.Result,

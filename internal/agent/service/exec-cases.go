@@ -81,8 +81,8 @@ func doExecCase(cs *agentExec.CaseExecProcessor, localVarsCache iris.Map, wsMsg 
 	agentExec.GetReqValueFromGoja(session)
 
 	// a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
-	if session.InterfaceDebug.CurrRequest.Url != "" {
-		cs.Data.DebugData.BaseRequest = session.InterfaceDebug.CurrRequest // update to the value changed in goja
+	if session.GetCurrRequest().Url != "" {
+		cs.Data.DebugData.BaseRequest = session.GetCurrRequest() // update to the value changed in goja
 	}
 
 	resultResp, err1 := RequestInterface(&cs.Data.DebugData)
@@ -97,8 +97,8 @@ func doExecCase(cs *agentExec.CaseExecProcessor, localVarsCache iris.Map, wsMsg 
 	PostRequest(originalReqUri, &cs.Data.DebugData)
 
 	// get the response data updated by script post-condition
-	if session.InterfaceDebug.CurrResponse.Data != nil {
-		resultResp = session.InterfaceDebug.CurrResponse
+	if session.GetCurrResponse().Data != nil {
+		resultResp = session.GetCurrResponse()
 		resultResp.ConsoleLogs = GenConditionLogsForCase(cs.Data) // only for cases
 	}
 

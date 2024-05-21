@@ -24,8 +24,8 @@ func RunInterface(call domain.InterfaceCall) (resultReq domain.DebugData, result
 	agentExec.GetReqValueFromGoja(session)
 
 	// TODO: a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
-	if session.InterfaceDebug.CurrRequest.Url != "" {
-		req.DebugData.BaseRequest = session.InterfaceDebug.CurrRequest // update to the value changed in goja
+	if session.GetCurrRequest().Url != "" {
+		req.DebugData.BaseRequest = session.GetCurrRequest() // update to the value changed in goja
 	}
 
 	resultResp, err = RequestInterface(&req.DebugData)
@@ -37,8 +37,8 @@ func RunInterface(call domain.InterfaceCall) (resultReq domain.DebugData, result
 	PostRequest(originalReqUri, &req.DebugData)
 
 	// get the response data updated by script post-condition
-	if session.InterfaceDebug.CurrResponse.Data != nil {
-		resultResp = session.InterfaceDebug.CurrResponse
+	if session.GetCurrResponse().Data != nil {
+		resultResp = session.GetCurrResponse()
 	}
 
 	// submit result

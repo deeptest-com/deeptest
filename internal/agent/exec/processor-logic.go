@@ -63,7 +63,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *ExecSession) (er
 	executedProcessorIds := map[uint]bool{}
 	if pass {
 		for _, child := range processor.Children {
-			if session.ForceStop {
+			if session.GetForceStop() {
 				break
 			}
 			if child.Disable {

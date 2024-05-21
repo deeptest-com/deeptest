@@ -80,7 +80,7 @@ func (entity *ProcessorLoop) runLoopItems(processor *Processor, iterator agentDo
 	executedProcessorIds := map[uint]bool{}
 
 	for index, item := range iterator.Items {
-		if session.ForceStop {
+		if session.GetForceStop() {
 			break
 		}
 		if DemoTestSite != "" && index > 2 {
@@ -100,7 +100,7 @@ func (entity *ProcessorLoop) runLoopItems(processor *Processor, iterator agentDo
 
 		round := ""
 		for _, child := range processor.Children {
-			if session.ForceStop {
+			if session.GetForceStop() {
 				break
 			}
 			if child.Disable {
@@ -145,7 +145,7 @@ func (entity *ProcessorLoop) runLoopUntil(processor *Processor, iterator agentDo
 	executedProcessorIds := map[uint]bool{}
 	index := 0
 	for {
-		if session.ForceStop {
+		if session.GetForceStop() {
 			break
 		}
 		if DemoTestSite != "" && index > 2 {
@@ -168,7 +168,7 @@ func (entity *ProcessorLoop) runLoopUntil(processor *Processor, iterator agentDo
 
 		round := ""
 		for _, child := range processor.Children {
-			if session.ForceStop {
+			if session.GetForceStop() {
 				break
 			}
 			if child.Disable {

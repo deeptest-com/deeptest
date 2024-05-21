@@ -98,7 +98,7 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 
 	// ExtractorVari
 	if checkpoint.Type == consts.ExtractorVari {
-		variable, _ := GetVariable(checkpoint.ExtractorVariable, session.ScenarioDebug.CurrProcessorId, session)
+		variable, _ := GetVariable(checkpoint.ExtractorVariable, session.GetCurrScenarioProcessorId(), session)
 
 		checkpoint.ActualResult = fmt.Sprintf("%v", variable.Value)
 

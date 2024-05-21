@@ -16,7 +16,7 @@ func GetAllValidVariables(session *ExecSession) (ret map[string]domain.ExecVaria
 	execScene := session.ExecScene
 	envId := session.EnvironmentId
 	if envId == 0 {
-		envId = execScene.DebugInterfaceToEnvMap[session.InterfaceDebug.DebugInterfaceId]
+		envId = execScene.DebugInterfaceToEnvMap[session.GetCurrDebugInterfaceId()]
 	}
 	envVars := execScene.EnvToVariables[envId]
 	popValidGlobalVariables(envVars, &ret)
@@ -26,12 +26,12 @@ func GetAllValidVariables(session *ExecSession) (ret map[string]domain.ExecVaria
 	popValidGlobalVariables(shareVars, &ret)
 
 	// share variables
-	allValidIds := GetValidScopeIds(session.ScenarioDebug.CurrProcessorId, session)
+	allValidIds := GetValidScopeIds(session.GetCurrScenarioProcessorId(), session)
 	if allValidIds != nil {
 		for _, id := range *allValidIds {
 			for _, item := range session.ScenarioDebug.ScopedVariables[id] {
 				if !(item.Scope == consts.Public ||
-					(item.Scope == consts.Private && id == session.ScenarioDebug.CurrProcessorId)) {
+					(item.Scope == consts.Private && id == session.GetCurrScenarioProcessorId())) {
 					continue
 				}
 

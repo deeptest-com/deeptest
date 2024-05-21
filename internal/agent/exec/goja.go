@@ -101,8 +101,8 @@ func defineJsFuncs(runtime *goja.Runtime, require *require.RequireModule, sessio
 
 	err = runtime.Set("getVariable", func(name string) interface{} {
 		var scopeId uint
-		if session.ScenarioDebug.CurrProcessor != nil {
-			scopeId = session.ScenarioDebug.CurrProcessor.ParentId
+		if session.GetCurrScenarioProcessor() != nil {
+			scopeId = session.GetCurrScenarioProcessor().ParentId
 		}
 
 		vari, err := GetVariable(name, scopeId, session)
@@ -126,8 +126,8 @@ func defineJsFuncs(runtime *goja.Runtime, require *require.RequireModule, sessio
 	})
 	err = runtime.Set("setVariable", func(name string, val interface{}) {
 		var scopeId uint
-		if session.ScenarioDebug.CurrProcessor != nil {
-			scopeId = session.ScenarioDebug.CurrProcessor.ParentId
+		if session.GetCurrScenarioProcessor() != nil {
+			scopeId = session.GetCurrScenarioProcessor().ParentId
 		}
 
 		ret, err := SetVariable(scopeId, name, val, commUtils.ValueType(val), consts.Public, session)
@@ -142,8 +142,8 @@ func defineJsFuncs(runtime *goja.Runtime, require *require.RequireModule, sessio
 	})
 	err = runtime.Set("clearVariable", func(name string) {
 		var scopeId uint
-		if session.ScenarioDebug.CurrProcessor != nil {
-			scopeId = session.ScenarioDebug.CurrProcessor.ParentId
+		if session.GetCurrScenarioProcessor() != nil {
+			scopeId = session.GetCurrScenarioProcessor().ParentId
 		}
 
 		err := ClearVariable(scopeId, name, session)

@@ -60,7 +60,7 @@ func (p *Processor) Run(s *ExecSession) (err error) {
 
 	//每个执行器延迟0.1秒，防止发送ws消息过快，导致前端消息错误
 	time.Sleep(100 * time.Microsecond)
-	if !p.Disable && p.Entity != nil && !s.ForceStop {
+	if !p.Disable && p.Entity != nil && !s.GetForceStop() {
 		p.Entity.Run(p, s)
 	}
 

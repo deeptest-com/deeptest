@@ -23,9 +23,9 @@ type ExecSession struct {
 	TenantId      consts.TenantId
 
 	// exec status
-	ExecScene domain.ExecScene
-	IsRunning bool
-	ForceStop bool
+	ExecScene  domain.ExecScene
+	_isRunning bool
+	_forceStop bool
 
 	InterfaceStat agentExecDomain.InterfaceStat
 
@@ -46,13 +46,13 @@ type ExecSession struct {
 }
 
 type InterfaceDebugSession struct {
-	DebugInterfaceId uint
+	_debugInterfaceId uint
 
 	AllVariables map[uint][]domain.ExecVariable
 
 	// used to exchange request and response data between goja and go
-	CurrRequest  domain.BaseRequest
-	CurrResponse domain.DebugResponse
+	_currRequest  domain.BaseRequest
+	_currResponse domain.DebugResponse
 }
 
 type ScenarioDebugSession struct {
@@ -63,10 +63,10 @@ type ScenarioDebugSession struct {
 	ScopeHierarchy  map[uint]*[]uint // processId -> ancestorProcessIds
 	DatapoolCursor  map[string]int
 
-	CurrProcessorId uint // for interface, pass an empty param to variable opt methods
-	CurrProcessor   *Processor
-	RootProcessor   *Processor
-	Report          *Report
+	_currProcessorId uint // for interface, pass an empty param to variable opt methods
+	_currProcessor   *Processor
+	RootProcessor    *Processor
+	Report           *Report
 
 	WsMsg *websocket.Message
 
@@ -93,9 +93,9 @@ func NewInterfaceExecSession(call domain.InterfaceCall) (session *ExecSession) {
 		InterfaceDebug: &InterfaceDebugSession{
 			AllVariables: map[uint][]domain.ExecVariable{},
 
-			DebugInterfaceId: call.Data.DebugInterfaceId,
-			CurrRequest:      domain.BaseRequest{},
-			CurrResponse:     domain.DebugResponse{},
+			_debugInterfaceId: call.Data.DebugInterfaceId,
+			_currRequest:      domain.BaseRequest{},
+			_currResponse:     domain.DebugResponse{},
 		},
 		ScenarioDebug: &ScenarioDebugSession{ // just put an empty
 			ScopedVariables: map[uint][]domain.ExecVariable{},

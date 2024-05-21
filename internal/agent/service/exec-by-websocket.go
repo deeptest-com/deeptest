@@ -55,6 +55,7 @@ func StartExec(req agentExec.WsReq, wsMsg *websocket.Message) (err error) {
 		} else if act == consts.ExecMessage {
 			req.MessageReq.TenantId = req.TenantId
 			RunMessage(&req.MessageReq, wsMsg)
+
 		} else if stringUtils.FindInArr(act.String(), consts.WebscoketAtions) {
 			req.WebsocketExecReq.TenantId = req.TenantId
 			RunWebsocket(act, &req.WebsocketExecReq, req.LocalVarsCache, wsMsg)

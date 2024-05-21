@@ -173,7 +173,7 @@ func (entity *ProcessorInterface) DealwithScriptCondition(condition domain.Inter
 	}
 
 	scriptHelper.GenResultMsg(&scriptBase)
-	scriptBase.VariableSettings = *session.GojaVariables
+	scriptBase.VariableSettings = *session.GetGojaVariables()
 
 	interfaceExecCondition := domain.InterfaceExecCondition{
 		Type: condition.Type,
@@ -182,7 +182,7 @@ func (entity *ProcessorInterface) DealwithScriptCondition(condition domain.Inter
 	*conditions = append(*conditions, interfaceExecCondition)
 
 	if isPostCondition {
-		for _, item := range *session.GojaLogs {
+		for _, item := range *session.GetGojaLogs() {
 			createAssertFromScriptResult(item, conditions, interfaceStatus,
 				scriptBase.ConditionId, scriptBase.ConditionEntityId)
 		}

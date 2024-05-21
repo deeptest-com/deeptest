@@ -51,7 +51,7 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *ExecSession
 	scriptHelper.GenResultMsg(&scriptBase)
 	//scriptBase.VariableSettings = VariableSettings
 
-	for _, item := range *session.GojaVariables {
+	for _, item := range *session.GetGojaVariables() {
 		SetVariable(processor.ParentId, item.Name, item.Value, item.ValueType, consts.Public, session)
 	}
 

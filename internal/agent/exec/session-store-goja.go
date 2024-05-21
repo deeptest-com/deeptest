@@ -5,35 +5,35 @@ import (
 )
 
 func (s *ExecSession) GetGojaVariables() (ret *[]domain.ExecVariable) {
-	ret = s.GojaVariables
+	ret = s._gojaVariables
 	return
 }
 func (s *ExecSession) SetGojaVariables(val *[]domain.ExecVariable) {
-	s.GojaVariables = val
+	s._gojaVariables = val
 	return
 }
 func (s *ExecSession) ResetGojaVariables() {
-	s.GojaVariables = &[]domain.ExecVariable{}
+	s._gojaVariables = &[]domain.ExecVariable{}
 	return
 }
 func (s *ExecSession) AppendGojaVariables(val domain.ExecVariable) {
-	*s.GojaVariables = append(*s.GojaVariables, val)
+	*s._gojaVariables = append(*s._gojaVariables, val)
 	return
 }
 
 func (s *ExecSession) GetGojaLogs() (ret *[]string) {
-	ret = s.GojaLogs
+	ret = s._gojaLogs
 	return
 }
 func (s *ExecSession) SetGojaLogs(val *[]string) {
-	s.GojaLogs = val
+	s._gojaLogs = val
 	return
 }
 func (s *ExecSession) ResetGojaLogs() {
-	s.GojaLogs = &[]string{}
+	s._gojaLogs = &[]string{}
 	return
 }
 func (s *ExecSession) AppendGojaLog(item string) {
-	*s.GojaLogs = append(*s.GojaLogs, item)
+	*s._gojaLogs = append(*s._gojaLogs, item)
 	return
 }

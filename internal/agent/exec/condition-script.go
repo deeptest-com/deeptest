@@ -33,7 +33,8 @@ func ExecScript(scriptObj *domain.ScriptBase, session *ExecSession) (err error) 
 			result = "空"
 		}
 
-		logs = *session.GojaLogs
+		// get logs from js script execution
+		logs = *session.GetGojaLogs()
 
 		if err != nil {
 			scriptObj.ResultStatus = consts.Fail

@@ -19,21 +19,21 @@ func (s *ExecSession) GetForceStop() (ret bool) {
 	return
 }
 
-func (s *ExecSession) SetScopedVariables(val map[uint][]domain.ExecVariable) {
-	s.ScenarioDebug.ScopedVariables = val
-}
-func (s *ExecSession) GetScopedVariables() (ret map[uint][]domain.ExecVariable) {
-	ret = s.ScenarioDebug.ScopedVariables
-	return
-}
-
-func (s *ExecSession) SetScopeHierarchy(val map[uint]*[]uint) {
-	s.ScenarioDebug.ScopeHierarchy = val
-}
-func (s *ExecSession) GetScopeHierarchy() (ret map[uint]*[]uint) {
-	ret = s.ScenarioDebug.ScopeHierarchy
-	return
-}
+//func (s *ExecSession) SetScopedVariables(val map[uint][]domain.ExecVariable) {
+//	s.ScenarioDebug.ScopedVariables = val
+//}
+//func (s *ExecSession) GetScopedVariables() (ret map[uint][]domain.ExecVariable) {
+//	ret = s.ScenarioDebug.ScopedVariables
+//	return
+//}
+//
+//func (s *ExecSession) SetScopeHierarchy(val map[uint]*[]uint) {
+//	s.ScenarioDebug.ScopeHierarchy = val
+//}
+//func (s *ExecSession) GetScopeHierarchy() (ret map[uint]*[]uint) {
+//	ret = s.ScenarioDebug.ScopeHierarchy
+//	return
+//}
 
 func (s *ExecSession) SetExecScene(val domain.ExecScene) {
 	s.ExecScene = val

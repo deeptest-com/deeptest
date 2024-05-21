@@ -36,9 +36,10 @@ type ExecSession struct {
 	// goja engine
 	GojaRuntime      *goja.Runtime
 	GojaRequire      *require.RequireModule
-	GojaVariables    *[]domain.ExecVariable
-	GojaLogs         *[]string
-	GojaSetValueFunc func(name string, value interface{}) // call this as call js _setData method
+	GojaSetValueFunc func(name string, value interface{}) // call this as call js _setData method in goja
+
+	_gojaLogs      *[]string
+	_gojaVariables *[]domain.ExecVariable
 
 	InterfaceDebug *InterfaceDebugSession
 	ScenarioDebug  *ScenarioDebugSession
@@ -86,9 +87,6 @@ func NewInterfaceExecSession(call domain.InterfaceCall) (session *ExecSession) {
 		ExecScene:     call.ExecScene,
 		InterfaceStat: agentExecDomain.InterfaceStat{},
 
-		GojaVariables: &[]domain.ExecVariable{},
-		GojaLogs:      &[]string{},
-
 		ServerUrl:   call.ServerUrl,
 		ServerToken: call.Token,
 
@@ -104,6 +102,8 @@ func NewInterfaceExecSession(call domain.InterfaceCall) (session *ExecSession) {
 			DatapoolCursor:  map[string]int{},
 		},
 	}
+	session.ResetGojaVariables()
+	session.ResetGojaLogs()
 
 	InitGojaRuntimeWithSession(session, session.VuNo, session.TenantId)
 
@@ -127,8 +127,6 @@ func NewScenarioExecSession(vuNo int, req *ScenarioExecObj, environmentId uint, 
 		ServerToken: req.Token,
 
 		GojaSetValueFunc: func(name string, value interface{}) {},
-		GojaVariables:    &[]domain.ExecVariable{},
-		GojaLogs:         &[]string{},
 
 		ScenarioDebug: &ScenarioDebugSession{
 			ScenarioId: req.ScenarioId,
@@ -145,6 +143,8 @@ func NewScenarioExecSession(vuNo int, req *ScenarioExecObj, environmentId uint, 
 		},
 		InterfaceDebug: &InterfaceDebugSession{}, // just put an empty
 	}
+	session.ResetGojaVariables()
+	session.ResetGojaLogs()
 
 	InitGojaRuntimeWithSession(session, session.VuNo, session.TenantId)
 	ComputerScopeHierarchy(req.RootProcessor, &session.ScenarioDebug.ScopeHierarchy)

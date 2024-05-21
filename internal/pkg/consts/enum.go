@@ -608,6 +608,8 @@ func (e ExecType) String() string {
 	return string(e)
 }
 
+var WebscoketAtions = []string{ExecWebsocketConnect.String(), ExecWebsocketDisconnect.String(), ExecWebsocketSendMsg.String()}
+
 type DataType string
 
 const (

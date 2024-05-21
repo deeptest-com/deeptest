@@ -12,6 +12,8 @@ type WsReq struct {
 	PlanExecReq     PlanExecReq     `json:"planExecReq"`
 	CasesExecReq    CasesExecReq    `json:"casesExecReq"`
 
+	WebsocketExecReq WebsocketExecReq `json:"websocketExecReq"`
+
 	MessageReq     MessageExecReq  `json:"messageReq"`
 	LocalVarsCache iris.Map        `json:"localVarsCache"`
 	TenantId       consts.TenantId `json:"tenantId"`

@@ -6,6 +6,7 @@ import (
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/kataras/iris/v12/websocket"
 	"github.com/savsgio/gotils/strings"
 	"runtime/debug"
@@ -54,6 +55,10 @@ func StartExec(req agentExec.WsReq, wsMsg *websocket.Message) (err error) {
 		} else if act == consts.ExecMessage {
 			req.MessageReq.TenantId = req.TenantId
 			RunMessage(&req.MessageReq, wsMsg)
+		} else if stringUtils.FindInArr(act.String(), consts.WebscoketAtions) {
+			req.WebsocketExecReq.TenantId = req.TenantId
+			RunWebsocket(act, &req.WebsocketExecReq, req.LocalVarsCache, wsMsg)
+
 		}
 
 		agentExec.CancelExecCtx(execUuid)

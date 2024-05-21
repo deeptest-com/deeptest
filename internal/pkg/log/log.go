@@ -1,32 +1,42 @@
 package zapLog
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	myZap "github.com/aaronchen2k/deeptest/pkg/core/zap"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/snowlyg/helper/dir"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"os"
+	"path/filepath"
 )
 
-// level 日志级别
-var level zapcore.Level
-
-// Init 初始化日志服务
 func Init() {
-	var logger *zap.Logger
+	logPath := getLogPath()
 
-	logDir := "log"
-	if consts.RunFrom == consts.FromServer {
-		logDir = config.CONFIG.Zap.Director
-	}
+	logUtils.Logger = getLogger(logPath)
+}
 
+func getLogger(logPath string) (logger *zap.Logger) {
+	logDir := filepath.Dir(logPath)
 	if !dir.IsExist(logDir) {
 		dir.InsureDir(logDir)
 	}
 
-	switch config.CONFIG.Zap.Level { // 初始化配置文件的Level
+	level := getLogLevel()
+
+	logger, err := CreateLogger(logPath, level)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return
+}
+
+func getLogLevel() (level zapcore.Level) {
+	switch config.CONFIG.Zap.Level {
 	case "debug":
 		level = zap.DebugLevel
 	case "info":
@@ -45,14 +55,41 @@ func Init() {
 		level = zap.InfoLevel
 	}
 
-	if level == zap.DebugLevel || level == zap.ErrorLevel {
-		logger = zap.New(myZap.GetEncoderCore(level), zap.AddStacktrace(level))
-	} else {
-		logger = zap.New(myZap.GetEncoderCore(level))
-	}
-	if config.CONFIG.Zap.ShowLine {
-		logger = logger.WithOptions(zap.AddCaller())
+	return
+}
+
+func getLogPath() (ret string) {
+	ret = filepath.Join(consts.WorkDir, "log", fmt.Sprintf("%s.log", consts.RunFrom))
+
+	return
+}
+
+func CreateLogger(logPath string, level zapcore.Level) (ret *zap.Logger, err error) {
+	prodEncoder := zap.NewProductionEncoderConfig()
+	prodEncoder.EncodeTime = zapcore.ISO8601TimeEncoder
+
+	infoPriority := zap.LevelEnablerFunc(func(lev zapcore.Level) bool {
+
+		return lev >= level
+	})
+	writeSyncer, lowClose, err := zap.Open(logPath)
+	if err != nil {
+		lowClose()
+		return
 	}
 
-	logUtils.Logger = logger
+	swSugar := zapcore.NewMultiWriteSyncer(
+		writeSyncer,
+		zapcore.AddSync(os.Stdout),
+	)
+	infoCore := zapcore.NewCore(zapcore.NewJSONEncoder(prodEncoder), swSugar, infoPriority)
+
+	ret = zap.New(zapcore.NewTee(infoCore))
+
+	ret = ret.WithOptions(
+		zap.AddCaller(),
+		zap.AddCallerSkip(1),
+		zap.AddStacktrace(zap.ErrorLevel))
+
+	return
 }

@@ -44,7 +44,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *ExecSession) (er
 	pass := false
 	detail := map[string]interface{}{"name": entity.Name, "expression": entity.Expression}
 	if typ == consts.ProcessorLogicIf {
-		result, _ := NewGojaSimple().ExecJsFuncSimple(entity.Expression, session, true)
+		result, _, _ := NewGojaSimple().ExecJsFuncSimple(entity.Expression, session, true)
 		pass, _ = result.(bool)
 
 	} else if typ == consts.ProcessorLogicElse {

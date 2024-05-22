@@ -50,7 +50,7 @@ func (r *CheckpointRepo) Save(tenantId consts.TenantId, checkpoint *model.DebugC
 func (r *CheckpointRepo) UpdateDesc(tenantId consts.TenantId, po *model.DebugConditionCheckpoint) (err error) {
 	result := po.ActualResult
 	if po.ResultStatus != consts.Pass {
-		result = po.Value
+		result = po.ExpectResult
 	}
 
 	desc := checkpointHelpper.GenDesc(po.Type, po.Operator, result, po.Expression,

@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	"strconv"
 	"strings"
 )
 
@@ -16,12 +17,17 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 
 	// Judgement 表达式
 	if checkpoint.Type == consts.Judgement {
-		result, variablesArr := computerExpr(checkpoint.Expression, session)
-
+		boolResult, variablesArr, err1 := computerExpr(checkpoint.Expression, session)
 		checkpoint.Variables = getVariableArrDesc(variablesArr)
-		checkpoint.ActualResult = fmt.Sprintf("%v", result)
+		checkpoint.ActualResult = fmt.Sprintf("%v", boolResult)
 
-		ret, ok := result.(bool)
+		if err1 != nil {
+			checkpoint.ResultStatus = consts.Fail
+			err = err1
+			return
+		}
+
+		ret, ok := boolResult.(bool)
 		if ok && ret {
 			checkpoint.ResultStatus = consts.Pass
 		} else {
@@ -32,15 +38,31 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 	}
 
 	// 计算表达式
-	checkpointValue, variablesArr := computerExpr(checkpoint.Value, session)
-	checkpointValue = _stringUtils.InterfToStr(checkpointValue)
+	checkpointValue, variablesArr, err := computerExpr(checkpoint.Value, session)
 	checkpoint.Variables = getVariableArrDesc(variablesArr)
+	checkpointValue = _stringUtils.InterfToStr(checkpointValue)
 
 	// Response ResultStatus
 	if checkpoint.Type == consts.ResponseStatus {
-		expectCodeNum := _stringUtils.ParseInt(fmt.Sprintf("%v", checkpointValue))
-
 		checkpoint.ActualResult = fmt.Sprintf("%d", resp.StatusCode)
+		if err != nil {
+			checkpoint.ExpectResult = fmt.Sprintf("%v", checkpointValue)
+			checkpoint.ResultStatus = consts.Fail
+			return
+		}
+
+		checkpointValueStr := fmt.Sprintf("%v", checkpointValue)
+		expectCodeNum, err1 := strconv.Atoi(checkpointValueStr)
+
+		expectValue := fmt.Sprintf("%d", expectCodeNum)
+		if err1 != nil {
+			expectValue = checkpointValueStr
+			checkpoint.ResultStatus = consts.Fail
+
+			return
+		}
+
+		checkpoint.ExpectResult = fmt.Sprintf("%v", expectValue)
 
 		if checkpoint.Operator == consts.Equal && resp.StatusCode == expectCodeNum {
 			checkpoint.ResultStatus = consts.Pass
@@ -60,8 +82,13 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 				break
 			}
 		}
-
 		checkpoint.ActualResult = headerValue
+		checkpoint.ExpectResult = _stringUtils.InterfToStr(checkpointValue)
+		if err != nil {
+			checkpoint.ExpectResult = fmt.Sprintf("%v", checkpointValue)
+			checkpoint.ResultStatus = consts.Fail
+			return
+		}
 
 		if checkpoint.Operator == consts.Equal && headerValue == checkpointValue {
 			checkpoint.ResultStatus = consts.Pass
@@ -76,13 +103,18 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 		return
 	}
 
-	var jsonData interface{}
-	json.Unmarshal([]byte(resp.Content), &jsonData)
-
-	checkpoint.ActualResult = "<RESPONSE_BODY>"
-
 	// Response Body
 	if checkpoint.Type == consts.ResponseBody {
+		var jsonData interface{}
+		json.Unmarshal([]byte(resp.Content), &jsonData)
+
+		checkpoint.ActualResult = "<RESPONSE_BODY>"
+		checkpoint.ExpectResult = _stringUtils.InterfToStr(checkpointValue)
+		if err != nil {
+			checkpoint.ResultStatus = consts.Fail
+			return
+		}
+
 		if checkpoint.Operator == consts.Equal && resp.Content == checkpointValue {
 			checkpoint.ResultStatus = consts.Pass
 		} else if checkpoint.Operator == consts.NotEqual && resp.Content != checkpointValue {
@@ -96,11 +128,16 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 		return
 	}
 
-	// ExtractorVari
+	// Extractor Vari
 	if checkpoint.Type == consts.ExtractorVari {
 		variable, _ := GetVariable(checkpoint.ExtractorVariable, session.GetCurrScenarioProcessorId(), session)
 
 		checkpoint.ActualResult = fmt.Sprintf("%v", variable.Value)
+		checkpoint.ExpectResult = _stringUtils.InterfToStr(checkpointValue)
+		if err != nil {
+			checkpoint.ResultStatus = consts.Fail
+			return
+		}
 
 		checkpoint.ResultStatus = agentUtils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpointValue)
 
@@ -116,6 +153,7 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 		extractorHelper.Extract(&extractor, resp)
 
 		checkpoint.ActualResult = fmt.Sprintf("%v", extractor.Result)
+		checkpoint.ExpectResult = _stringUtils.InterfToStr(checkpointValue)
 
 		checkpoint.ResultStatus = agentUtils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpointValue)
 
@@ -125,8 +163,10 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 	return
 }
 
-func computerExpr(expression string, session *ExecSession) (result interface{}, params domain.VarKeyValuePair) {
-	result, params = NewGojaSimple().ExecJsFuncSimple(expression, session, true)
+func computerExpr(expression string, session *ExecSession) (
+	expectResult interface{}, params domain.VarKeyValuePair, err error) {
+
+	expectResult, params, err = NewGojaSimple().ExecJsFuncSimple(expression, session, true)
 
 	return
 }

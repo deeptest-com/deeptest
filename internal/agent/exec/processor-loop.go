@@ -153,7 +153,7 @@ func (entity *ProcessorLoop) runLoopUntil(processor *Processor, iterator agentDo
 		}
 		index += 1
 
-		result, _ := NewGojaSimple().ExecJsFuncSimple(expression, session, true)
+		result, _, _ := NewGojaSimple().ExecJsFuncSimple(expression, session, true)
 		pass, ok := result.(bool)
 
 		if !ok || pass {
@@ -211,7 +211,7 @@ func (entity *ProcessorLoop) getBeak(session *ExecSession) (ret bool, msg string
 		return
 	}
 
-	result, _ := NewGojaSimple().ExecJsFuncSimple(breakIfExpress, session, true)
+	result, _, _ := NewGojaSimple().ExecJsFuncSimple(breakIfExpress, session, true)
 	pass, ok := result.(bool)
 
 	if ok && pass {

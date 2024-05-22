@@ -41,7 +41,7 @@ func (entity ProcessorAssertion) Run(processor *Processor, session *ExecSession)
 		Round:             processor.Round,
 	}
 
-	result, params := NewGojaSimple().ExecJsFuncSimple(entity.Expression, session, true)
+	result, params, err := NewGojaSimple().ExecJsFuncSimple(entity.Expression, session, true)
 	pass, _ := result.(bool)
 
 	var status string

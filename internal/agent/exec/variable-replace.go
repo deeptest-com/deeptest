@@ -30,7 +30,7 @@ func ReplaceVariableValue(value string, session *ExecSession) (ret string) {
 
 		// expression
 		if placeholder.Type == PlaceholderTypeExpression || placeholder.Type == PlaceholderTypeVariable {
-			result, _ := NewGojaSimple().ExecJsFuncSimple(placeholder.Content, session, true)
+			result, _, _ := NewGojaSimple().ExecJsFuncSimple(placeholder.Content, session, true)
 
 			newVal := _stringUtils.InterfToStr(result)
 

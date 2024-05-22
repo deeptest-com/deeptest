@@ -45,7 +45,7 @@ func (entity ProcessorVariable) Run(processor *Processor, session *ExecSession) 
 	if entity.ProcessorType == consts.ProcessorVariableSet {
 		var variableValue interface{}
 
-		variableValue, _ = NewGojaSimple().ExecJsFuncSimple(entity.Expression, session, true)
+		variableValue, _, _ = NewGojaSimple().ExecJsFuncSimple(entity.Expression, session, true)
 
 		SetVariable(processor.ParentId, entity.VariableName, variableValue, consts.ExtractorResultTypeString,
 			consts.Public, session) // set in parent scope

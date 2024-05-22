@@ -24,7 +24,8 @@ func NewGojaSimple() (ret *GojaSimple) {
 }
 
 func (e *GojaSimple) ExecJsFuncSimple(content string, session *ExecSession, loadCustom bool) (
-	ret interface{}, params domain.VarKeyValuePair) {
+	ret interface{}, params domain.VarKeyValuePair, err error) {
+
 	params = domain.VarKeyValuePair{}
 
 	e.InitJsRuntimeSimple(session, loadCustom)

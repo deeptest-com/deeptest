@@ -19,13 +19,13 @@ func NewTenant() *Tenant {
 	return new(Tenant)
 }
 
-func (t *Tenant) GetInfo(tenantId consts.TenantId) (tenant domain.Tenant) {
-	tenant = new(remote.Remote).GetTenant(tenantId)
+func (t *Tenant) GetInfo(tenantId consts.TenantId, prefix string) (tenant domain.Tenant) {
+	tenant = new(remote.Remote).GetTenant(tenantId, prefix)
 	return
 }
 
 func (t *Tenant) GetDbConfig(tenantId consts.TenantId) (config domain.DbConfig, err error) {
-	res := t.GetInfo(tenantId)
+	res := t.GetInfo(tenantId, "")
 	config = res.DbConfig
 	return
 }
@@ -38,7 +38,7 @@ func (t *Tenant) GetInfos() (tenants []domain.Tenant) {
 }
 
 func (t *Tenant) ForFree(tenantId consts.TenantId) bool {
-	tenant := new(remote.Remote).GetTenant(tenantId)
+	tenant := new(remote.Remote).GetTenant(tenantId, "")
 	version := strings.ReplaceAll(tenant.SpecCode, tenant.SkuCode, "")
 	return version == "-01"
 

@@ -10,6 +10,6 @@ type Factory struct {
 
 func (f *Factory) creatDb(tenantId consts.TenantId) {
 	ret := tenant.NewTenant()
-	ret.GetInfo(tenantId)
+	ret.GetInfo(tenantId, "")
 
 }

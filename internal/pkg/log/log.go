@@ -10,6 +10,7 @@ import (
 	"go.uber.org/zap/zapcore"
 	"os"
 	"path/filepath"
+	"runtime"
 )
 
 func Init() {
@@ -59,7 +60,11 @@ func getLogLevel() (level zapcore.Level) {
 }
 
 func getLogPath() (ret string) {
-	ret = filepath.Join(consts.WorkDir, "log", fmt.Sprintf("%s.log", consts.RunFrom))
+	if runtime.GOOS == "windows" {
+		ret = filepath.Join("log", fmt.Sprintf("%s.log", consts.RunFrom))
+	} else {
+		ret = filepath.Join(consts.WorkDir, "log", fmt.Sprintf("%s.log", consts.RunFrom))
+	}
 
 	return
 }
@@ -74,7 +79,9 @@ func CreateLogger(logPath string, level zapcore.Level) (ret *zap.Logger, err err
 	})
 	writeSyncer, lowClose, err := zap.Open(logPath)
 	if err != nil {
-		lowClose()
+		if lowClose != nil {
+			lowClose()
+		}
 		return
 	}
 

@@ -141,6 +141,11 @@ func (s *ServeService) ListServer(tenantId consts.TenantId, req v1.ServeServer, 
 		}
 	}
 
+	//saas 项目ID=1 为示例项目，初始化数据为脚本初始化的，导致 mock地址host为空，故做触修改配置
+	if projectId == 1 {
+		s.ServeRepo.MockUrl(tenantId)
+	}
+
 	return
 }
 

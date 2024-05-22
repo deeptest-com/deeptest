@@ -730,3 +730,9 @@ func (r *ServeRepo) GetDefaultServer(tenantId consts.TenantId, serveId uint) (se
 	err = r.GetDB(tenantId).Model(&model.ServeServer{}).Where("serve_id=? AND NOT deleted ", serveId).First(&server).Order("created_at desc").Error
 	return
 }
+
+func (r *ServeRepo) MockUrl(tenantId consts.TenantId) (err error) {
+	host, _ := cache.GetCacheString(fmt.Sprintf("%s_host", tenantId))
+	err = r.GetDB(tenantId).Model(&model.ServeServer{}).Where("id = 2 and serve_id = 1 and description = 'Mock环境' and url not like 'http%' AND NOT deleted ").UpdateColumn("url", gorm.Expr("CONCAT(?,url)", host)).Error
+	return
+}

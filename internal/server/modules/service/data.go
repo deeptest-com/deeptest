@@ -37,7 +37,7 @@ type DataService struct {
 	ProjectRoleMenuSource  *source.ProjectRoleMenuSource  `inject:""`
 	MockJsExpressionSource *source.MockJsExpressionSource `inject:""`
 	ProjectRolePermService *ProjectRolePermService        `inject:""`
-	SampleSource           *source.SampleSource           `inject:""`
+	SampleService          *SampleService                 `inject:""`
 }
 
 // writeConfig 写入配置文件
@@ -118,20 +118,12 @@ func (s *DataService) InitDB(tenantId consts.TenantId, req v1.DataReq) error {
 			s.ProjectMenuSource,
 			s.ProjectRoleMenuSource,
 			s.MockJsExpressionSource,
-			s.SampleSource,
+			s.SampleService,
 		)
 		if err != nil {
 			logUtils.Errorf("填充数据错误", zap.String("错误:", err.Error()))
 			s.refreshConfig(config.VIPER, defaultConfig)
 			return err
-		}
-	}
-
-	if config.CONFIG.System.SysEnv == "ly" {
-		_, err = s.ProjectRolePermService.GetRoleFromOther(tenantId)
-		if err != nil { // 遇到错误时回滚事务
-			logUtils.Errorf("[Mysql] --> %s 表初始数据失败!,err:%s", model.ProjectRole{}.TableName(), err.Error())
-			return nil
 		}
 	}
 

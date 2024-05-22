@@ -15,10 +15,10 @@ type UserSource struct {
 	ProjectRepo *repo2.ProjectRepo `inject:""`
 }
 
-func (s *UserSource) GetSources(tenantId consts.TenantId) ([]v1.UserReq, v1.ProjectReq, error) {
+func (s *UserSource) GetSources(tenantId consts.TenantId) ([]v1.UserReq, error) {
 	roleIds, err := s.RoleRepo.GetRoleIds(tenantId)
 	if err != nil {
-		return []v1.UserReq{}, v1.ProjectReq{}, err
+		return []v1.UserReq{}, err
 	}
 	users := []v1.UserReq{
 		{
@@ -33,9 +33,7 @@ func (s *UserSource) GetSources(tenantId consts.TenantId) ([]v1.UserReq, v1.Proj
 		},
 	}
 
-	project := v1.ProjectReq{ProjectBase: v1.ProjectBase{Name: "示例项目", AdminId: 1, Logo: "default_logo1", ShortName: "Demo", Desc: "示例项目包含样例数据，用于展示API管理基本功能和使用"}}
-
-	return users, project, nil
+	return users, nil
 }
 
 func (s *UserSource) Init(tenantId consts.TenantId) error {
@@ -43,13 +41,10 @@ func (s *UserSource) Init(tenantId consts.TenantId) error {
 		color.Danger.Printf("\n[Mysql] --> %s 表的初始数据已存在!", model.SysUser{}.TableName())
 		return nil
 	}
-	sources, project, err := s.GetSources(tenantId)
+	sources, err := s.GetSources(tenantId)
 	if err != nil {
 		return err
 	}
-
-	//创建项目
-	s.ProjectRepo.Create(tenantId, project, 1)
 
 	for _, source := range sources {
 		if _, err := s.UserRepo.Create(tenantId, source); err != nil { // 遇到错误时回滚事务

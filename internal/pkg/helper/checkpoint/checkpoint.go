@@ -36,7 +36,11 @@ func GenDesc(typ consts.CheckpointType, operator consts.ComparisonOperator, actu
 }
 
 func GenResultMsg(po *domain.CheckpointBase) {
-	desc := GenDesc(po.Type, po.Operator, po.ActualResult, po.Expression, po.ExtractorVariable, po.ExtractorType, po.ExtractorExpression)
+	result := po.ActualResult
+	if po.ResultStatus != consts.Pass {
+		result = po.Value
+	}
+	desc := GenDesc(po.Type, po.Operator, result, po.Expression, po.ExtractorVariable, po.ExtractorType, po.ExtractorExpression)
 
 	po.ResultMsg = fmt.Sprintf("%s", desc)
 

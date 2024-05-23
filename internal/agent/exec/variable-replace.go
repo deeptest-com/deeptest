@@ -66,13 +66,57 @@ func ReplaceVariableValueInBody(value string, session *ExecSession) (ret string)
 }
 
 func parseStatement(statement string) (ret []Placeholder) {
-	reg := regexp.MustCompile(`(?U)\$\{(.+)}`)
-	arr := reg.FindAllStringSubmatch(statement, -1)
+	// 前缀 ${任意长度的JS表达式} 后缀，可包含闭包函数function(){return 1}
+	//reg := regexp.MustCompile(`(?U)\$\{(.+)}`)
+	//arr := reg.FindAllStringSubmatch(statement, -1)
 
-	for _, items := range arr {
+	placeholderStart := -1
+	countLeftBrace := 0
+	countRightBrace := 0
+	arrOrArr := [][]string{}
+
+	for index, char := range statement {
+		if char == '{' {
+			countLeftBrace++
+
+			if index > 0 && statement[index-1] == '$' { // found ${
+				placeholderStart = index
+				arrOrArr = append(arrOrArr, []string{"${", ""})
+
+				continue
+			} else {
+				arrOrArr[len(arrOrArr)-1][0] += string(char)
+				arrOrArr[len(arrOrArr)-1][1] += string(char)
+			}
+
+			continue
+		}
+
+		if char == '}' {
+			arrOrArr[len(arrOrArr)-1][0] += string(char)
+			countRightBrace++
+
+			if countLeftBrace > 0 && countLeftBrace == countRightBrace { // expression finish
+				placeholderStart = -1
+				countLeftBrace = 0
+				countRightBrace = 0
+			} else {
+				arrOrArr[len(arrOrArr)-1][1] += string(char)
+			}
+
+			continue
+		}
+
+		if placeholderStart > 0 {
+			arrOrArr[len(arrOrArr)-1][0] += string(char)
+			arrOrArr[len(arrOrArr)-1][1] += string(char)
+		}
+	}
+
+	for _, arr := range arrOrArr {
 		placeholder := Placeholder{
-			Whole:   items[0],
-			Content: items[1],
+			Whole:   arr[0],
+			Content: arr[1],
 		}
 
 		if isVariable(placeholder.Content) {
@@ -85,7 +129,7 @@ func parseStatement(statement string) (ret []Placeholder) {
 		reg1 := regexp.MustCompile(`_mock\("(.+)"\)`)
 		arr1 := reg1.FindAllStringSubmatch(placeholder.Content, -1)
 
-		if len(arr1) > 0 {
+		if len(arr1) > 0 { // is mock
 			placeholder.Type = PlaceholderTypeMock
 			placeholder.Content = arr1[0][1]
 		} else {

@@ -17,7 +17,6 @@ func GetTenantId(ctx *context.Context) consts.TenantId {
 	tenantId := consts.TenantId(ret)
 
 	if config.CONFIG.Saas.Switch && ret == "" && strings.HasPrefix(ctx.Path(), "/mocks") {
-		fmt.Println(ctx.Host(), ctx.Path(), "++++++++++++++++")
 		domain := ctx.Host()
 		array := strings.Split(domain, ".")
 		prefix := strings.ReplaceAll(array[0], "dev-", "")

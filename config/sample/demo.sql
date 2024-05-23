@@ -316,7 +316,11 @@ INSERT INTO `biz_project_serve_component_schema` (`id`, `created_at`, `updated_a
 INSERT INTO `biz_project_serve_component_schema` (`id`, `created_at`, `updated_at`, `deleted`, `disabled`, `name`, `type`, `content`, `serve_id`, `examples`, `tags`, `description`, `ref`, `source_type`, `project_id`) VALUES (10, '2024-05-11 15:46:45', '2024-05-11 15:47:53', 0, 0, 'petRequest', 'object', '{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\",\"x-mock-type\":\"@name()\"},\"status\":{\"type\":\"string\",\"enum\":[\"available\",\"sold\"]}}}', 0, '', '', '', '#/components/schemas/petstore.petRequest', 0, 1);
 INSERT INTO `biz_project_serve_component_schema` (`id`, `created_at`, `updated_at`, `deleted`, `disabled`, `name`, `type`, `content`, `serve_id`, `examples`, `tags`, `description`, `ref`, `source_type`, `project_id`) VALUES (11, '2024-05-11 15:47:56', '2024-05-11 15:49:25', 0, 0, 'petDetail', 'object', '{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"enum\":[],\"exclusiveMin\":false,\"exclusiveMax\":false,\"deprecated\":false,\"x-mock-type\":\"@increment(1)\"},\"name\":{\"type\":\"string\",\"enum\":[],\"deprecated\":false,\"x-mock-type\":\"@name()\"},\"status\":{\"type\":\"string\",\"enum\":[\"available\",\"sold\"],\"deprecated\":false}}}', 0, '', '', '', '#/components/schemas/petstore.petDetail', 0, 1);
 
+
 #关联项目
 INSERT INTO `biz_integration_project_space_rel` (`id`, `created_at`, `updated_at`, `deleted`, `disabled`, `project_id`, `space_code`) VALUES (1, '2024-05-23 15:43:04', '2024-05-23 15:43:04', 0, 0, 1, 'DemoSpace');
 INSERT INTO `biz_integration_project_product_rel` (`id`, `created_at`, `updated_at`, `deleted`, `disabled`, `project_id`, `product_id`) VALUES (1, '2024-05-23 15:43:04', '2024-05-23 15:43:04', 0, 0, 1, 2);
+
+#更新demo项目为租户管理员
+update biz_project set admin_id = 2 where id = 1
 

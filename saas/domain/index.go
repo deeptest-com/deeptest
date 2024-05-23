@@ -20,17 +20,26 @@ type DbConfig struct {
 }
 
 type Tenant struct {
-	Id       consts.TenantId `json:"id"`
-	SpecCode string          `json:"specCode"`
-	SkuCode  string          `json:"skuCode"`
-	DbConfig DbConfig        `json:"leyanapiDB"`
+	Id            consts.TenantId `json:"id"`
+	SpecCode      string          `json:"specCode"`
+	SkuCode       string          `json:"skuCode"`
+	ManagerId     uint64          `json:"managerId"`
+	ManagerMobile string          `json:"managerMobile"`
+	ManagerName   string          `json:"managerName"`
+	ManagerMail   string          `json:"managerMail"`
+
+	DbConfig DbConfig `json:"leyanapiDB"`
 }
 
 type temp struct {
-	Id       int64    `json:"id"`
-	DbConfig DbConfig `json:"leyanapiDB"`
-	SpecCode string   `json:"specCode"`
-	SkuCode  string   `json:"skuCode"`
+	Id            int64    `json:"id"`
+	DbConfig      DbConfig `json:"leyanapiDB"`
+	SpecCode      string   `json:"specCode"`
+	SkuCode       string   `json:"skuCode"`
+	ManagerId     uint64   `json:"managerId"`
+	ManagerMobile string   `json:"managerMobile"`
+	ManagerName   string   `json:"managerName"`
+	ManagerMail   string   `json:"managerMail"`
 }
 
 func (tenant *Tenant) MarshalJSON() (res []byte, err error) {
@@ -39,6 +48,10 @@ func (tenant *Tenant) MarshalJSON() (res []byte, err error) {
 	x.DbConfig = tenant.DbConfig
 	x.SpecCode = tenant.SpecCode
 	x.SkuCode = tenant.SkuCode
+	x.ManagerMail = tenant.ManagerMail
+	x.ManagerId = tenant.ManagerId
+	x.ManagerName = tenant.ManagerName
+	x.ManagerMobile = tenant.ManagerMobile
 	return json.Marshal(x)
 }
 
@@ -54,6 +67,10 @@ func (tenant *Tenant) UnmarshalJSON(data []byte) error {
 	tenant.DbConfig = x.DbConfig
 	tenant.SkuCode = x.SkuCode
 	tenant.SpecCode = x.SpecCode
+	tenant.ManagerMail = x.ManagerMail
+	tenant.ManagerId = x.ManagerId
+	tenant.ManagerName = x.ManagerName
+	tenant.ManagerMobile = x.ManagerMobile
 
 	return nil
 }

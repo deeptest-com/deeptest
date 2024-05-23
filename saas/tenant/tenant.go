@@ -9,10 +9,13 @@ import (
 )
 
 type Tenant struct {
-	Id       consts.TenantId `json:"id"`
-	DbConfig domain.DbConfig `json:"dbConfig"`
-	SpecCode string          `json:"specCode"`
-	SkuCode  string          `json:"skuCode"`
+	Id            consts.TenantId `json:"id"`
+	DbConfig      domain.DbConfig `json:"dbConfig"`
+	SpecCode      string          `json:"specCode"`
+	SkuCode       string          `json:"skuCode"`
+	ManagerId     uint64          `json:"managerId"`
+	ManagerMobile string          `json:"managerMobile"`
+	managerMail   string          `json:"managerMail"`
 }
 
 func NewTenant() *Tenant {

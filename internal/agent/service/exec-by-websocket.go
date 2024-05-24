@@ -62,7 +62,9 @@ func StartExec(req agentExec.WsReq, wsMsg *websocket.Message) (err error) {
 
 		}
 
-		agentExec.CancelExecCtx(execUuid)
+		if !stringUtils.FindInArr(act.String(), consts.WebscoketAtions) { // keep context for websocket testing
+			agentExec.CancelExecCtx(execUuid)
+		}
 	}()
 
 	return
@@ -77,6 +79,9 @@ func getExecUuid(req agentExec.WsReq) (ret string) {
 
 	} else if req.CasesExecReq.ExecUuid != "" {
 		ret = req.CasesExecReq.ExecUuid
+
+	} else if req.WebsocketExecReq.Room != "" {
+		ret = req.WebsocketExecReq.Room
 
 	}
 

@@ -90,4 +90,3 @@ gRPC
     ${eval("'url is ' + escape('https://baidu.com')")} 加 ${x}
     ${_do_something('test ' + g_var1 + ' ' + escape('https://baidu.com'))}
     int2=='101' && function(x) {return x + 100} (6) == 106
-

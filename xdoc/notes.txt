@@ -74,3 +74,20 @@ make compile_ui_demo
 ENV=dp make compile_server_linux
 ENV=dp make compile_agent_linux
 
+
+测试：
+基本Websocket
+    ws://111.231.16.35:9090/ws
+扩展Websocket
+    ws://localhost:8085/api/v1/ws
+    TestNamespace   /   MyRoom
+gRPC
+    111.231.16.35:9528
+
+表达式
+    ${Math.random() + +int2 + ' AND ' + g_var1}  和 ${dt.datapool.get('dp1', 'name', '1')}
+    ${g_var1} 加 ${_mock("@date('yyyy-MM-dd')")} 加 ${mymath.add(1,2)}
+    ${eval("'url is ' + escape('https://baidu.com')")} 加 ${x}
+    ${_do_something('test ' + g_var1 + ' ' + escape('https://baidu.com'))}
+    int2=='101' && function(x) {return x + 100} (6) == 106
+

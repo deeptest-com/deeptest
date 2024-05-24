@@ -2,7 +2,7 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -13,7 +13,6 @@ import (
 
 const (
 	result = "result"
-	outPut = "output"
 )
 
 var (
@@ -28,7 +27,7 @@ type WebSocketCtrl struct {
 }
 
 func NewWebsocketCtrl() *WebSocketCtrl {
-	inst := &WebSocketCtrl{Namespace: consts.WsDefaultNamespace}
+	inst := &WebSocketCtrl{Namespace: "TestNamespace"}
 	return inst
 }
 
@@ -64,6 +63,12 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	ctx := websocket.GetContext(c.Conn)
 
 	_logUtils.Infof("WebSocket OnChat: remote address=%s, room=%s, msg=%s", ctx.RemoteAddr(), wsMsg.Room, string(wsMsg.Body))
+
+	resp := _domain.WsResp{Msg: fmt.Sprintf("from server: OnChat msg is \"%s\"", string(wsMsg.Body))}
+	bytes, _ := json.Marshal(resp)
+	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
+
+	websocketHelper.PubMsg(mqData)
 
 	return
 }

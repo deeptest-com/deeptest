@@ -324,3 +324,9 @@ INSERT INTO `biz_integration_project_product_rel` (`id`, `created_at`, `updated_
 #更新demo项目为租户管理员
 update biz_project set admin_id = 2 where id = 1
 
+#计划
+INSERT INTO `biz_plan` (`id`, `created_at`, `updated_at`, `deleted`, `disabled`, `version`, `name`, `desc`, `category_id`, `project_id`, `serial_number`, `admin_id`, `create_user_id`, `update_user_id`, `status`, `test_stage`, `curr_env_id`) VALUES (1, '2024-05-24 14:49:25', '2024-05-24 14:49:25', 0, 0, 0, '样例测试计划', '', -1, 1, 'Demo-TP-1', 2, 2, 0, 'draft', '', 1);
+INSERT INTO `biz_plan_scenario_r` (`id`, `created_at`, `updated_at`, `deleted`, `disabled`, `plan_id`, `scenario_id`, `service_id`, `project_id`, `ordr`) VALUES (1, '2024-05-24 14:49:30', '2024-05-24 14:49:30', 0, 0, 1, 1, 0, 0, 0);
+
+
+

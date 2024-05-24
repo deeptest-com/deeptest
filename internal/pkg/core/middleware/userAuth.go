@@ -91,7 +91,7 @@ func UserAuth() iris.Handler {
 func creatSession(tenantId consts.TenantId, userInfo integrationDomain.UserInfo) (token string, err error) {
 	//修改saas默认示例用户为租户管理员
 	updateManagerAccount(tenantId)
-	
+
 	req := v1.UserReq{UserBase: v1.UserBase{
 		Username:  userInfo.Username,
 		Email:     userInfo.Mail,
@@ -166,8 +166,15 @@ func updateManagerAccount(tenantId consts.TenantId) {
 			if info.ManagerMail == "" {
 				info.ManagerMail = fmt.Sprintf("%d", info.ManagerId)
 			}
-			sql := fmt.Sprintf("update sys_user set  username = '%d',name = '%s',email = '%s'  where id = 2 and  name = 'sys'", info.ManagerId, info.ManagerName, info.ManagerMail)
-			dao.GetDB(tenantId).Exec(sql)
+			sqls := []string{
+				fmt.Sprintf("update sys_user set  username = '%d',name = '%s',email = '%s'  where id = 2 and  name = 'sys'", info.ManagerId, info.ManagerName, info.ManagerMail),
+				fmt.Sprintf("update biz_endpoint set  create_user = '%d',create_user = '%d'  where project_id = 1 and create_user = 'sys'", info.ManagerId, info.ManagerId),
+				fmt.Sprintf("update biz_scenario set  create_user_name = '%d'  where project_id = 1 and create_user_name = 'sys'", info.ManagerId),
+			}
+			for _, sql := range sqls {
+				dao.GetDB(tenantId).Exec(sql)
+			}
+
 		}
 	}
 }

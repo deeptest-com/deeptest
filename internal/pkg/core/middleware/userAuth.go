@@ -8,11 +8,13 @@ import (
 	"github.com/aaronchen2k/deeptest/integration/service/user"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/saas/common"
+	"github.com/aaronchen2k/deeptest/saas/tenant"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"github.com/snowlyg/multi"
@@ -87,6 +89,8 @@ func UserAuth() iris.Handler {
 }
 
 func creatSession(tenantId consts.TenantId, userInfo integrationDomain.UserInfo) (token string, err error) {
+	//修改saas默认示例用户为租户管理员
+	updateManagerAccount(tenantId)
 
 	req := v1.UserReq{UserBase: v1.UserBase{
 		Username:  userInfo.Username,
@@ -123,6 +127,7 @@ func creatSession(tenantId consts.TenantId, userInfo integrationDomain.UserInfo)
 		logUtils.Errorf("%s", err.Error())
 		return
 	}
+
 	return
 }
 
@@ -146,4 +151,30 @@ func getAppName(ctx *context.Context) (appName enum.AppName, token, origin strin
 	}
 
 	return
+}
+
+func updateManagerAccount(tenantId consts.TenantId) {
+	if tenantId != "" {
+		var ids []uint
+		dao.GetDB(tenantId).Table("sys_user").Where("id = 2 and name = 'sys' ").Pluck("id", &ids)
+		if len(ids) == 0 {
+			return
+		}
+
+		info := tenant.NewTenant().GetInfo(tenantId, "")
+		if info.ManagerId != 0 {
+			if info.ManagerMail == "" {
+				info.ManagerMail = fmt.Sprintf("%d", info.ManagerId)
+			}
+			sqls := []string{
+				fmt.Sprintf("update sys_user set  username = '%d',name = '%s',email = '%s'  where id = 2 and  name = 'sys'", info.ManagerId, info.ManagerName, info.ManagerMail),
+				fmt.Sprintf("update biz_endpoint set  create_user = '%d',create_user = '%d'  where project_id = 1 and create_user = 'sys'", info.ManagerId, info.ManagerId),
+				fmt.Sprintf("update biz_scenario set  create_user_name = '%d'  where project_id = 1 and create_user_name = 'sys'", info.ManagerId),
+			}
+			for _, sql := range sqls {
+				dao.GetDB(tenantId).Exec(sql)
+			}
+
+		}
+	}
 }

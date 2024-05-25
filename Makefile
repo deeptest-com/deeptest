@@ -48,12 +48,19 @@ GIT_HASH=`git show -s --format=%H`
 BUILD_CMD_UNIX=go build -ldflags "-X 'main.AppVersion=${VERSION}' -X 'main.BuildTime=${BUILD_TIME}' -X 'main.GoVersion=${GO_VERSION}' -X 'main.GitHash=${GIT_HASH}'"
 BUILD_CMD_WIN=go build -ldflags "-s -w -X 'main.AppVersion=${VERSION}' -X 'main.BuildTime=${BUILD_TIME}' -X 'main.GoVersion=${GO_VERSION}' -X 'main.GitHash=${GIT_HASH}'"
 
-default: win64 win32 linux mac
+default: compile_ui_web win64 win32 linux mac
 
-win64: prepare build_gui_win64 compile_launcher_win64 compile_server_win64 copy_files_win64 zip_win64 zip_win64_upgrade
-win32: prepare build_gui_win32 compile_launcher_win32 compile_server_win32 copy_files_win32 zip_win32 zip_win32_upgrade
-linux: prepare build_gui_linux                        compile_server_linux copy_files_linux zip_linux zip_linux_upgrade
-mac:   prepare build_gui_mac                          compile_server_mac   copy_files_mac   zip_mac zip_mac_upgrade
+# 非客户端版本打包
+win64: prepare compile_agent_win64 compile_server_win64 zip_web_win64
+win32: prepare compile_agent_win32 compile_server_win32 zip_web_win32
+linux: prepare compile_agent_linux compile_server_linux zip_web_linux
+mac:   prepare compile_agent_mac   compile_server_mac   zip_web_mac
+
+# 客户端版本打包
+dp-win64: prepare build_gui_win64 compile_launcher_win64 compile_server_win64 copy_files_win64 zip_win64 zip_win64_upgrade
+dp-win32: prepare build_gui_win32 compile_launcher_win32 compile_server_win32 copy_files_win32 zip_win32 zip_win32_upgrade
+dp-linux: prepare build_gui_linux                        compile_server_linux copy_files_linux zip_linux zip_linux_upgrade
+dp-mac:   prepare build_gui_mac                          compile_server_mac   copy_files_mac   zip_mac zip_mac_upgrade
 
 # 乐研 打包
 ly-win64: prepare compile_ly_ui_client build_gui_win64 compile_ly_launcher_win64 compile_server_win64 copy_files_win64 zip_win64 zip_win64_upgrade
@@ -61,13 +68,11 @@ ly-win32: prepare compile_ly_ui_client build_gui_win32 compile_ly_launcher_win32
 ly-linux: prepare compile_ly_ui_client build_gui_linux                        compile_server_linux copy_files_linux zip_linux zip_linux_upgrade
 ly-mac:   prepare compile_ly_ui_client build_gui_mac                          compile_server_mac   copy_files_mac   zip_mac zip_mac_upgrade
 
-build_agent: compile_agent_win64 compile_agent_win32 compile_agent_linux compile_agent_mac
-
 prepare: init_client_project update_version
 
 # 初始化客户端项目
 init_client_project:
-	@sh ./init.project.sh
+	@sh ./init.project.sh && yarn config set ignore-engines true
 
 update_version: gen_version_file
 
@@ -78,6 +83,8 @@ gen_version_file:
 
 compile_ui:
 	@cd ui && yarn build --dest ../client/ui && cd ..
+compile_ui_web:
+	@cd ../leyanapi-frontend && yarn build:web --dest ../leyanapi-backendend/client/ui && cd ../leyanapi-backendend
 compile_ui_demo:
 	@cd ../deeptest-ui && yarn build:demo --dest ../deeptest/client/ui && cd ../deeptest
 compile_ui_client:
@@ -233,7 +240,72 @@ copy_files_linux:
 copy_files_mac:
 	@echo 'start copy files darwin'
 
-# zip files
+# zip web files
+zip_web_win64:
+	@echo 'start zip win64'
+	@find . -name .DS_Store -print0 | xargs -0 rm -f
+	@mkdir -p ${QINIU_DIST_DIR}win64 && rm -rf ${QINIU_DIST_DIR}win64/${PROJECT}-web.zip
+
+	@cp -rf config ${BIN_DIR}win64/
+	@cp -rf ${CLIENT_BIN_DIR}win32/deeptest-agent.exe ${BIN_DIR}win64/
+	@rm -rf ${BIN_DIR}win64/deeptest-ui && mkdir ${BIN_DIR}win64/deeptest-ui
+	@cp -rf client/ui/* ${BIN_DIR}win64/deeptest-ui
+
+	@cd ${BIN_DIR}win64/ && \
+		zip -ry ${QINIU_DIST_DIR}win64/${PROJECT}-web.zip ./* && \
+		md5sum ${QINIU_DIST_DIR}win64/${PROJECT}-web.zip | awk '{print $$1}' | \
+			xargs echo > ${QINIU_DIST_DIR}win64/${PROJECT}-web.zip.md5 && \
+        cd ../..; \
+
+zip_web_win32:
+	@echo 'start zip win32'
+	@find . -name .DS_Store -print0 | xargs -0 rm -f
+	@mkdir -p ${QINIU_DIST_DIR}win32 && rm -rf ${QINIU_DIST_DIR}win32/${PROJECT}-web.zip
+
+	@cp -rf config ${BIN_DIR}win32/
+	@cp -rf ${CLIENT_BIN_DIR}win32/deeptest-agent.exe ${BIN_DIR}win32/
+	@rm -rf ${BIN_DIR}win32/deeptest-ui && mkdir ${BIN_DIR}win32/deeptest-ui
+	@cp -rf client/ui/* ${BIN_DIR}win32/deeptest-ui
+
+	@cd ${BIN_DIR}win32/ && \
+		zip -ry ${QINIU_DIST_DIR}win32/${PROJECT}-web.zip ./* && \
+		md5sum ${QINIU_DIST_DIR}win32/${PROJECT}-web.zip | awk '{print $$1}' | \
+			xargs echo > ${QINIU_DIST_DIR}win32/${PROJECT}-web.zip.md5 && \
+        cd ../..; \
+
+zip_web_linux:
+	@echo 'start zip linux'
+	@find . -name .DS_Store -print0 | xargs -0 rm -f
+	@mkdir -p ${QINIU_DIST_DIR}linux && rm -rf ${QINIU_DIST_DIR}linux/${PROJECT}-web.zip
+
+	@cp -rf config ${BIN_DIR}linux/
+	@cp -rf ${CLIENT_BIN_DIR}linux/deeptest-agent ${BIN_DIR}linux/
+	@rm -rf ${BIN_DIR}linux/deeptest-ui && mkdir ${BIN_DIR}linux/deeptest-ui
+	@cp -rf client/ui/* ${BIN_DIR}linux/deeptest-ui
+
+	@cd ${BIN_DIR}linux/ && \
+		zip -ry ${QINIU_DIST_DIR}linux/${PROJECT}-web.zip ./* && \
+		md5sum ${QINIU_DIST_DIR}linux/${PROJECT}-web.zip | awk '{print $$1}' | \
+			xargs echo > ${QINIU_DIST_DIR}linux/${PROJECT}-web.zip.md5 && \
+        cd ../..; \
+
+zip_web_mac:
+	@echo 'start zip darwin'
+	@find . -name .DS_Store -print0 | xargs -0 rm -f
+	@mkdir -p ${QINIU_DIST_DIR}darwin && rm -rf ${QINIU_DIST_DIR}darwin/${PROJECT}-web.zip
+
+	@cp -rf config ${BIN_DIR}darwin/
+	@cp -rf ${CLIENT_BIN_DIR}darwin/deeptest-agent ${BIN_DIR}darwin/
+	@rm -rf ${BIN_DIR}darwin/deeptest-ui && mkdir ${BIN_DIR}darwin/deeptest-ui
+	@cp -rf client/ui/* ${BIN_DIR}darwin/deeptest-ui
+
+	@cd ${BIN_DIR}darwin/ && \
+		zip -ry ${QINIU_DIST_DIR}darwin/${PROJECT}-web.zip ./* && \
+		md5sum ${QINIU_DIST_DIR}darwin/${PROJECT}-web.zip | awk '{print $$1}' | \
+			xargs echo > ${QINIU_DIST_DIR}darwin/${PROJECT}-web.zip.md5 && \
+        cd ../..; \
+
+# zip client files
 zip_win64:
 	@echo 'start zip win64'
 	@find . -name .DS_Store -print0 | xargs -0 rm -f

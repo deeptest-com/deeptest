@@ -74,6 +74,10 @@ make compile_ui_demo
 ENV=dp make compile_server_linux
 ENV=dp make compile_agent_linux
 
+ENV=dp make win64
+ENV=dp make win32
+ENV=dp make linux
+ENV=dp make mac
 
 测试：
 基本Websocket

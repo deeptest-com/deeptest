@@ -84,7 +84,7 @@ gen_version_file:
 compile_ui:
 	@cd ui && yarn build --dest ../client/ui && cd ..
 compile_ui_web:
-	@cd ../leyanapi-frontend && yarn build:web --dest ../leyanapi-backendend/client/ui && cd ../leyanapi-backendend
+	@cd ../leyanapi-frontend && yarn build:web --dest ../leyanapi-backend/client/ui && cd ../leyanapi-backend
 compile_ui_demo:
 	@cd ../deeptest-ui && yarn build:demo --dest ../deeptest/client/ui && cd ../deeptest
 compile_ui_client:

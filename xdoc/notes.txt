@@ -13,6 +13,7 @@ protoc --go_out=. \
   greater/greater.proto
 
 redis-server /usr/local/etc/redis.conf
+redis-cli shutdown
 
 npm i postman-to-openapi -g
 p2o xdoc/openapi/postman/v2/SimplePost.json -f xdoc/openapi/out/simple-post-v2.yml -o xdoc/openapi/options.json

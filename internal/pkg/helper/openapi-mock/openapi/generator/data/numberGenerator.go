@@ -53,7 +53,8 @@ func (generator *numberGenerator) getMinMax(schema *openapi3.Schema) (float64, f
 
 func (generator *numberGenerator) generateUniformRandomValue(schema *openapi3.Schema) float64 {
 	minimum := 0
-	maximum := math.MaxInt64
+	maximum := math.MaxInt32
+
 	if schema.ExclusiveMin {
 		minimum++
 	}
@@ -62,8 +63,8 @@ func (generator *numberGenerator) generateUniformRandomValue(schema *openapi3.Sc
 	}
 	delta := maximum - minimum
 
-	value1 := float64(generator.random.Intn(delta)+minimum) / float64(math.MaxInt64)
-	value2 := float64(generator.random.Intn(delta)+minimum) / float64(math.MaxInt64)
+	value1 := float64(generator.random.Intn(delta)+minimum) / float64(maximum)
+	value2 := float64(generator.random.Intn(delta)+minimum) / float64(maximum)
 
 	return value1 * value2
 }

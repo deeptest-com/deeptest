@@ -118,7 +118,7 @@ func (s *MockAdvanceService) ByScript(tenantId consts.TenantId, endpoint model.E
 	mockHelper.InitJsRuntime(tenantId)
 	mockHelper.SetReqValueToGoja(req)
 	mockHelper.SetRespValueToGoja(*resp)
-	mockHelper.ExecScript(tenantId, script.Content)
+	mockHelper.ExecScript(script.Content)
 	mockHelper.GetRespValueFromGoja()
 
 	if mockHelper.CurrResponse.Data != nil {

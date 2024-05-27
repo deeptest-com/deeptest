@@ -355,6 +355,19 @@ func (s *Schema2conv) CombineSchemas(schema *SchemaRef) {
 		return
 	}
 
+	if schema.Value.Type == openapi3.TypeObject {
+		for key, property := range schema.Value.Properties {
+
+			s.CombineSchemas(property)
+
+			if schema.Value.Properties == nil {
+				schema.Value.Properties = Schemas{}
+			}
+			schema.Value.Properties[key] = property
+
+		}
+	}
+
 	if len(schema.Value.AllOf) >= 1 {
 		combineSchemas = schema.Value.AllOf
 		fmt.Println(combineSchemas)
@@ -371,15 +384,23 @@ func (s *Schema2conv) CombineSchemas(schema *SchemaRef) {
 	}
 	//fmt.Println(combineSchemas)
 	for _, item := range combineSchemas {
-
 		if item.Ref != "" {
-			if component, _, _ := s.Components.Component(item); component != nil {
-				item = component
-			}
-			if item.Value == nil {
-				continue
-			}
+			schema.Ref = item.Ref
+			schema.Value = nil
+			return
 		}
+
+		/*
+			if item.Ref != "" {
+				if component, _, _ := s.Components.Component(item); component != nil {
+					item = component
+				}
+				if item.Value == nil {
+					continue
+				}
+			}
+		*/
+
 		schema.Value.Type = item.Value.Type
 
 		if item.Value.Type != openapi3.TypeObject {

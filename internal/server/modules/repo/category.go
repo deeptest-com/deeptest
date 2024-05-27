@@ -357,7 +357,7 @@ func (r *CategoryRepo) DeleteByEntityId(tenantId consts.TenantId, entityId uint,
 func (r *CategoryRepo) UpdateEntityId(tenantId consts.TenantId, id, entityId uint) (err error) {
 	err = r.GetDB(tenantId).Model(&model.Category{}).
 		Where("id = ?", id).
-		Update("entity_id = ?", entityId).Error
+		Update("entity_id", entityId).Error
 
 	return
 }

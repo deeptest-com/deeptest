@@ -63,3 +63,13 @@ func (r *SummaryBugsRepo) CheckUpdated(tenantId consts.TenantId, lastUpdateTime 
 	result = newTime.After(*lastUpdateTime)
 	return
 }
+
+func (r *SummaryBugsRepo) GetNewBugs(tenantId consts.TenantId) (reports []model.ScenarioReport, err error) {
+	err = r.GetDB(tenantId).Model(model.ScenarioReport{}).Where("bug_id != '' and id not in (?)", r.GetDB(tenantId).Model(&model.SummaryBugs{}).Select("bug_id")).Find(&reports).Error
+	return
+}
+
+func (r *SummaryBugsRepo) Creates(tenantId consts.TenantId, bugs []model.SummaryBugs) (err error) {
+	err = r.GetDB(tenantId).Create(&bugs).Error
+	return
+}

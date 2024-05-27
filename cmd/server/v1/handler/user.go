@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	integrationService "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -17,8 +18,9 @@ import (
 
 type UserCtrl struct {
 	BaseCtrl
-	UserService *service.UserService `inject:""`
-	UserRepo    *repo.UserRepo       `inject:""`
+	UserService               *service.UserService               `inject:""`
+	UserRepo                  *repo.UserRepo                     `inject:""`
+	IntegrationProjectService *integrationService.ProjectService `inject:""`
 }
 
 // ListAll
@@ -95,6 +97,12 @@ func (c *UserCtrl) Invite(ctx iris.Context) {
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	//TODO  Saas免费版限制使用人数
+	if tenantId != "" && c.IntegrationProjectService.SaasUserLimit(tenantId, uint(req.ProjectId)) {
+		ctx.JSON(_domain.Response{Code: _domain.ErrUserProjectLimit.Code, Msg: _domain.ErrUserProjectLimit.Msg})
 		return
 	}
 

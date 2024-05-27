@@ -53,7 +53,12 @@ func (t *typeScript) array(field fields.Field) string {
 	//if field.SubField.FieldType ==
 	varName := field.SubField.FieldName
 	if varName == "" {
-		varName = fields.FieldName(field.SubField.FieldType)
+		if field.SubField.FieldType != "" {
+			varName = fields.FieldName(field.SubField.FieldType)
+		} else {
+			varName = field.SubField.FieldRefName
+		}
+
 	}
 	ret := fmt.Sprintf("type %s = %s[]", field.FieldName, t.typeConvert(fields.FieldType(varName)))
 	if field.IsProperty {

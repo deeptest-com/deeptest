@@ -52,6 +52,10 @@ type ScenarioReport struct {
 	Priority  string `gorm:"-" json:"priority"`
 
 	StatRaw string `json:"stat"`
+
+	BugId    string               `json:"bugId" gorm:"default:''"`
+	BugType  uint                 `json:"bugType" gorm:"default:0"`
+	Severity consts.SeverityLevel `json:"severity" gorm:"default:0"`
 }
 
 func (ScenarioReport) TableName() string {

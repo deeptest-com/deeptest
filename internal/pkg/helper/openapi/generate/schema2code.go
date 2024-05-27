@@ -29,6 +29,7 @@ func NewSchema2Code(langType template.LangType, nameRule template.NameRule) *Sch
 func (s *Schema2Code) schema2Fields(name string, schema schemaHelper.SchemaRef) *fields.Field {
 	ref := schema.Ref
 	refName := ""
+	s.CombineSchemas(&schema)
 	if component, _, refx := s.Components.Component(&schema); component != nil && refx != "" {
 		s.sets[ref]++
 		schema = *component
@@ -58,6 +59,7 @@ func (s *Schema2Code) schema2Fields(name string, schema schemaHelper.SchemaRef) 
 		}
 
 		field.FieldType = openapi3.TypeObject
+
 		if field.FieldName == "" {
 			field.FieldName = field.FieldRefName
 		}
@@ -67,6 +69,7 @@ func (s *Schema2Code) schema2Fields(name string, schema schemaHelper.SchemaRef) 
 			subField.IsProperty = true
 			field.Properties = append(field.Properties, subField)
 		}
+		//field.FieldType = fields.FieldType(field.FieldName)
 	case openapi3.TypeArray:
 		if s.sets[ref] > 1 {
 			return field

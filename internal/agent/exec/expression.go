@@ -64,9 +64,9 @@ func EvaluateGovaluateExpressionByProcessorScope(expression string, scopeId uint
 	if err != nil {
 		return
 	}
-	expr := commUtils.RemoveLeftVariableSymbol(expression)
+	//	expr := commUtils.RemoveLeftVariableSymbol(expression)
 
-	convertParams, convertExpr := convertGovaluateParamAndExpressionForProcessor(params, expr)
+	convertParams, convertExpr := convertGovaluateParamAndExpressionForProcessor(params, expression)
 
 	valueExpression, err := govaluate.NewEvaluableExpressionWithFunctions(convertExpr, GovaluateFunctions)
 	if err != nil {

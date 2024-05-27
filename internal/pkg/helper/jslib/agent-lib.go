@@ -14,7 +14,6 @@ import (
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
 	"log"
-	"path/filepath"
 	"time"
 )
 
@@ -59,16 +58,18 @@ func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireMod
 
 	for _, lib := range libs {
 		id := lib.Id
-		js := fmt.Sprintf("%d.js", id)
-		if tenantId != "" {
-			js = fmt.Sprintf("%v/%d.js", tenantId, id)
+		if tenantId == "" {
+			tenantId = "NA"
 		}
-		pth := filepath.Join(consts.TmpDir, js)
-		//pth := filepath.Join("./res/tmp/", fmt.Sprintf("%d.js", id))
-		fileUtils.WriteFile(pth, lib.Script)
-		module, err := require.Require(pth)
+
+		tmpFile := fmt.Sprintf("%d-%s-%d.js", id, tenantId, lib.UpdatedAt.Unix())
+		tmpPath := fmt.Sprintf("%s/%s", consts.TmpDirRelativeAgent, tmpFile)
+		tmpContent := lib.Script
+		fileUtils.WriteFileIfNotExist(tmpPath, tmpContent)
+
+		module, err := require.Require("./" + tmpPath)
 		if err != nil {
-			logUtils.Errorf(err.Error())
+			logUtils.Infof("goja require failed, path: %s, err: %s.", tmpPath, err.Error())
 		}
 
 		err = runtime.Set(lib.Name, module)

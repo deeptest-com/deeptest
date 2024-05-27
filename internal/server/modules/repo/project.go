@@ -1168,3 +1168,19 @@ func (r *ProjectRepo) GetUserProjectRoleMap(tenantId consts.TenantId, username s
 
 	return
 }
+
+func (r *ProjectRepo) GetProjectMemberCount(tenantId consts.TenantId, projectId uint) (count int64, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectMember{}).Where("project_id=?", projectId).Count(&count).Error
+	if err != nil {
+		return
+	}
+	return
+}
+
+func (r *ProjectRepo) GetProjectMemberList(tenantId consts.TenantId, projectId uint) (list []model.ProjectMember, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectMember{}).Where("project_id=?", projectId).Find(&list).Error
+	if err != nil {
+		return
+	}
+	return
+}

@@ -7,13 +7,6 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
-	"path/filepath"
-	"sync"
-	"time"
-)
-
-var (
-	ServerLoadedLibs sync.Map
 )
 
 func LoadServerJslibs(tenantId consts.TenantId, runtime *goja.Runtime, require *require.RequireModule) {
@@ -21,43 +14,27 @@ func LoadServerJslibs(tenantId consts.TenantId, runtime *goja.Runtime, require *
 
 	JslibCache.Range(func(key, value interface{}) bool {
 		id := key.(uint)
+		if tenantId == "" {
+			tenantId = "NA"
+		}
 
 		lib, ok := value.(Jslib)
 		if !ok {
 			return true
 		}
 
-		updateTime, ok := GetServerCache(id)
-		if !ok || updateTime.Before(lib.UpdatedAt) {
-			pth := filepath.Join(consts.TmpDir, fmt.Sprintf("%d.js", id))
-			if tenantId != "" {
-				pth = filepath.Join(consts.TmpDir, fmt.Sprintf("%s_%d.js", tenantId, id))
-			}
-			fileUtils.WriteFile(pth, lib.Script)
-			module, err := require.Require(pth)
-			if err != nil {
-				logUtils.Info(err.Error())
-			}
+		tmpFile := fmt.Sprintf("%d-%s-%d.js", id, tenantId, lib.UpdatedAt.Unix())
+		tmpPath := fmt.Sprintf("%s/%s.js", consts.TmpDirRelativeServer, tmpFile)
+		tmpContent := lib.Script
+		fileUtils.WriteFileIfNotExist(tmpPath, tmpContent)
 
-			runtime.Set(lib.Name, module)
-
-			SetServerCache(id, lib.UpdatedAt)
+		module, err := require.Require("./" + tmpPath)
+		if err != nil {
+			logUtils.Infof("goja require failed, path: %s, err: %s.", tmpPath, err.Error())
 		}
+
+		runtime.Set(lib.Name, module)
 
 		return true
 	})
-}
-
-func GetServerCache(id uint) (val time.Time, ok bool) {
-	inf, ok := ServerLoadedLibs.Load(id)
-
-	if ok {
-		val = inf.(time.Time)
-	}
-
-	return
-}
-
-func SetServerCache(id uint, val time.Time) {
-	ServerLoadedLibs.Store(id, val)
 }

@@ -343,6 +343,11 @@ func (c *ProjectCtrl) Apply(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
+
+	if tenantId != "" && c.IntegrationProjectService.SaasUserLimit(tenantId, req.ProjectId) {
+		ctx.JSON(_domain.Response{Code: _domain.ErrUserProjectLimit.Code, Msg: _domain.ErrUserProjectLimit.Msg})
+	}
+
 	req.ApplyUserId = multi.GetUserId(ctx)
 	err = c.ProjectService.Apply(tenantId, req)
 	if err != nil {

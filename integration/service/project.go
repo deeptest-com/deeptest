@@ -12,6 +12,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	"github.com/aaronchen2k/deeptest/saas/tenant"
 )
 
 type ProjectService struct {
@@ -71,6 +72,8 @@ func (s *ProjectService) SyncSpaceMembers(tenantId consts.TenantId, projectId ui
 	if err != nil {
 		return
 	}
+	//saas免费用户限制项目成员数
+	members = s.randomMember(tenantId, projectId, members)
 
 	err = s.AddMembers(tenantId, projectId, members, memberRoles)
 
@@ -413,4 +416,55 @@ func (s *ProjectService) GetMyEngineeringList(token string) (ret []integrationDo
 func (s *ProjectService) GetEngineeringOptions() (ret []integrationDomain.EngineeringItem) {
 	ret, _ = s.EngineerService.GetEngineeringOptions(config.CONFIG.ThirdParty.Lcurl)
 	return
+}
+
+func (s *ProjectService) GetProjectMemberCount(tenantId consts.TenantId, projectId uint) (count int64, err error) {
+	return s.ProjectRepo.GetProjectMemberCount(tenantId, projectId)
+}
+
+func (s *ProjectService) SaasUserLimit(tenantId consts.TenantId, projectId uint) bool {
+	isFree := tenant.NewTenant().ForFree(tenantId)
+	if isFree {
+		count, _ := s.GetProjectMemberCount(tenantId, projectId)
+		return count >= 3
+	}
+
+	return false
+}
+
+func (s *ProjectService) randomMember(tenantId consts.TenantId, projectId uint, members map[string]integrationDomain.UserRoleInfo) (randomMembers map[string]integrationDomain.UserRoleInfo) {
+	isFree := tenant.NewTenant().ForFree(tenantId)
+	if isFree {
+		randomMembers = map[string]integrationDomain.UserRoleInfo{}
+		list, _ := s.GetProjectMemberList(tenantId, projectId)
+		count := len(list)
+
+		for _, item := range list {
+			delete(members, item.Username)
+		}
+
+		for _, member := range members {
+			if count < 3 {
+				randomMembers[member.Username] = member
+			}
+			count++
+		}
+
+		return randomMembers
+	}
+	return members
+}
+
+func (s *ProjectService) GetProjectMemberList(tenantId consts.TenantId, projectId uint) (ret []model.SysUser, err error) {
+	list, err := s.ProjectRepo.GetProjectMemberList(tenantId, projectId)
+	if err != nil {
+		return
+	}
+	userIds := make([]uint, 0)
+	for _, v := range list {
+		userIds = append(userIds, v.UserId)
+	}
+
+	return s.UserRepo.GetUserByIds(tenantId, userIds)
+
 }

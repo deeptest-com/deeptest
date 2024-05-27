@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	myZap "github.com/aaronchen2k/deeptest/pkg/core/zap"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
@@ -13,6 +14,7 @@ import (
 	"github.com/snowlyg/helper/dir"
 	"github.com/spf13/viper"
 	"os"
+	"path"
 	"path/filepath"
 )
 
@@ -36,7 +38,7 @@ func Init() {
 		agentConfigPath := filepath.Join(consts.WorkDir, consts.AgentConfigFileName)
 
 		if !dir.IsExist(agentConfigPath) { // create config if not exist
-			configRes := filepath.Join("res", consts.AgentConfigFileName)
+			configRes := path.Join("res", consts.AgentConfigFileName)
 			yamlDefault, _ := deeptest.ReadResData(configRes)
 
 			if err := VIPER.ReadConfig(bytes.NewBuffer(yamlDefault)); err != nil {
@@ -129,11 +131,14 @@ func Init() {
 }
 
 func getWorkdir() {
-	consts.WorkDir = os.Getenv("WORK_DIR")
+	if consts.WorkDir == "" {
+		consts.WorkDir = os.Getenv("WORK_DIR")
+	}
 
 	if consts.WorkDir == "" {
-		userHome, _ := _fileUtils.GetUserHome()
-		consts.WorkDir = filepath.Join(userHome, consts.App)
+		//userHome, _ := _fileUtils.GetUserHome()
+		//consts.WorkDir = filepath.Join(userHome, consts.App)
+		consts.WorkDir = commUtils.GetWorkDir()
 	}
 
 	consts.TmpDir = filepath.Join(consts.WorkDir, consts.FolderTmp)

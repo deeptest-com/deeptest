@@ -42,6 +42,15 @@ func WriteFile(filePath string, content string) (err error) {
 
 	return
 }
+func WriteFileIfNotExist(filePath string, content string) (err error) {
+	if FileExist(filePath) {
+		return
+	}
+
+	WriteFile(filePath, content)
+
+	return
+}
 
 func FileExist(path string) bool {
 	var exist = true

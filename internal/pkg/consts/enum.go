@@ -933,3 +933,34 @@ const (
 func (e CronExecStatus) String() string {
 	return string(e)
 }
+
+type SeverityLevel int
+
+const (
+	Critical SeverityLevel = 3
+	Blocker  SeverityLevel = 2
+	Deadly   SeverityLevel = 1
+	Major    SeverityLevel = 4
+	Minor    SeverityLevel = 5
+	Suggest  SeverityLevel = 6
+)
+
+func (e SeverityLevel) String() (ret string) {
+	switch e {
+	case Critical:
+		ret = "critical"
+	case Blocker:
+		ret = "blocker"
+	case Deadly:
+		ret = "deadly"
+	case Major:
+		ret = "major"
+	case Minor:
+		ret = "minor"
+	case Suggest:
+		ret = "suggest"
+	default:
+		ret = "major"
+	}
+	return ret
+}

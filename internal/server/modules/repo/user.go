@@ -766,3 +766,8 @@ func (r *UserRepo) CreateIfNotExisted(tenantId consts.TenantId, req serverDomain
 
 	return
 }
+
+func (r *UserRepo) GetUserByIds(tenantId consts.TenantId, ids []uint) (users []model.SysUser, err error) {
+	err = r.GetDB(tenantId).Model(&model.SysUser{}).Where("NOT deleted and id in ?", ids).Find(&users).Error
+	return
+}

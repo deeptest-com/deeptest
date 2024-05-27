@@ -1,7 +1,6 @@
 package agentExec
 
 import (
-	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	jslibHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
@@ -38,7 +37,6 @@ func (e *GojaSimple) ExecJsFuncSimple(content string, session *ExecSession, load
 		e.execRuntime.Set(variable.Name, variable.Value)
 
 		if reflect.TypeOf(variable.Value).Kind() == reflect.Func {
-			fmt.Println(reflect.TypeOf(variable.Value).Kind(), "+++")
 			continue
 		}
 		params[variable.Name] = variable.Value

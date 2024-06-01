@@ -46,6 +46,7 @@ export class DeepTestApp {
         app.commandLine.appendSwitch('disable-site-isolation-trials')
         app.commandLine.appendSwitch('disable-features','BlockInsecurePrivateNetworkRequests')
         this._windows = new Map();
+
         // 需要启动本地 Agent 服务，之后再会启动 UI 服务
         (async () => {
             port = await getUsefulPort(portAgent,56999);
@@ -95,6 +96,7 @@ export class DeepTestApp {
         mainWin.show()
 
         this._windows.set('main', mainWin);
+
         // 最终都是返回 http地址，远端 或者 本地http服务
         const uiPort = process.env.UI_SERVER_PORT || await getUsefulPort(portClient,55999);
         const url = await startUIService(uiPort);

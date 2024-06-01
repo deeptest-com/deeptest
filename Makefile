@@ -51,6 +51,7 @@ BUILD_CMD_WIN=go build -ldflags "-s -w -X 'main.AppVersion=${VERSION}' -X 'main.
 default: compile_ui_web win64 win32 linux mac
 
 # 非客户端版本打包
+# 先运行 make compile_ui_client
 win64: prepare compile_agent_win64 compile_server_win64 zip_web_win64
 win32: prepare compile_agent_win32 compile_server_win32 zip_web_win32
 linux: prepare compile_agent_linux compile_server_linux zip_web_linux
@@ -60,7 +61,8 @@ mac:   prepare compile_agent_mac   compile_server_mac   zip_web_mac
 dp-win64: prepare build_gui_win64 compile_launcher_win64 compile_server_win64 copy_files_win64 zip_win64 zip_win64_upgrade
 dp-win32: prepare build_gui_win32 compile_launcher_win32 compile_server_win32 copy_files_win32 zip_win32 zip_win32_upgrade
 dp-linux: prepare build_gui_linux                        compile_server_linux copy_files_linux zip_linux zip_linux_upgrade
-dp-mac:   prepare build_gui_mac                          compile_server_mac   copy_files_mac   zip_mac zip_mac_upgrade
+dp-mac:   prepare build_gui_mac        					 compile_server_mac   copy_files_mac   zip_mac zip_mac_upgrade
+dp-mac-test: compile_ui_client_test build_gui_mac
 
 # 乐研 打包
 ly-win64: prepare compile_ly_ui_client build_gui_win64 compile_ly_launcher_win64 compile_server_win64 copy_files_win64 zip_win64 zip_win64_upgrade
@@ -87,8 +89,12 @@ compile_ui_web:
 	@cd ../leyanapi-frontend && yarn build:web --dest ../leyanapi-backend/client/ui && cd ../leyanapi-backend
 compile_ui_demo:
 	@cd ../deeptest-ui && yarn build:demo --dest ../deeptest/client/ui && cd ../deeptest
+
 compile_ui_client:
-	@cd ui && yarn build --dest ../client/ui && cd ..
+	@cd ../leyanapi-frontend && yarn build:client --dest ../leyanapi-backend/client/ui && cd ..
+compile_ui_client_test:
+	@rm -rf client/ui && cd ../leyanapi-frontend && yarn build:clientTest --dest ../leyanapi-backend/client/ui && cd ..
+
 compile_ly_ui_client:
 	@cd ../leyanapi-frontend  && yarn build:client && cd ../leyanapi-backend
 

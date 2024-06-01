@@ -91,7 +91,7 @@ compile_ui_demo:
 	@cd ../deeptest-ui && yarn build:demo --dest ../deeptest/client/ui && cd ../deeptest
 
 compile_ui_client:
-	@cd ../leyanapi-frontend && yarn build:client --dest ../leyanapi-backend/client/ui && cd ..
+	@rm -rf client/ui && cd ../leyanapi-frontend && yarn build:client --dest ../leyanapi-backend/client/ui && cd ..
 compile_ui_client_test:
 	@rm -rf client/ui && cd ../leyanapi-frontend && yarn build:clientTest --dest ../leyanapi-backend/client/ui && cd ..
 

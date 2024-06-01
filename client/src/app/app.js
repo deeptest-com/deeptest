@@ -106,7 +106,9 @@ export class DeepTestApp {
         await mainWin.loadURL(url);
 
         // 通知渲染进程，agent服务端口
-        mainWin.webContents.send(electronMsgUsePort, {uiPort,agentPort:port});
+        const data = {uiPort, agentPort: port}
+        logInfo(`send event to webpage, uiPort=${data.uiPort}, agentPort=${data.agentPort}`)
+        mainWin.webContents.send(electronMsgUsePort, data);
 
         // 读取服务配置
         const confPath = path.join(os.homedir(), App, 'conf.yaml');
@@ -201,6 +203,7 @@ export class DeepTestApp {
         // this.buildAppMenu();
         this.openOrCreateWindow()
         this.setAboutPanel();
+
         // 使用默认的快捷键，和常用的快捷键有冲突
         // globalShortcut.register('CommandOrControl+D', () => {
         //     const mainWin = this._windows.get('main');
@@ -239,6 +242,7 @@ export class DeepTestApp {
             //     createWindow();
             // }
         });
+
         // Quit when all windows are closed, except on macOS. There, it's common
         // for applications and their menu bar to stay active until the user quits
         // explicitly with Cmd + Q.

@@ -50,8 +50,7 @@ BUILD_CMD_WIN=go build -ldflags "-s -w -X 'main.AppVersion=${VERSION}' -X 'main.
 
 default: compile_ui_web win64 win32 linux mac
 
-# 非客户端版本打包
-# 先运行 make compile_ui_client
+# 非客户端版本打包，更新客户端需先运行 make compile_ui_client
 win64: prepare compile_agent_win64 compile_server_win64 zip_web_win64
 win32: prepare compile_agent_win32 compile_server_win32 zip_web_win32
 linux: prepare compile_agent_linux compile_server_linux zip_web_linux

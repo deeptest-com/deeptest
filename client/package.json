@@ -23,6 +23,9 @@
     "forge": "./forge.config.js"
   },
   "devDependencies": {
+    "electron": "30.0.9",
+    "electron-packager": "17.1.2",
+
     "@electron-forge/cli": "7.4.0",
     "@electron-forge/maker-deb": "7.4.0",
     "@electron-forge/maker-rpm": "7.4.0",
@@ -30,11 +33,10 @@
     "@electron-forge/maker-zip": "7.4.0",
     "@electron-forge/plugin-auto-unpack-natives": "7.4.0",
     "@electron-forge/plugin-webpack": "7.4.0",
+
     "@timfish/forge-externals-plugin": "^0.2.0",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "css-loader": "^6.5.1",
-    "electron": "30.0.9",
-    "electron-packager": "17.1.2",
     "node-loader": "^2.0.0",
     "style-loader": "^3.3.1"
   },

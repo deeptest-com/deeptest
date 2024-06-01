@@ -27,43 +27,45 @@ export function startUIService(portClient) {
     }
 
     // 从环境变量中获取 ui 服务地址
-    let {UI_SERVER_URL: uiServerUrl} = process.env;
+    let {UI_SERVER_URL: uiServerUrlOrPath} = process.env;
 
-    if (!uiServerUrl && !DEBUG) {
-        uiServerUrl = path.resolve(process.resourcesPath, 'ui');
+    if (!uiServerUrlOrPath && !DEBUG) {
+        uiServerUrlOrPath = path.resolve(process.resourcesPath, 'ui');
     }
 
-    // uiServerUrl = path.resolve(process.resourcesPath, 'ui');
-    uiServerUrl = uiServerUrl || path.resolve(process.resourcesPath, 'ui');
+    // uiServerUrlOrPath = path.resolve(process.resourcesPath, 'ui');
+    uiServerUrlOrPath = uiServerUrlOrPath || path.resolve(process.resourcesPath, 'ui');
 
 
-    if (uiServerUrl) {
+    if (uiServerUrlOrPath) {
         // 有效的 http 地址
-        if (/^https?:\/\//.test(uiServerUrl)) {
-            return Promise.resolve(uiServerUrl);
+        if (/^https?:\/\//.test(uiServerUrlOrPath)) {
+            return Promise.resolve(uiServerUrlOrPath);
         }
         // 返回本地的静态资源路径，启动 express 服务
         return new Promise((resolve, reject) => {
-            if (!path.isAbsolute(uiServerUrl)) {
-                uiServerUrl = path.resolve(app.getAppPath(), uiServerUrl);
+            if (!path.isAbsolute(uiServerUrlOrPath)) {
+                uiServerUrlOrPath = path.resolve(app.getAppPath(), uiServerUrlOrPath);
             }
 
             const port = portClient;
-            logInfo(`>> starting ui serer at ${uiServerUrl} with port ${port}`);
+            logInfo(`>> starting deeptest webui from dir ${uiServerUrlOrPath} with port ${port}`);
 
             const uiServer = express();
             uiServer.use(history());
-            uiServer.use(express.static(uiServerUrl));
+            uiServer.use(express.static(uiServerUrlOrPath));
+
             const server = uiServer.listen(port, serverError => {
                 if (serverError) {
-                    console.error('>>> start ui server failed with error', serverError);
+                    console.error('>>> start deeptest webui failed with error', serverError);
                     _uiService = null;
                     reject(serverError);
                 } else {
-                    logInfo(`>> ui server started successfully on http://localhost:${port}.`);
+                    logInfo(`>> deeptest webui started successfully on http://localhost:${port}.`);
                     resolve(`http://localhost:${port}`);
                 }
             });
+            
             // express 服务关闭时，清空 _uiService
             server.on('close', () => {
                 _uiService = null;

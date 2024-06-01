@@ -50,11 +50,14 @@ export class DeepTestApp {
         // 需要启动本地 Agent 服务，之后再会启动 UI 服务
         (async () => {
             port = await getUsefulPort(portAgent,56999);
+
+            logInfo(`>> starting deeptest agent on port ${port}`);
+
             startAgent(port).then((agentUrl)=> {
-                if (agentUrl) logInfo(`>> deeptest server started successfully on : ${agentUrl}`);
+                if (agentUrl) logInfo(`>> deeptest agent started successfully at ${agentUrl}`);
                 this.bindElectronEvents();
             }).catch((err) => {
-                logErr('>> agent started failed, err: ' + err);
+                logErr('>> deeptest agent started failed on port ${port}, err: ' + err);
                 process.exit(1);
             })
         })()

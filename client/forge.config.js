@@ -17,7 +17,9 @@ module.exports = {
         {
             name: '@electron-forge/maker-squirrel',
             config: {
-                name: pkg?.name || 'deeptest'
+                name: pkg?.name || 'deeptest',
+                authors: 'AaronChen',
+                description: 'DeepTest Electron Client'
             }
         },
         {

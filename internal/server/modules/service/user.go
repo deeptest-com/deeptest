@@ -2,6 +2,7 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -81,15 +82,15 @@ func (s *UserService) Invite(tenantId consts.TenantId, req v1.InviteUserReq) (us
 
 	vcode, _ := s.UserRepo.GenAndUpdateVcode(tenantId, user.ID)
 
-	url := consts.Url
+	url := config.CONFIG.System.Website
 	if !consts.IsRelease {
-		url = consts.UrlDev
+		url = consts.WebsiteDev
 	}
 	settings := map[string]string{
 		"name":  user.Username,
 		"url":   url,
 		"vcode": vcode,
-		"sys":   consts.Sys,
+		"sys":   config.CONFIG.System.Name,
 	}
 	_mailUtils.Send(user.Email, _i118Utils.Sprintf("invite_user"), "invite-user", settings)
 

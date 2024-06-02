@@ -51,8 +51,12 @@ saas:
     appSecret: ""
   host: ""
 system:
-  name: "deeptest"
+  name: "DeepTest"
   sysEnv: ""
+
+  supportMail: chenqi@deeptest.com
+  website: http://deeptest.com/
+
   level: debug
   serverAddress: 0.0.0.0:8085
   agentAddress: ""

@@ -23,7 +23,11 @@ type Config struct {
 }
 
 type System struct {
-	Name          string `mapstructure:"name" json:"name" yaml:"name"`
+	Name string `mapstructure:"name" json:"name" yaml:"name"`
+
+	SupportMail string `mapstructure:"supportMail" json:"supportMail" yaml:"supportMail"`
+	Website     string `mapstructure:"website" json:"website" yaml:"website"`
+
 	SysEnv        string `mapstructure:"sysEnv" json:"sysEnv" yaml:"sysEnv"` // dev, leyan_test, deeptest_demo etc.
 	Level         string `mapstructure:"level" json:"level" yaml:"level"`    // debug,release,test
 	ServerAddress string `mapstructure:"serverAddress" json:"serverAddress" yaml:"serverAddress"`

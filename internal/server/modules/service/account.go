@@ -113,9 +113,10 @@ func (s *AccountService) Register(tenantId consts.TenantId, req v1.RegisterReq) 
 
 	if strings.ToLower(config.CONFIG.System.Name) == "deeptest" {
 		mp := map[string]string{
-			"name": user.Name,
-			"sys":  config.CONFIG.System.Name,
-			"url":  config.CONFIG.System.Website,
+			"name":    user.Name,
+			"sys":     config.CONFIG.System.Name,
+			"url":     config.CONFIG.System.Website,
+			"toEmail": user.Email,
 		}
 		_mailUtils.Send(user.Email, _i118Utils.Sprintf("register_success"), "register-success", mp)
 	}
@@ -133,9 +134,10 @@ func (s *AccountService) ForgotPassword(tenantId consts.TenantId, usernameOrPass
 		url = consts.WebsiteDev
 	}
 	settings := map[string]string{
-		"name":  user.Username,
-		"url":   url,
-		"vcode": vcode,
+		"name":    user.Username,
+		"url":     url,
+		"vcode":   vcode,
+		"toEmail": user.Email,
 	}
 	_mailUtils.Send(user.Email, _i118Utils.Sprintf("reset_password"), "reset-password", settings)
 

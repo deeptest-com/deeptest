@@ -16,6 +16,7 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -110,7 +111,7 @@ func (s *AccountService) Register(tenantId consts.TenantId, req v1.RegisterReq) 
 
 	s.UserRepo.Register(tenantId, &user)
 
-	if config.CONFIG.System.Name == "deeptest" {
+	if strings.ToLower(config.CONFIG.System.Name) == "deeptest" {
 		mp := map[string]string{
 			"name": user.Name,
 			"sys":  config.CONFIG.System.Name,

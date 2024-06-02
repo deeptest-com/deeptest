@@ -11,9 +11,9 @@ limit:
   burst: 5
 
 mail:
-  smtpAddress: smtp.exmail.qq.com
+  smtpAddress: smtp.qq.com
   smtpPort: 465
-  account: mail@deeptest.com
+  account:
   password:
 
 max-size: 1024

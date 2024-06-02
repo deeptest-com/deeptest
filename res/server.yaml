@@ -55,7 +55,7 @@ system:
   sysEnv: ""
 
   supportMail: chenqi@deeptest.com
-  website: http://deeptest.com/
+  website: http://demo.deeptest.com/
 
   level: debug
   serverAddress: 0.0.0.0:8085

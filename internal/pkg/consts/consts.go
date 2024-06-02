@@ -41,11 +41,6 @@ const (
 	ExtractorErr = "extractor_err"
 	ContentErr   = "content_err"
 
-	EmailSmtpAddress = "smtp.exmail.qq.com"
-	EmailSmtpPort    = 465
-	EmailAccount     = "chenqi@deeptest.com"
-	EmailPassword    = ""
-
 	HttpRequestTimeout = 60 * time.Second
 	DeepestKey         = "com_deeptest_prop_for_selection"
 	KEY_BASE_URL       = "_base_url_"

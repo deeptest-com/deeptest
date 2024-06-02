@@ -68,9 +68,6 @@ npm config set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/
 scp -r ~/work/qiniu/deeptest/* lighthouse@111.231.16.35:~/work/qiniu/deeptest
 nohup light-server -s ~/work/qiniu/deeptest > ~/light-server.log 2>&1 &
 
-git push -f github dt:main
-git push -f github feature/chenqi99/var_in_params:feature/chenqi99/var_in_params
-
 测试：
 基本Websocket
     ws://111.231.16.35:9090/ws
@@ -86,6 +83,10 @@ gRPC
     ${eval("'url is ' + escape('https://baidu.com')")} 加 ${x}
     ${_do_something('test ' + g_var1 + ' ' + escape('https://baidu.com'))}
     int2=='101' && function(x) {return x + 100} (6) == 106
+
+# 版本库
+git push -f github dt:main
+git push -f github feature/chenqi99/var_in_params:feature/chenqi99/var_in_params
 
 # 打包命令
 ENV=dp rm -rf bin && make default

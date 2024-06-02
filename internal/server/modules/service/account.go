@@ -110,12 +110,14 @@ func (s *AccountService) Register(tenantId consts.TenantId, req v1.RegisterReq) 
 
 	s.UserRepo.Register(tenantId, &user)
 
-	//mp := map[string]string{
-	//	"name": user.Name,
-	//	"sys":  consts.Sys,
-	//	"url":  consts.Url,
-	//}
-	//_mailUtils.Send(user.Email, _i118Utils.Sprintf("register_success"), "register-success", mp)
+	if config.CONFIG.System.Name == "deeptest" {
+		mp := map[string]string{
+			"name": user.Name,
+			"sys":  consts.Sys,
+			"url":  consts.Url,
+		}
+		_mailUtils.Send(user.Email, _i118Utils.Sprintf("register_success"), "register-success", mp)
+	}
 
 	return
 }

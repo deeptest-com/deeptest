@@ -9,6 +9,13 @@ limit:
   disable: true
   limit: 0
   burst: 5
+
+mail:
+  smtpAddress: smtp.exmail.qq.com
+  smtpPort: 465
+  account: mail@deeptest.com
+  password:
+
 max-size: 1024
 maxsize: 1024
 mcs:
@@ -44,7 +51,7 @@ saas:
     appSecret: ""
   host: ""
 system:
-  name: ""
+  name: "deeptest"
   sysEnv: ""
   level: debug
   serverAddress: 0.0.0.0:8085
@@ -54,6 +61,7 @@ system:
   db-type: mysql
   cache-type: redis
   time-format: "2006-01-02 15:04:05"
+
 thirdparty:
   username: ""
   password: ""

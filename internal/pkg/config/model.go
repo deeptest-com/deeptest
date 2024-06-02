@@ -8,6 +8,7 @@ import (
 type Config struct {
 	MaxSize     int64       `mapstructure:"max-size" json:"burst" yaml:"max-size"`
 	System      System      `mapstructure:"system" json:"system" yaml:"system"`
+	Mail        Mail        `mapstructure:"mail" json:"mail" yaml:"mail"`
 	Limit       Limit       `mapstructure:"limit" json:"limit" yaml:"limit"`
 	Zap         myZap.Zap   `mapstructure:"zap" json:"zap" yaml:"zap"`
 	Redis       Redis       `mapstructure:"redis" json:"redis" yaml:"redis"`
@@ -32,6 +33,13 @@ type System struct {
 	DbType        string `mapstructure:"db-type" json:"dbType" yaml:"db-type"`
 	CacheType     string `mapstructure:"cache-type" json:"cacheType" yaml:"cache-type"`
 	TimeFormat    string `mapstructure:"time-format" json:"timeFormat" yaml:"time-format"`
+}
+
+type Mail struct {
+	SmtpAddress string `mapstructure:"smtpAddress" json:"smtpAddress" yaml:"smtpAddress"`
+	SmtpPort    int    `mapstructure:"smtpPort" json:"smtpPort" yaml:"smtpPort"`
+	Account     string `mapstructure:"account" json:"account" yaml:"account"`
+	Password    string `mapstructure:"password" json:"password" yaml:"password"`
 }
 
 type Limit struct {

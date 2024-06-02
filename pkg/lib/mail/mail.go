@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/aaronchen2k/deeptest"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/aaronchen2k/deeptest/pkg/lib/i118"
@@ -20,18 +21,13 @@ import (
 	"strings"
 )
 
-// name
-// inviter
-// sys
-// url
-// vcode
-
 func Send(to, subject, tmpl string, mp map[string]string) (err error) {
 	d := gomail.NewDialer(
-		consts.EmailSmtpAddress,
-		consts.EmailSmtpPort,
-		consts.EmailAccount,
-		consts.EmailPassword)
+		config.CONFIG.Mail.SmtpAddress,
+		config.CONFIG.Mail.SmtpPort,
+		config.CONFIG.Mail.Account,
+		config.CONFIG.Mail.Password)
+
 	s, err := d.Dial()
 	if err != nil {
 		return

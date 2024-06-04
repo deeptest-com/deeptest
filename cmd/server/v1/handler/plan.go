@@ -17,6 +17,7 @@ import (
 
 type PlanCtrl struct {
 	PlanService *service.PlanService `inject:""`
+	UserService *service.UserService `inject:""`
 	BaseCtrl
 }
 
@@ -116,7 +117,13 @@ func (c *PlanCtrl) Create(ctx iris.Context) {
 		return
 	}
 
-	req.CreateUserId = multi.GetUserId(ctx)
+	if req.IsLy {
+		user, _ := c.UserService.FindByUserName(tenantId, req.AdminName)
+		req.AdminId = user.Id
+	} else {
+		req.CreateUserId = multi.GetUserId(ctx)
+	}
+
 	req.ProjectId = uint(projectId)
 	req.Status = consts.Draft
 	po, bizErr := c.PlanService.Create(tenantId, req)
@@ -147,8 +154,10 @@ func (c *PlanCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	userId := multi.GetUserId(ctx)
-	req.UpdateUserId = userId
+	if !req.IsLy {
+		userId := multi.GetUserId(ctx)
+		req.UpdateUserId = userId
+	}
 
 	err = c.PlanService.Update(tenantId, req)
 	if err != nil {

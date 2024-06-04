@@ -1,6 +1,6 @@
 limit:
   disable: true
-  limit: 10
+  limit: 0
   burst: 5
 system:
   level: debug

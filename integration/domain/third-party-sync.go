@@ -194,3 +194,10 @@ type LovByCodeRes struct {
 		} `json:"details"`
 	} `json:"data"`
 }
+
+type CreateReport struct {
+	ApiPlanNumber   string `json:"apiPlanNumber"`
+	ApiReportNumber string `json:"apiReportNumber"`
+	CreatedBy       string `json:"createdBy"`
+	Name            string
+}

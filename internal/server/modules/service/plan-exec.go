@@ -2,6 +2,8 @@ package service
 
 import (
 	"encoding/json"
+	"github.com/aaronchen2k/deeptest/integration/leyan/service"
+	integrationService "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
 	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -23,6 +25,9 @@ type PlanExecService struct {
 
 	EnvironmentService *EnvironmentService `inject:""`
 	DatapoolService    *DatapoolService    `inject:""`
+
+	RemoteService *service.RemoteService
+	ReportService *integrationService.ReportService `inject:""`
 }
 
 func (s *PlanExecService) LoadExecResult(tenantId consts.TenantId, planId int) (result domain.Report, err error) {
@@ -85,6 +90,9 @@ func (s *PlanExecService) SaveReport(tenantId consts.TenantId, planId int, userI
 	_ = s.PlanReportRepo.Create(tenantId, &report)
 
 	_ = s.ScenarioReportRepo.BatchUpdatePlanReportId(tenantId, scenarioReportIds, report.ID)
+
+	// 创建LY报告
+	go s.ReportService.SaveReport(tenantId, report.ID)
 
 	return
 }

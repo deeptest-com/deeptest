@@ -63,7 +63,7 @@ func (s *RemoteService) GetUserInfoByToken(tenantId consts.TenantId, token strin
 	if respContent.Data.UserInfo.Mail == "" {
 		respContent.Data.UserInfo.Mail = respContent.Data.UserInfo.Username
 	}
-	
+
 	user = respContent.Data.UserInfo
 
 	return
@@ -716,6 +716,48 @@ func (s *RemoteService) GetUserOpenRoles(tenantId consts.TenantId, username stri
 	}
 
 	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) SaveReport(tenantId consts.TenantId, report integrationDomain.CreateReport) (err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/saveReport", config.CONFIG.ThirdParty.Url)
+	req := _commUtils.JsonEncode(report)
+	headers := s.GetHeaders(tenantId, req)
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		Body:     req,
+	}
+	logUtils.Infof("leyan-SaveReport %s", _commUtils.JsonEncode(httpReq))
+	resp, err := httpHelper.Post(httpReq)
+	if err != nil {
+		logUtils.Infof("get SaveReport failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("get SaveReport failed, response %v", resp)
+		err = fmt.Errorf("get SaveReport failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data interface{}
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("SaveReport failed, response %v", resp)
+		err = fmt.Errorf("get SaveReport failed, response %v", resp)
+		return
+	}
 
 	return
 }

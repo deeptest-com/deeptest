@@ -36,9 +36,20 @@ func (s *ReportService) SaveReport(tenantId consts.TenantId, id uint) (err error
 		return err
 	}
 	data.CreatedBy = user.Username
-
-	s.RemoteService.SaveReport(tenantId, data)
+	data.EnvName = report.ExecEnv
+	data.ExecUserName = report.ExecUserName
+	data.TestRate = report.TestRate
+	err = s.RemoteService.SaveReport(tenantId, data)
 
 	return
 
+}
+
+func (s *ReportService) DeleteReport(tenantId consts.TenantId, id uint) (err error) {
+	report, err := s.PlanReportRepo.Get(tenantId, id)
+	if err != nil {
+		return err
+	}
+	err = s.RemoteService.DeleteReport(tenantId, report.SerialNumber)
+	return
 }

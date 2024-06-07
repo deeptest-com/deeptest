@@ -190,6 +190,7 @@ func (r *PlanRepo) Update(tenantId consts.TenantId, req model.Plan) error {
 		"test_stage":     req.TestStage,
 		"update_user_id": req.UpdateUserId,
 		"disabled":       req.Disabled,
+		"deleted":        req.Deleted,
 	}
 	err := r.GetDB(tenantId).Model(&req).Where("id = ?", req.ID).Updates(values).Error
 	if err != nil {

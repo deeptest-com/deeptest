@@ -76,9 +76,10 @@ func (r *PlanReportRepo) Paginate(tenantId consts.TenantId, req v1.PlanReportReq
 
 func (r *PlanReportRepo) Get(tenantId consts.TenantId, id uint) (report model.PlanReportDetail, err error) {
 	err = r.GetDB(tenantId).Model(model.PlanReport{}).
-		Select("biz_plan_report.*, e.name exec_env, u.name exec_user_name").
+		Select("biz_plan_report.*, e.name exec_env, u.name exec_user_name,u.name create_user_name,p.name plan_name").
 		Joins("LEFT JOIN biz_environment e ON biz_plan_report.exec_env_id=e.id").
 		Joins("LEFT JOIN sys_user u ON biz_plan_report.create_user_id=u.id").
+		Joins("LEFT JOIN biz_plan p ON biz_plan_report.plan_id=p.id").
 		Where("biz_plan_report.id = ?", id).First(&report).Error
 	if err != nil {
 		logUtils.Errorf("find report by id error %s", err.Error())
@@ -88,8 +89,16 @@ func (r *PlanReportRepo) Get(tenantId consts.TenantId, id uint) (report model.Pl
 	scenarioReports, err := r.ScenarioReportRepo.GetReportsByPlanReportId(tenantId, report.ID)
 	report.ScenarioReports = scenarioReports
 
-	createUserName, _ := r.GetCreateUserName(tenantId, report)
-	report.CreateUserName = createUserName
+	/*
+		createUserName, _ := r.GetCreateUserName(tenantId, report)
+		report.CreateUserName = createUserName
+	*/
+
+	if report.TotalScenarioNum == 0 {
+		report.TestRate = 0
+	} else {
+		report.TestRate = uint(report.PassScenarioNum * 100 / report.TotalScenarioNum)
+	}
 	//root, err := r.getLogTree(report)
 	//report.Logs = root.Logs
 

@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/aaronchen2k/deeptest/integration/leyan/service"
 	integrationService "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
@@ -11,6 +12,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"gorm.io/gorm"
+	"time"
 )
 
 type PlanExecService struct {
@@ -70,7 +72,7 @@ func (s *PlanExecService) SaveReport(tenantId consts.TenantId, planId int, userI
 
 	report.PlanId = uint(planId)
 	report.ProjectId = projectId
-	report.Name = plan.Name
+	report.Name = fmt.Sprintf("测试执行[%s]%s", plan.Name, time.Now().Format("2006-01-02 15:04:05"))
 	report.ExecEnvId = uint(result.EnvironmentId)
 	report.CreateUserId = userId
 	report.ProgressStatus = consts.End

@@ -120,12 +120,19 @@ func (c *PlanCtrl) Create(ctx iris.Context) {
 	if req.IsLy {
 		user, _ := c.UserService.FindByUserName(tenantId, req.AdminName)
 		req.AdminId = user.Id
+		user, _ = c.UserService.FindByUserName(tenantId, req.CreateUserName)
+		req.CreateUserId = user.Id
 	} else {
 		req.CreateUserId = multi.GetUserId(ctx)
 	}
 
 	req.ProjectId = uint(projectId)
 	req.Status = consts.Draft
+
+	if req.CategoryId == 0 {
+		req.CategoryId = -1
+	}
+
 	po, bizErr := c.PlanService.Create(tenantId, req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{Code: bizErr.Code, Data: nil})
@@ -323,16 +330,17 @@ func (c *PlanCtrl) TestStageDropDownOptions(ctx iris.Context) {
 // @Router	/api/v1/plans/{id}/clone	[post]
 func (c *PlanCtrl) Clone(ctx iris.Context) {
 	tenantId := c.getTenantId(ctx)
-	userId := multi.GetUserId(ctx)
 
+	planId, _ := ctx.Params().GetInt("id")
+
+	var userId uint
 	var req _domain.ReqId
-	if err := ctx.ReadParams(&req); err != nil {
-		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
+	ctx.ReadJSON(&req)
+	if !req.IsLy {
+		userId = multi.GetUserId(ctx)
 	}
 
-	plan, err := c.PlanService.Clone(tenantId, req.Id, userId)
+	plan, err := c.PlanService.Clone(tenantId, uint(planId), userId)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})

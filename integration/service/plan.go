@@ -2,6 +2,7 @@ package service
 
 import (
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
+	"github.com/aaronchen2k/deeptest/integration/leyan/common"
 	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -20,9 +21,11 @@ func (s *PlanService) SyncPlan(tenantId consts.TenantId, id uint) (err error) {
 	data := integrationDomain.SyncPlan{
 		Number:   plan.SerialNumber,
 		Name:     plan.Name,
-		Status:   1,
 		IsDelete: plan.Deleted,
 	}
+
+	data.Status, _ = common.PlanStatus[string(plan.Status)]
+
 	err = s.RemoteService.SyncPlan(tenantId, data)
 	return
 

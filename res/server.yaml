@@ -1,3 +1,4 @@
+
 captcha:
   key-long: 6
   img-width: 240
@@ -85,3 +86,6 @@ zap:
   encode-level: ""
   stacktrace-key: stacktrace
   log-in-console: true
+
+chatChatUrl: http://127.0.0.1:7861/
+chatChatControllerAddress: http://127.0.0.1:20001/

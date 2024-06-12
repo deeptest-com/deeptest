@@ -18,8 +18,11 @@ type Config struct {
 	ThirdParty  ThirdParty  `mapstructure:"third-party" json:"third-party" yaml:"third-party"`
 	Mcs         Mcs         `mapstructure:"mcs" json:"mcs" yaml:"mcs"`
 	Environment Environment `mapstructure:"environment" json:"environment" yaml:"environment"`
-	OpenApi     OpenApi     `mapstructure:"openapi" json:"openapi" yaml:"openapi"`
 	Saas        Saas        `mapstructure:"saas" json:"saas" yaml:"saas"`
+
+	OpenApi                   OpenApi `mapstructure:"openapi" json:"openapi" yaml:"openapi"`
+	ChatChatUrl               string  `mapstructure:"chatChatUrl" json:"chatChatUrl" yaml:"chatChatUrl"`
+	ChatChatControllerAddress string  `mapstructure:"chatChatControllerAddress" json:"chatChatControllerAddress" yaml:"chatChatControllerAddress"`
 }
 
 type System struct {

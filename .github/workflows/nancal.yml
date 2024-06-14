@@ -28,7 +28,7 @@ jobs:
         run: ENV=dp make compile_agent_linux
 
       - name: make ui
-        run: make compile_ui_demo
+        run: make compile_ui_nancal
 
       - name: copy files
         run:  |

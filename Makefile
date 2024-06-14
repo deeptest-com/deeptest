@@ -88,6 +88,8 @@ compile_ui_web:
 	@cd ../leyanapi-frontend && yarn build:web --dest ../leyanapi-backend/client/ui && cd ../leyanapi-backend
 compile_ui_demo:
 	@cd ../deeptest-ui && yarn build:demo --dest ../deeptest/client/ui && cd ../deeptest
+compile_ui_nancal:
+	@cd ../deeptest-ui && yarn build:nancal --dest ../deeptest/client/ui && cd ../deeptest
 
 compile_ui_client:
 	@rm -rf client/ui && cd ../leyanapi-frontend && yarn build:client --dest ../leyanapi-backend/client/ui && cd ..

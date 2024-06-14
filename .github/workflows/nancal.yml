@@ -3,9 +3,9 @@ name: nancal site deploy
 on:
   workflow_dispatch
   # pull_request:
-#   branches: [ "main" ]
-# push:
-#   branches: [ "main" ]
+  #   branches: [ "main" ]
+  # push:
+  #   branches: [ "main" ]
 
 jobs:
   build-and-deploy:

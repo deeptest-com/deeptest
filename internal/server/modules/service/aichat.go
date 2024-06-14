@@ -3,20 +3,29 @@ package service
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	"github.com/kataras/iris/v12"
 	"net/http"
+	"strings"
 )
 
 type AiChatService struct {
 }
 
 func (s *AiChatService) KnowledgeBaseChat(req v1.KnowledgeBaseChatReq, flusher http.Flusher, ctx iris.Context) (ret _domain.PageData, err error) {
-	url := _httpUtils.AddSepIfNeeded(config.CONFIG.ChatChatUrl) + "chat/knowledge_base_chat"
+	if strings.TrimSpace(req.Query) == "小乐" {
+		str := fmt.Sprintf(`data: {"answer": "您好，有什么可以帮助您的？"}`)
 
+		ctx.Writef("%s\n\n", str)
+		flusher.Flush()
+		return
+	}
+
+	url := _httpUtils.AddSepIfNeeded(config.CONFIG.ChatChatUrl) + "chat/knowledge_base_chat"
 	bts, err := json.Marshal(req)
 
 	reader := bytes.NewReader(bts)

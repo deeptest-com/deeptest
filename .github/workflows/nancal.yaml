@@ -12,14 +12,14 @@ jobs:
     runs-on: self-hosted
     defaults:
       run:
-        working-directory: /rd/project/deeptest
+        working-directory: /home/nancal/rd/project/deeptest
     steps:
       - name: checkout backend codes
         run: git pull
 
       - name: checkout frontend codes
         run: git pull
-        working-directory: /rd/project/deeptest-ui
+        working-directory: /home/nancal/rd/project/deeptest-ui
 
       - name: make server
         run: ENV=dp make compile_server_linux
@@ -32,16 +32,16 @@ jobs:
 
       - name: copy files
         run:  |
-          mkdir -p /rd/server
-          cp -f bin/linux/deeptest-server /rd/server/
-          cp -f client/bin/linux/deeptest-agent /rd/server/
+          mkdir -p /home/nancal/rd/server
+          cp -f bin/linux/deeptest-server /home/nancal/rd/server/
+          cp -f client/bin/linux/deeptest-agent /home/nancal/rd/server/
           
-          rm -rf /rd/server/deeptest-ui
-          cp -fr client/ui /rd/server/deeptest-ui
+          rm -rf /home/nancal/rd/server/deeptest-ui
+          cp -fr client/ui /home/nancal/rd/server/deeptest-ui
 
       - name: start service
         run:  |
           ps -ef | grep 'deeptest-' | grep -v grep | awk '{print $2}' | xargs --no-run-if-empty kill -9
-          cd /rd/server
+          cd /home/nancal/rd/server
           RUNNER_TRACKING_ID="" && nohup ./deeptest-server > server.log 2>&1 &
           RUNNER_TRACKING_ID="" && nohup ./deeptest-agent > agent.log 2>&1 &

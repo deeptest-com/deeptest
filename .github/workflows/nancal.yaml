@@ -1,4 +1,4 @@
-name: demo site deploy
+name: nancal site deploy
 
 on:
   workflow_dispatch
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: self-hosted
+    runs-on: nancal
     defaults:
       run:
         working-directory: /home/nancal/rd/project/deeptest

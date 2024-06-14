@@ -89,6 +89,8 @@ git push -f github dt:main
 git push -f github feature/chenqi99/var_in_params:feature/chenqi99/var_in_params
 git push -f github feature/chenqi99/openai:feature/chenqi99/openai
 
+git pull github feature/chenqi99/openai
+
 # 打包命令
 ENV=dp rm -rf bin && make default
 

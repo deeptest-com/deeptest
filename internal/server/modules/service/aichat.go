@@ -17,6 +17,7 @@ type AiChatService struct {
 }
 
 func (s *AiChatService) KnowledgeBaseChat(req v1.KnowledgeBaseChatReq, flusher http.Flusher, ctx iris.Context) (ret _domain.PageData, err error) {
+	//req.KnowledgeBaseName = "samples"
 	if strings.TrimSpace(req.Query) == "小乐" {
 		str := fmt.Sprintf(`data: {"answer": "您好，有什么可以帮助您的？"}`)
 

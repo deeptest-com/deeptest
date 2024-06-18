@@ -352,7 +352,7 @@ func (r *PlanRepo) PlanScenariosPaginate(tenantId consts.TenantId, req v1.PlanSc
 	var count int64
 
 	db := r.GetDB(tenantId).Model(&model.Scenario{}).
-		Select("biz_scenario.*, c.name category_name,r.id ref_id").
+		Select("biz_scenario.*, if(c.name  is not null,c.name,'未分类') category_name,r.id ref_id").
 		Joins("LEFT JOIN biz_plan_scenario_r r ON biz_scenario.id=r.scenario_id").
 		Joins("LEFT JOIN biz_category c ON biz_scenario.category_id=c.id").
 		Where("r.plan_id = ? AND NOT biz_scenario.deleted AND NOT r.deleted", planId)

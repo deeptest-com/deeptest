@@ -75,6 +75,35 @@ func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireMod
 		if err != nil {
 			logUtils.Errorf(err.Error())
 		}
+		/*
+				x := module.Export()
+				fmt.Println(x)
+
+				for key, item := range x.(map[string]interface{}) {
+					a := item.(func(goja.FunctionCall) goja.Value)
+					println(a)
+
+					fun := runtime.Get(key).Export()
+					t := reflect.TypeOf(fun)
+
+					// 输出函数参数的数量和它们的类型
+					for i := 0; i < t.NumIn(); i++ {
+						fmt.Println("Input", i, ":", t.In(i))
+					}
+
+					// 输出函数返回值的数量和它们的类型
+					for i := 0; i < t.NumOut(); i++ {
+						fmt.Println("Output", i, ":", t.Out(i))
+					}
+				}
+
+
+			x := runtime.Get("exports").Export()
+
+			obj := runtime.ToValue(x)
+			y := obj.Export()
+			fmt.Println(y)
+		*/
 
 		logUtils.Infof("更新第三方库，projectId：%v,id:%v,lib.Name:%v", projectId, lib.Id, lib.Name)
 	}

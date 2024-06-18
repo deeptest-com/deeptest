@@ -21,6 +21,10 @@ func (m *SnippetModule) Party() module.WebModule {
 		index.Get("/listJslibNames", m.SnippetCtrl.ListJslibNames).Name = "获取所有自定义库名称"
 		index.Get("/getJslibs", m.SnippetCtrl.GetJslibs).Name = "获取用户自定义脚本库"
 		index.Post("/getJslibsForAgent", m.SnippetCtrl.GetJslibsForAgent).Name = "获取用户自定义脚本库"
+		index.Get("/listVar", m.SnippetCtrl.ListVar).Name = "获取变量列表"
+		index.Get("/listMock", m.SnippetCtrl.ListMock).Name = "获取mock规则"
+		index.Get("/listSysFunc", m.SnippetCtrl.ListSysFunc).Name = "获取系统函数"
+
 	}
 	return module.NewModule("/snippets", handler)
 }

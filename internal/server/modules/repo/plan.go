@@ -167,7 +167,7 @@ func (r *PlanRepo) Create(tenantId consts.TenantId, scenario model.Plan) (ret mo
 		return
 	}
 
-	err = r.UpdateSerialNumber(tenantId, scenario.ID, scenario.ProjectId)
+	scenario.SerialNumber, err = r.UpdateSerialNumber(tenantId, scenario.ID, scenario.ProjectId)
 	if err != nil {
 		logUtils.Errorf("add plan serial number error", zap.String("error:", err.Error()))
 		bizErr = &_domain.BizErr{Code: _domain.SystemErr.Code}
@@ -182,14 +182,15 @@ func (r *PlanRepo) Create(tenantId consts.TenantId, scenario model.Plan) (ret mo
 
 func (r *PlanRepo) Update(tenantId consts.TenantId, req model.Plan) error {
 	values := map[string]interface{}{
-		"name":           req.Name,
-		"desc":           req.Desc,
-		"status":         req.Status,
-		"admin_id":       req.AdminId,
+		"name":   req.Name,
+		"desc":   req.Desc,
+		"status": req.Status,
+		//		"admin_id":       req.AdminId,  负责人不支持修改
 		"category_id":    req.CategoryId,
 		"test_stage":     req.TestStage,
 		"update_user_id": req.UpdateUserId,
 		"disabled":       req.Disabled,
+		"deleted":        req.Deleted,
 	}
 	err := r.GetDB(tenantId).Model(&req).Where("id = ?", req.ID).Updates(values).Error
 	if err != nil {
@@ -315,14 +316,17 @@ func (r *PlanRepo) RemoveScenarios(tenantId consts.TenantId, planId int, scenari
 	return
 }
 
-func (r *PlanRepo) UpdateSerialNumber(tenantId consts.TenantId, id, projectId uint) (err error) {
+func (r *PlanRepo) UpdateSerialNumber(tenantId consts.TenantId, id, projectId uint) (number string, err error) {
 	var project model.Project
 	project, err = r.ProjectRepo.Get(tenantId, projectId)
 	if err != nil {
 		return
 	}
 
-	err = r.GetDB(tenantId).Model(&model.Plan{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TP-"+strconv.Itoa(int(id))).Error
+	number = project.ShortName + "-TP-" + strconv.Itoa(int(id))
+
+	err = r.GetDB(tenantId).Model(&model.Plan{}).Where("id=?", id).Update("serial_number", number).Error
+
 	return
 }
 

@@ -2,18 +2,19 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	integrationService "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"strings"
-
 	"github.com/kataras/iris/v12"
 	"go.uber.org/zap"
+	"strings"
 )
 
 type PlanReportCtrl struct {
-	ReportService *service.PlanReportService `inject:""`
+	ReportService            *service.PlanReportService        `inject:""`
+	IntegrationReportService *integrationService.ReportService `inject:""`
 	BaseCtrl
 }
 
@@ -101,6 +102,12 @@ func (c *PlanReportCtrl) Delete(ctx iris.Context) {
 	}
 
 	err = c.ReportService.DeleteById(tenantId, req.Id)
+
+	if ctx.Method() == "DELETE" {
+		//同步乐研
+		go c.IntegrationReportService.DeleteReport(tenantId, req.Id)
+	}
+
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

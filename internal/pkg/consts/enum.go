@@ -715,6 +715,7 @@ type TestStatus string
 const (
 	Draft     TestStatus = "draft"      //草稿
 	Disabled  TestStatus = "disabled"   //已禁用
+	Submitted TestStatus = "submitted"  //已提交
 	ToExecute TestStatus = "to_execute" //待执行
 	Executed  TestStatus = "executed"   //已执行
 )

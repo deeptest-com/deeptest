@@ -168,7 +168,7 @@ func updateManagerAccount(tenantId consts.TenantId) {
 			}
 			sqls := []string{
 				fmt.Sprintf("update sys_user set  username = '%d',name = '%s',email = '%s'  where id = 2 and  name = 'sys'", info.ManagerId, info.ManagerName, info.ManagerMail),
-				fmt.Sprintf("update biz_endpoint set  create_user = '%d',create_user = '%d'  where project_id = 1 and create_user = 'sys'", info.ManagerId, info.ManagerId),
+				fmt.Sprintf("update biz_endpoint set  create_user = '%d',update_user = '%d'  where project_id = 1 and create_user = 'sys'", info.ManagerId, info.ManagerId),
 				fmt.Sprintf("update biz_scenario set  create_user_name = '%d'  where project_id = 1 and create_user_name = 'sys'", info.ManagerId),
 			}
 			for _, sql := range sqls {

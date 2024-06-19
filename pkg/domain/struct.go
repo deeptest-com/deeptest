@@ -12,7 +12,8 @@ type Model struct {
 }
 
 type ReqId struct {
-	Id uint `json:"id" param:"id"`
+	IsLy bool `json:"isLy"`
+	Id   uint `json:"id" param:"id"`
 }
 
 type PaginateReq struct {

@@ -132,7 +132,8 @@ func (s *SnippetService) ListMock(tenantId consts.TenantId) (res []serverDomain.
 
 func (s *SnippetService) ListSysFunc() (res []serverDomain.SnippetRes) {
 	for _, item := range agentExec.SysFuncList {
-		res = append(res, serverDomain.SnippetRes{Label: item.Label, Value: item.Value, Desc: item.Desc})
+		expression := fmt.Sprintf("${%s}", item.Value)
+		res = append(res, serverDomain.SnippetRes{Label: item.Label, Value: expression, Desc: item.Desc})
 	}
 
 	return

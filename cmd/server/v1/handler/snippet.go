@@ -125,3 +125,14 @@ func (c *SnippetCtrl) ListSysFunc(ctx iris.Context) {
 	list := c.SnippetService.ListSysFunc()
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: list, Msg: _domain.NoErr.Msg})
 }
+
+func (c *SnippetCtrl) ListCustomFunc(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+	list := c.SnippetService.ListCustomFunc(tenantId, uint(projectId))
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: list, Msg: _domain.NoErr.Msg})
+}

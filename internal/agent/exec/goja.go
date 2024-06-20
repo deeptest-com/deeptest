@@ -218,6 +218,7 @@ func defineGoFuncs(session *ExecSession) {
 	}
 
 	err = session.GojaRuntime.ExportTo(session.GojaRuntime.Get("_setData"), &session.GojaSetValueFunc)
+
 }
 
 func GenerateGojaRuntime() (execRuntime *goja.Runtime, execRequire *require.RequireModule) {

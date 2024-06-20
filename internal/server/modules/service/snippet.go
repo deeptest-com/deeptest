@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	jslibHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
+	mockHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/mock"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
@@ -137,4 +138,25 @@ func (s *SnippetService) ListSysFunc() (res []serverDomain.SnippetRes) {
 	}
 
 	return
+}
+
+func (s *SnippetService) ListCustomFunc(tenantId consts.TenantId, projectId uint) (res []serverDomain.SnippetRes) {
+	mockHelper.InitJsRuntime(tenantId, projectId)
+
+	libs, _ := s.JslibRepo.List(tenantId, "", int(projectId), true)
+	for _, item := range libs {
+
+		jslib := jslibHelper.GetJslibCache(tenantId, item.ID)
+
+		//lib := serverDomain.SnippetRes{Label: item.Name, Key: fmt.Sprintf("%d", item.ID)}
+		for _, function := range jslib.Functions {
+			functionName := fmt.Sprintf("%s(%s)", function.Name, function.Args)
+			expression := fmt.Sprintf("${%s.%s}", item.Name, functionName)
+			res = append(res, serverDomain.SnippetRes{Label: functionName, Value: expression, Desc: item.Name})
+		}
+		//res = append(res, lib)
+
+	}
+
+	return res
 }

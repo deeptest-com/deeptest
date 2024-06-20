@@ -115,7 +115,7 @@ func (s *MockAdvanceService) ByScript(tenantId consts.TenantId, endpoint model.E
 		return
 	}
 
-	mockHelper.InitJsRuntime(tenantId)
+	mockHelper.InitJsRuntime(tenantId, endpoint.ProjectId)
 	mockHelper.SetReqValueToGoja(req)
 	mockHelper.SetRespValueToGoja(*resp)
 	mockHelper.ExecScript(script.Content)

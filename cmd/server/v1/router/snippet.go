@@ -24,6 +24,7 @@ func (m *SnippetModule) Party() module.WebModule {
 		index.Get("/listVar", m.SnippetCtrl.ListVar).Name = "获取变量列表"
 		index.Get("/listMock", m.SnippetCtrl.ListMock).Name = "获取mock规则"
 		index.Get("/listSysFunc", m.SnippetCtrl.ListSysFunc).Name = "获取系统函数"
+		index.Get("/ListCustomFunc", m.SnippetCtrl.ListCustomFunc).Name = "创建代码片段"
 
 	}
 	return module.NewModule("/snippets", handler)

@@ -132,6 +132,7 @@ func (s *SnippetService) ListMock(tenantId consts.TenantId) (res []serverDomain.
 }
 
 func (s *SnippetService) ListSysFunc() (res []serverDomain.SnippetRes) {
+
 	for _, item := range agentExec.SysFuncList {
 		expression := fmt.Sprintf("${%s}", item.Value)
 		res = append(res, serverDomain.SnippetRes{Label: item.Label, Value: expression, Desc: item.Desc})
@@ -141,21 +142,17 @@ func (s *SnippetService) ListSysFunc() (res []serverDomain.SnippetRes) {
 }
 
 func (s *SnippetService) ListCustomFunc(tenantId consts.TenantId, projectId uint) (res []serverDomain.SnippetRes) {
+	res = make([]serverDomain.SnippetRes, 0)
 	mockHelper.InitJsRuntime(tenantId, projectId)
 
 	libs, _ := s.JslibRepo.List(tenantId, "", int(projectId), true)
 	for _, item := range libs {
-
 		jslib := jslibHelper.GetJslibCache(tenantId, item.ID)
-
-		//lib := serverDomain.SnippetRes{Label: item.Name, Key: fmt.Sprintf("%d", item.ID)}
 		for _, function := range jslib.Functions {
 			functionName := fmt.Sprintf("%s(%s)", function.Name, function.Args)
 			expression := fmt.Sprintf("${%s.%s}", item.Name, functionName)
 			res = append(res, serverDomain.SnippetRes{Label: functionName, Value: expression, Desc: item.Name})
 		}
-		//res = append(res, lib)
-
 	}
 
 	return res

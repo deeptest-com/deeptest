@@ -17,8 +17,8 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 
 	// Judgement 表达式
 	if checkpoint.Type == consts.Judgement {
-		boolResult, variablesArr, err1 := computerExpr(checkpoint.Expression, session)
-		checkpoint.Variables = getVariableArrDesc(variablesArr)
+		boolResult, _, err1 := computerExpr(checkpoint.Expression, session)
+		//checkpoint.Variables = getVariableArrDesc(variablesArr)
 		checkpoint.ActualResult = fmt.Sprintf("%v", boolResult)
 
 		if err1 != nil {
@@ -38,8 +38,9 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 	}
 
 	// 计算表达式
-	checkpointValue, variablesArr, err := computerExpr(checkpoint.Value, session)
-	checkpoint.Variables = getVariableArrDesc(variablesArr)
+	checkpointValue := ReplaceVariableValue(checkpoint.Value, session) //非表达试，支持${abc}abc
+	//checkpointValue, variablesArr, err := computerExpr(checkpoint.Value, session)
+	//checkpoint.Variables = getVariableArrDesc(variablesArr)
 	checkpointValue = _stringUtils.InterfToStr(checkpointValue)
 
 	// Response ResultStatus

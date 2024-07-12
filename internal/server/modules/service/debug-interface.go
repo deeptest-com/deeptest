@@ -555,8 +555,10 @@ func (s *DebugInterfaceService) LoadCurl(tenantId consts.TenantId, req serverDom
 	// replace variables
 	uuid := fmt.Sprintf("load_curl_on_server_side_user%d_%s", req.UserId, _stringUtils.Uuid())
 	session := agentExec.ExecSession{
-		ExecUuid:  uuid,
-		ExecScene: execObj.ExecScene,
+		ExecUuid:       uuid,
+		ExecScene:      execObj.ExecScene,
+		InterfaceDebug: new(agentExec.InterfaceDebugSession),
+		ScenarioDebug:  new(agentExec.ScenarioDebugSession),
 	}
 	agentExec.ReplaceVariables(&execObj.DebugData.BaseRequest, &session)
 

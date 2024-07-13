@@ -49,6 +49,7 @@ BUILD_CMD_UNIX=go build -ldflags "-X 'main.AppVersion=${VERSION}' -X 'main.Build
 BUILD_CMD_WIN=go build -ldflags "-s -w -X 'main.AppVersion=${VERSION}' -X 'main.BuildTime=${BUILD_TIME}' -X 'main.GoVersion=${GO_VERSION}' -X 'main.GitHash=${GIT_HASH}'"
 
 default: compile_ui_web win64 win32 linux mac
+server: compile_server_win64 compile_server_win32 compile_server_linux compile_server_mac copy_server
 
 # 非客户端版本打包，更新客户端需先运行 make compile_ui_client
 win64: prepare compile_agent_win64 compile_server_win64 zip_web_win64
@@ -392,6 +393,11 @@ upload_to:
 	@qshell qupload2 --src-dir=${QINIU_DIR} --bucket=download --thread-count=10 --log-file=qshell.log \
 					 --skip-path-prefixes=ztf,zd,zv,zmanager,driver --rescan-local --overwrite --check-hash
 
+copy_server:
+	@cp bin/win64/${PROJECT}-server.exe ${QINIU_DIST_DIR}win64/
+	@cp bin/win32/${PROJECT}-server.exe ${QINIU_DIST_DIR}win32/
+	@cp bin/linux/${PROJECT}-server ${QINIU_DIST_DIR}linux/
+	@cp bin/darwin/${PROJECT}-server ${QINIU_DIST_DIR}darwin/
 
 DEMO_BIN=/home/lighthouse/rd/server/deeptest
 

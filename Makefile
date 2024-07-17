@@ -48,27 +48,26 @@ GIT_HASH=`git show -s --format=%H`
 BUILD_CMD_UNIX=go build -ldflags "-X 'main.AppVersion=${VERSION}' -X 'main.BuildTime=${BUILD_TIME}' -X 'main.GoVersion=${GO_VERSION}' -X 'main.GitHash=${GIT_HASH}'"
 BUILD_CMD_WIN=go build -ldflags "-s -w -X 'main.AppVersion=${VERSION}' -X 'main.BuildTime=${BUILD_TIME}' -X 'main.GoVersion=${GO_VERSION}' -X 'main.GitHash=${GIT_HASH}'"
 
-default: compile_ui_web win64 win32 linux mac
-server: compile_server_win64 compile_server_win32 compile_server_linux compile_server_mac copy_server
+default: compile_ui_web win64-web win32-web linux-web mac-web
 
-# 非客户端版本打包，更新客户端需先运行 make compile_ui_client
-win64: prepare compile_agent_win64 compile_server_win64 zip_web_win64
-win32: prepare compile_agent_win32 compile_server_win32 zip_web_win32
-linux: prepare compile_agent_linux compile_server_linux zip_web_linux
-mac:   prepare compile_agent_mac   compile_server_mac   zip_web_mac
+# 非客户端版本打包，需先运行 make compile_ui_web
+win64-web: prepare compile_agent_win64 compile_server_win64 zip_win64_web
+win32-web: prepare compile_agent_win32 compile_server_win32 zip_win32_web
+linux-web: prepare compile_agent_linux compile_server_linux zip_linux_web
+mac-web:   prepare compile_agent_mac   compile_server_mac   zip_mac_web
 
-# 客户端版本打包
-dp-win64: prepare build_gui_win64 compile_launcher_win64 compile_server_win64 copy_files_win64 zip_win64 zip_win64_upgrade
-dp-win32: prepare build_gui_win32 compile_launcher_win32 compile_server_win32 copy_files_win32 zip_win32 zip_win32_upgrade
-dp-linux: prepare build_gui_linux                        compile_server_linux copy_files_linux zip_linux zip_linux_upgrade
-dp-mac:   prepare build_gui_mac        					 compile_server_mac   copy_files_mac   zip_mac zip_mac_upgrade
-dp-mac-test: compile_ui_client_test build_gui_mac
+# 客户端版本打包，需先运行 make compile_ui_<target>
+dp-win64-client: prepare build_gui_win64 compile_launcher_win64 compile_server_win64 copy_files_win64 zip_win64_client zip_win64_upgrade
+dp-win32-client: prepare build_gui_win32 compile_launcher_win32 compile_server_win32 copy_files_win32 zip_win32_client zip_win32_upgrade
+dp-linux-client: prepare build_gui_linux                        compile_server_linux copy_files_linux zip_linux_client zip_linux_upgrade
+dp-mac-client:   prepare build_gui_mac        					 compile_server_mac   copy_files_mac   zip_mac_client zip_mac_upgrade
+dp-mac-test-client: compile_ui_client_test build_gui_mac
 
 # 乐研 打包
-ly-win64: prepare compile_ly_ui_client build_gui_win64 compile_ly_launcher_win64 compile_server_win64 copy_files_win64 zip_win64 zip_win64_upgrade
-ly-win32: prepare compile_ly_ui_client build_gui_win32 compile_ly_launcher_win32 compile_server_win32 copy_files_win32 zip_win32 zip_win32_upgrade
-ly-linux: prepare compile_ly_ui_client build_gui_linux                        compile_server_linux copy_files_linux zip_linux zip_linux_upgrade
-ly-mac:   prepare compile_ly_ui_client build_gui_mac                          compile_server_mac   copy_files_mac   zip_mac zip_mac_upgrade
+ly-win64-client: prepare compile_ly_ui_client build_gui_win64 compile_ly_launcher_win64 compile_server_win64 copy_files_win64 zip_win64_client zip_win64_upgrade
+ly-win32-client: prepare compile_ly_ui_client build_gui_win32 compile_ly_launcher_win32 compile_server_win32 copy_files_win32 zip_win32_client zip_win32_upgrade
+ly-linux-client: prepare compile_ly_ui_client build_gui_linux                        compile_server_linux copy_files_linux zip_linux_client zip_linux_upgrade
+ly-mac-client:   prepare compile_ly_ui_client build_gui_mac                          compile_server_mac   copy_files_mac   zip_mac_client zip_mac_upgrade
 
 prepare: init_client_project update_version
 
@@ -85,20 +84,20 @@ gen_version_file:
 
 compile_ui:
 	@cd ui && yarn build --dest ../client/ui && cd ..
-compile_ui_web:
-	@cd ../leyanapi-frontend && yarn build:web --dest ../leyanapi-backend/client/ui && cd ../leyanapi-backend
-compile_ui_demo:
+compile_ui_demo: # DeepTest测试
 	@cd ../deeptest-ui && yarn build:demo --dest ../deeptest/client/ui && cd ../deeptest
-compile_ui_nancal:
+compile_ui_nancal: # 内网测试
 	@cd ../deeptest-ui && yarn build:nancal --dest ../deeptest/client/ui && cd ../deeptest
-
 compile_ui_client:
 	@rm -rf client/ui && cd ../leyanapi-frontend && yarn build:client --dest ../leyanapi-backend/client/ui && cd ..
 compile_ui_client_test:
 	@rm -rf client/ui && cd ../leyanapi-frontend && yarn build:clientTest --dest ../leyanapi-backend/client/ui && cd ..
-
 compile_ly_ui_client:
 	@cd ../leyanapi-frontend  && yarn build:client && cd ../leyanapi-backend
+
+
+compile_ui_web:
+	@cd ../leyanapi-frontend && yarn build:web --dest ../leyanapi-backend/bin/deeptest-ui && cd ../leyanapi-backend
 
 # launcher
 compile_launcher_win64:
@@ -249,15 +248,15 @@ copy_files_mac:
 	@echo 'start copy files darwin'
 
 # zip web files
-zip_web_win64:
+zip_win64_web:
 	@echo 'start zip win64'
 	@find . -name .DS_Store -print0 | xargs -0 rm -f
 	@mkdir -p ${QINIU_DIST_DIR}win64 && rm -rf ${QINIU_DIST_DIR}win64/${PROJECT}-web.zip
 
 	@cp -rf config ${BIN_DIR}win64/
 	@cp -rf ${CLIENT_BIN_DIR}win32/deeptest-agent.exe ${BIN_DIR}win64/
-	@rm -rf ${BIN_DIR}win64/deeptest-ui && mkdir ${BIN_DIR}win64/deeptest-ui
-	@cp -rf client/ui/* ${BIN_DIR}win64/deeptest-ui
+	@rm -rf ${BIN_DIR}win64/deeptest-ui
+	@cp -rf bin/deeptest-ui ${BIN_DIR}win64
 
 	@cd ${BIN_DIR}win64/ && \
 		zip -ry ${QINIU_DIST_DIR}win64/${PROJECT}-web.zip ./* && \
@@ -265,15 +264,15 @@ zip_web_win64:
 			xargs echo > ${QINIU_DIST_DIR}win64/${PROJECT}-web.zip.md5 && \
         cd ../..; \
 
-zip_web_win32:
+zip_win32_web:
 	@echo 'start zip win32'
 	@find . -name .DS_Store -print0 | xargs -0 rm -f
 	@mkdir -p ${QINIU_DIST_DIR}win32 && rm -rf ${QINIU_DIST_DIR}win32/${PROJECT}-web.zip
 
 	@cp -rf config ${BIN_DIR}win32/
 	@cp -rf ${CLIENT_BIN_DIR}win32/deeptest-agent.exe ${BIN_DIR}win32/
-	@rm -rf ${BIN_DIR}win32/deeptest-ui && mkdir ${BIN_DIR}win32/deeptest-ui
-	@cp -rf client/ui/* ${BIN_DIR}win32/deeptest-ui
+	@rm -rf ${BIN_DIR}win32/deeptest-ui
+	@cp -rf bin/deeptest-ui ${BIN_DIR}win32
 
 	@cd ${BIN_DIR}win32/ && \
 		zip -ry ${QINIU_DIST_DIR}win32/${PROJECT}-web.zip ./* && \
@@ -281,15 +280,15 @@ zip_web_win32:
 			xargs echo > ${QINIU_DIST_DIR}win32/${PROJECT}-web.zip.md5 && \
         cd ../..; \
 
-zip_web_linux:
+zip_linux_web:
 	@echo 'start zip linux'
 	@find . -name .DS_Store -print0 | xargs -0 rm -f
 	@mkdir -p ${QINIU_DIST_DIR}linux && rm -rf ${QINIU_DIST_DIR}linux/${PROJECT}-web.zip
 
 	@cp -rf config ${BIN_DIR}linux/
 	@cp -rf ${CLIENT_BIN_DIR}linux/deeptest-agent ${BIN_DIR}linux/
-	@rm -rf ${BIN_DIR}linux/deeptest-ui && mkdir ${BIN_DIR}linux/deeptest-ui
-	@cp -rf client/ui/* ${BIN_DIR}linux/deeptest-ui
+	@rm -rf ${BIN_DIR}linux/deeptest-ui
+	@cp -rf bin/deeptest-ui ${BIN_DIR}linux
 
 	@cd ${BIN_DIR}linux/ && \
 		zip -ry ${QINIU_DIST_DIR}linux/${PROJECT}-web.zip ./* && \
@@ -297,15 +296,15 @@ zip_web_linux:
 			xargs echo > ${QINIU_DIST_DIR}linux/${PROJECT}-web.zip.md5 && \
         cd ../..; \
 
-zip_web_mac:
+zip_mac_web:
 	@echo 'start zip darwin'
 	@find . -name .DS_Store -print0 | xargs -0 rm -f
 	@mkdir -p ${QINIU_DIST_DIR}darwin && rm -rf ${QINIU_DIST_DIR}darwin/${PROJECT}-web.zip
 
 	@cp -rf config ${BIN_DIR}darwin/
 	@cp -rf ${CLIENT_BIN_DIR}darwin/deeptest-agent ${BIN_DIR}darwin/
-	@rm -rf ${BIN_DIR}darwin/deeptest-ui && mkdir ${BIN_DIR}darwin/deeptest-ui
-	@cp -rf client/ui/* ${BIN_DIR}darwin/deeptest-ui
+	@rm -rf ${BIN_DIR}darwin/deeptest-ui
+	@cp -rf bin/deeptest-ui ${BIN_DIR}darwin
 
 	@cd ${BIN_DIR}darwin/ && \
 		zip -ry ${QINIU_DIST_DIR}darwin/${PROJECT}-web.zip ./* && \
@@ -314,44 +313,44 @@ zip_web_mac:
         cd ../..; \
 
 # zip client files
-zip_win64:
+zip_win64_client:
 	@echo 'start zip win64'
 	@find . -name .DS_Store -print0 | xargs -0 rm -f
-	@mkdir -p ${QINIU_DIST_DIR}win64 && rm -rf ${QINIU_DIST_DIR}win64/${PROJECT}.zip
+	@mkdir -p ${QINIU_DIST_DIR}win64 && rm -rf ${QINIU_DIST_DIR}win64/${PROJECT}-client.zip
 	@cd ${CLIENT_OUT_DIR_EXECUTABLE}win64 && \
-		zip -ry ${QINIU_DIST_DIR}win64/${PROJECT}.zip ./* && \
-		md5sum ${QINIU_DIST_DIR}win64/${PROJECT}.zip | awk '{print $$1}' | \
-			xargs echo > ${QINIU_DIST_DIR}win64/${PROJECT}.zip.md5 && \
+		zip -ry ${QINIU_DIST_DIR}win64/${PROJECT}-client.zip ./* && \
+		md5sum ${QINIU_DIST_DIR}win64/${PROJECT}-client.zip | awk '{print $$1}' | \
+			xargs echo > ${QINIU_DIST_DIR}win64/${PROJECT}-client.zip.md5 && \
         cd ../../..; \
 
-zip_win32:
+zip_win32_client:
 	@echo 'start zip win32'
 	@find . -name .DS_Store -print0 | xargs -0 rm -f
-	@mkdir -p ${QINIU_DIST_DIR}win32 && rm -rf ${QINIU_DIST_DIR}win32/${PROJECT}.zip
+	@mkdir -p ${QINIU_DIST_DIR}win32 && rm -rf ${QINIU_DIST_DIR}win32/${PROJECT}-client.zip
 	@cd ${CLIENT_OUT_DIR_EXECUTABLE}win32 && \
-		zip -ry ${QINIU_DIST_DIR}win32/${PROJECT}.zip ./* && \
-		md5sum ${QINIU_DIST_DIR}win32/${PROJECT}.zip | awk '{print $$1}' | \
-			xargs echo > ${QINIU_DIST_DIR}win32/${PROJECT}.zip.md5 && \
+		zip -ry ${QINIU_DIST_DIR}win32/${PROJECT}-client.zip ./* && \
+		md5sum ${QINIU_DIST_DIR}win32/${PROJECT}-client.zip | awk '{print $$1}' | \
+			xargs echo > ${QINIU_DIST_DIR}win32/${PROJECT}-client.zip.md5 && \
         cd ../../..; \
 
-zip_linux:
+zip_linux_client:
 	@echo 'start zip linux'
 	@find . -name .DS_Store -print0 | xargs -0 rm -f
-	@mkdir -p ${QINIU_DIST_DIR}linux && rm -rf ${QINIU_DIST_DIR}linux/${PROJECT}.zip
+	@mkdir -p ${QINIU_DIST_DIR}linux && rm -rf ${QINIU_DIST_DIR}linux/${PROJECT}-client.zip
 	@cd ${CLIENT_OUT_DIR_EXECUTABLE}linux && \
-		zip -ry ${QINIU_DIST_DIR}linux/${PROJECT}.zip ./* && \
-		md5sum ${QINIU_DIST_DIR}linux/${PROJECT}.zip | awk '{print $$1}' | \
-			xargs echo > ${QINIU_DIST_DIR}linux/${PROJECT}.zip.md5 && \
+		zip -ry ${QINIU_DIST_DIR}linux/${PROJECT}-client.zip ./* && \
+		md5sum ${QINIU_DIST_DIR}linux/${PROJECT}-client.zip | awk '{print $$1}' | \
+			xargs echo > ${QINIU_DIST_DIR}linux/${PROJECT}-client.zip.md5 && \
         cd ../../..; \
 
-zip_mac:
+zip_mac_client:
 	@echo 'start zip darwin'
 	@find . -name .DS_Store -print0 | xargs -0 rm -f
-	@mkdir -p ${QINIU_DIST_DIR}darwin && rm -rf ${QINIU_DIST_DIR}darwin/${PROJECT}.zip
+	@mkdir -p ${QINIU_DIST_DIR}darwin && rm -rf ${QINIU_DIST_DIR}darwin/${PROJECT}-client.zip
 	@cd ${CLIENT_OUT_DIR_EXECUTABLE}darwin && \
-		zip -ry ${QINIU_DIST_DIR}darwin/${PROJECT}.zip ./* && \
-		md5sum ${QINIU_DIST_DIR}darwin/${PROJECT}.zip | awk '{print $$1}' | \
-			xargs echo > ${QINIU_DIST_DIR}darwin/${PROJECT}.zip.md5 && \
+		zip -ry ${QINIU_DIST_DIR}darwin/${PROJECT}-client.zip ./* && \
+		md5sum ${QINIU_DIST_DIR}darwin/${PROJECT}-client.zip | awk '{print $$1}' | \
+			xargs echo > ${QINIU_DIST_DIR}darwin/${PROJECT}-client.zip.md5 && \
         cd ../../..; \
 
 # zip upgrade package
@@ -393,11 +392,17 @@ upload_to:
 	@qshell qupload2 --src-dir=${QINIU_DIR} --bucket=download --thread-count=10 --log-file=qshell.log \
 					 --skip-path-prefixes=ztf,zd,zv,zmanager,driver --rescan-local --overwrite --check-hash
 
-copy_server:
+zip_server:
 	@cp bin/win64/${PROJECT}-server.exe ${QINIU_DIST_DIR}win64/
+
 	@cp bin/win32/${PROJECT}-server.exe ${QINIU_DIST_DIR}win32/
 	@cp bin/linux/${PROJECT}-server ${QINIU_DIST_DIR}linux/
-	@cp bin/darwin/${PROJECT}-server ${QINIU_DIST_DIR}darwin/
+
+	# zip -r /Users/aaron/work/qiniu/deeptest/3.0/darwin/deeptest-server.zip config bin/deeptest-ui bin/darwin/deeptest-server
+	@zip -ry ${QINIU_DIST_DIR}darwin/${PROJECT}-server.zip \
+			bin/darwin/${PROJECT}-server config client/ui && \
+		md5sum ${QINIU_DIST_DIR}darwin/${PROJECT}-upgrade.zip | awk '{print $$1}' | \
+			xargs echo > ${QINIU_DIST_DIR}darwin/${PROJECT}-upgrade.zip.md5 && \
 
 DEMO_BIN=/home/lighthouse/rd/server/deeptest
 

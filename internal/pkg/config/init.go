@@ -13,6 +13,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/snowlyg/helper/dir"
 	"github.com/spf13/viper"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -117,7 +118,9 @@ func Init() {
 		casbinRes := path.Join("res", consts.CasbinFileName)
 		yamlDefault, err := deeptest.ReadResData(casbinRes)
 		if err != nil {
-			panic(fmt.Errorf("failed to read casbin rbac_model.conf from res: %s", err.Error()))
+			panic(fmt.Errorf("failed to read casbin rbac_model.conf from res: %s\n", err.Error()))
+		} else {
+			log.Printf("success to read casbin rbac_model.conf from res path %s\n", casbinRes)
 		}
 
 		err = _fileUtils.WriteFile(casbinPath, string(yamlDefault))

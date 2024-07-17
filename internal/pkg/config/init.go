@@ -78,7 +78,7 @@ func Init() {
 	// server config
 	serverConfigPath := filepath.Join(consts.WorkDir, consts.ServerConfigFileName)
 	if !dir.IsExist(serverConfigPath) { // create config if not exist
-		configRes := filepath.Join("res", consts.ServerConfigFileName)
+		configRes := path.Join("res", consts.ServerConfigFileName)
 		yamlDefault, _ := deeptest.ReadResData(configRes)
 
 		if err := VIPER.ReadConfig(bytes.NewBuffer(yamlDefault)); err != nil {
@@ -114,7 +114,7 @@ func Init() {
 	// create casbin rbac_model.conf if needed
 	casbinPath := filepath.Join(consts.WorkDir, consts.CasbinFileName)
 	if !dir.IsExist(casbinPath) {
-		casbinRes := filepath.Join("res", consts.CasbinFileName)
+		casbinRes := path.Join("res", consts.CasbinFileName)
 		yamlDefault, err := deeptest.ReadResData(casbinRes)
 		if err != nil {
 			panic(fmt.Errorf("failed to read casbin rbac_model.conf from res: %s", err.Error()))

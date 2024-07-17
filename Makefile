@@ -48,7 +48,7 @@ GIT_HASH=`git show -s --format=%H`
 BUILD_CMD_UNIX=go build -ldflags "-X 'main.AppVersion=${VERSION}' -X 'main.BuildTime=${BUILD_TIME}' -X 'main.GoVersion=${GO_VERSION}' -X 'main.GitHash=${GIT_HASH}'"
 BUILD_CMD_WIN=go build -ldflags "-s -w -X 'main.AppVersion=${VERSION}' -X 'main.BuildTime=${BUILD_TIME}' -X 'main.GoVersion=${GO_VERSION}' -X 'main.GitHash=${GIT_HASH}'"
 
-default: compile_ui_web win64-web win32-web linux-web mac-web
+web: compile_ui_web win64-web win32-web linux-web mac-web
 
 # 非客户端版本打包，需先运行 make compile_ui_web
 win64-web: prepare compile_agent_win64 compile_server_win64 zip_win64_web
@@ -307,7 +307,7 @@ zip_mac_web:
 	@cp -rf bin/deeptest-ui ${BIN_DIR}darwin
 
 	@cd ${BIN_DIR}darwin/ && \
-		zip -ry ${QINIU_DIST_DIR}darwin/${PROJECT}-web.zip ./* && \
+		zip -ry ${QINIU_DIST_DIR}darwin/${PROJECT}-web.zip ./* -x Leyan* && \
 		md5sum ${QINIU_DIST_DIR}darwin/${PROJECT}-web.zip | awk '{print $$1}' | \
 			xargs echo > ${QINIU_DIST_DIR}darwin/${PROJECT}-web.zip.md5 && \
         cd ../..; \
@@ -318,7 +318,7 @@ zip_win64_client:
 	@find . -name .DS_Store -print0 | xargs -0 rm -f
 	@mkdir -p ${QINIU_DIST_DIR}win64 && rm -rf ${QINIU_DIST_DIR}win64/${PROJECT}-client.zip
 	@cd ${CLIENT_OUT_DIR_EXECUTABLE}win64 && \
-		zip -ry ${QINIU_DIST_DIR}win64/${PROJECT}-client.zip ./* && \
+		zip -ry ${QINIU_DIST_DIR}win64/${PROJECT}-client.zip ./* -x Leyan* && \
 		md5sum ${QINIU_DIST_DIR}win64/${PROJECT}-client.zip | awk '{print $$1}' | \
 			xargs echo > ${QINIU_DIST_DIR}win64/${PROJECT}-client.zip.md5 && \
         cd ../../..; \
@@ -328,7 +328,7 @@ zip_win32_client:
 	@find . -name .DS_Store -print0 | xargs -0 rm -f
 	@mkdir -p ${QINIU_DIST_DIR}win32 && rm -rf ${QINIU_DIST_DIR}win32/${PROJECT}-client.zip
 	@cd ${CLIENT_OUT_DIR_EXECUTABLE}win32 && \
-		zip -ry ${QINIU_DIST_DIR}win32/${PROJECT}-client.zip ./* && \
+		zip -ry ${QINIU_DIST_DIR}win32/${PROJECT}-client.zip ./* -x Leyan* && \
 		md5sum ${QINIU_DIST_DIR}win32/${PROJECT}-client.zip | awk '{print $$1}' | \
 			xargs echo > ${QINIU_DIST_DIR}win32/${PROJECT}-client.zip.md5 && \
         cd ../../..; \
@@ -338,7 +338,7 @@ zip_linux_client:
 	@find . -name .DS_Store -print0 | xargs -0 rm -f
 	@mkdir -p ${QINIU_DIST_DIR}linux && rm -rf ${QINIU_DIST_DIR}linux/${PROJECT}-client.zip
 	@cd ${CLIENT_OUT_DIR_EXECUTABLE}linux && \
-		zip -ry ${QINIU_DIST_DIR}linux/${PROJECT}-client.zip ./* && \
+		zip -ry ${QINIU_DIST_DIR}linux/${PROJECT}-client.zip ./* -x Leyan* && \
 		md5sum ${QINIU_DIST_DIR}linux/${PROJECT}-client.zip | awk '{print $$1}' | \
 			xargs echo > ${QINIU_DIST_DIR}linux/${PROJECT}-client.zip.md5 && \
         cd ../../..; \
@@ -348,7 +348,7 @@ zip_mac_client:
 	@find . -name .DS_Store -print0 | xargs -0 rm -f
 	@mkdir -p ${QINIU_DIST_DIR}darwin && rm -rf ${QINIU_DIST_DIR}darwin/${PROJECT}-client.zip
 	@cd ${CLIENT_OUT_DIR_EXECUTABLE}darwin && \
-		zip -ry ${QINIU_DIST_DIR}darwin/${PROJECT}-client.zip ./* && \
+		zip -ry ${QINIU_DIST_DIR}darwin/${PROJECT}-client.zip ./* -x Leyan* && \
 		md5sum ${QINIU_DIST_DIR}darwin/${PROJECT}-client.zip | awk '{print $$1}' | \
 			xargs echo > ${QINIU_DIST_DIR}darwin/${PROJECT}-client.zip.md5 && \
         cd ../../..; \

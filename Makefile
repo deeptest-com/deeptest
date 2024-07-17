@@ -95,7 +95,6 @@ compile_ui_client_test:
 compile_ly_ui_client:
 	@cd ../leyanapi-frontend  && yarn build:client && cd ../leyanapi-backend
 
-
 compile_ui_web:
 	@cd ../leyanapi-frontend && yarn build:web --dest ../leyanapi-backend/bin/deeptest-ui && cd ../leyanapi-backend
 

@@ -74,12 +74,14 @@ func ReplaceVariableValueInBody(value string, session *ExecSession) (ret string)
 
 func execJsFuncSimple(data interface{}, session *ExecSession) interface{} {
 	if v, ok := data.(string); ok {
-		if strings.HasPrefix(v, "${") && strings.HasSuffix(v, "}") {
-			expression := v[2 : len(v)-1]
-			result, _, _ := NewGojaSimple().ExecJsFuncSimple(expression, session, true)
-			return _stringUtils.InterfToStr(result)
-		}
-
+		return ReplaceVariableValue(v, session)
+		/*
+			if strings.HasPrefix(v, "${") && strings.HasSuffix(v, "}") {
+				expression := v[2 : len(v)-1]
+				result, _, _ := NewGojaSimple().ExecJsFuncSimple(expression, session, true)
+				return _stringUtils.InterfToStr(result)
+			}
+		*/
 	}
 	if v, ok := data.(map[string]interface{}); ok {
 		for key, item := range v {
@@ -102,48 +104,65 @@ func parseStatement(statement string) (ret []Placeholder) {
 	//reg := regexp.MustCompile(`(?U)\$\{(.+)}`)
 	//arr := reg.FindAllStringSubmatch(statement, -1)
 
-	placeholderStart := -1
-	countLeftBrace := 0
-	countRightBrace := 0
-	arrOrArr := [][]string{}
+	//str := "xxxx${_mock('@string(pool, 1, 10)')}+==1222{_mock('@string(pool, 1, 10)')}-------"
 
-	for index, char := range statement {
-		if char == '{' {
-			countLeftBrace++
+	// 编译正则表达式
+	// 注意：这里的正则表达式使用了非贪婪匹配（*?）来确保只匹配到最近的'}'
+	re := regexp.MustCompile(`\$\{(.*?)\}`)
 
-			if index > 0 && statement[index-1] == '$' { // found ${
-				placeholderStart = index
-				arrOrArr = append(arrOrArr, []string{"${", ""})
+	// 查找所有匹配的子串
+	matches := re.FindAllStringSubmatch(statement, -1)
+
+	var arrOrArr [][]string
+	// 打印所有匹配的子串（每个子串的第一个元素是完整匹配，第二个元素是括号内的匹配内容）
+	for _, match := range matches {
+		arrOrArr = append(arrOrArr, match)
+	}
+
+	/*
+		placeholderStart := -1
+		countLeftBrace := 0
+		countRightBrace := 0
+		arrOrArr := [][]string{}
+
+		for index, char := range statement {
+			if char == '{' {
+				countLeftBrace++
+
+				if index > 0 && statement[index-1] == '$' { // found ${
+					placeholderStart = index
+					arrOrArr = append(arrOrArr, []string{"${", ""})
+
+					continue
+				} else {
+					arrOrArr[len(arrOrArr)-1][0] += string(char)
+					arrOrArr[len(arrOrArr)-1][1] += string(char)
+				}
 
 				continue
-			} else {
+			}
+
+			if char == '}' {
+				arrOrArr[len(arrOrArr)-1][0] += string(char)
+				countRightBrace++
+
+				if countLeftBrace > 0 && countLeftBrace == countRightBrace { // expression finish
+					placeholderStart = -1
+					countLeftBrace = 0
+					countRightBrace = 0
+				} else {
+					arrOrArr[len(arrOrArr)-1][1] += string(char)
+				}
+
+				continue
+			}
+
+			if placeholderStart > 0 {
 				arrOrArr[len(arrOrArr)-1][0] += string(char)
 				arrOrArr[len(arrOrArr)-1][1] += string(char)
 			}
-
-			continue
 		}
-
-		if char == '}' {
-			arrOrArr[len(arrOrArr)-1][0] += string(char)
-			countRightBrace++
-
-			if countLeftBrace > 0 && countLeftBrace == countRightBrace { // expression finish
-				placeholderStart = -1
-				countLeftBrace = 0
-				countRightBrace = 0
-			} else {
-				arrOrArr[len(arrOrArr)-1][1] += string(char)
-			}
-
-			continue
-		}
-
-		if placeholderStart > 0 {
-			arrOrArr[len(arrOrArr)-1][0] += string(char)
-			arrOrArr[len(arrOrArr)-1][1] += string(char)
-		}
-	}
+	*/
 
 	for _, arr := range arrOrArr {
 		placeholder := Placeholder{

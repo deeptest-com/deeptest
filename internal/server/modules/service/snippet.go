@@ -124,7 +124,7 @@ func (s *SnippetService) ListVar(tenantId consts.TenantId, req domain.DebugInfo)
 func (s *SnippetService) ListMock(tenantId consts.TenantId) (res []serverDomain.SnippetRes) {
 	list, _ := s.MockJsService.ListExpressions(tenantId)
 	for _, item := range list {
-		expression := fmt.Sprintf("${_mock(\"@%s\")}", item.Expression)
+		expression := fmt.Sprintf("${_mock('@%s')}", item.Expression)
 		res = append(res, serverDomain.SnippetRes{Label: "@" + item.Expression, Value: expression, Desc: item.Name})
 	}
 

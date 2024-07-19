@@ -8,10 +8,12 @@ import (
 	gojaUtils "github.com/aaronchen2k/deeptest/internal/pkg/goja"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	jslibHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
+	mockData "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
 	"path/filepath"
@@ -92,6 +94,14 @@ func defineJsFuncs(runtime *goja.Runtime, require *require.RequireModule, sessio
 			return
 		}
 
+		return
+	})
+
+	runtime.Set("_mock", func(rule string) (ret string) {
+		result, err := (&mockData.MockjsGenerator{}).GenerateByMockJsExpression(rule, "string")
+		if err == nil {
+			ret = _stringUtils.InterfToStr(result)
+		}
 		return
 	})
 

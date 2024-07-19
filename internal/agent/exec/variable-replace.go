@@ -1,10 +1,10 @@
 package agentExec
 
 import (
-	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	mockData "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"regexp"
 	"strings"
@@ -46,23 +46,55 @@ func ReplaceVariableValue(value string, session *ExecSession) (ret string) {
 func ReplaceVariableValueInBody(value string, session *ExecSession) (ret string) {
 	// add a plus to set field vale as a number
 	// {"id": "${+dev_env_var1}"} => {"id": 2}
+	//var x interface{}
+	var data interface{}
+	_commUtils.JsonDecode(value, &data)
+	data = execJsFuncSimple(data, session)
+	ret = _commUtils.JsonEncode(data)
+	return
+	/*
+		variablePlaceholders := commUtils.GetVariablesInExpressionPlaceholder(value)
+		ret = value
 
-	variablePlaceholders := commUtils.GetVariablesInExpressionPlaceholder(value)
-	ret = value
+		for _, placeholder := range variablePlaceholders {
+			oldVal := fmt.Sprintf("${%s}", placeholder)
+			if strings.Index(placeholder, "+") == 0 { // replace it with a number, if has prefix +
+				oldVal = "\"" + oldVal + "\""
+			}
 
-	for _, placeholder := range variablePlaceholders {
-		oldVal := fmt.Sprintf("${%s}", placeholder)
-		if strings.Index(placeholder, "+") == 0 { // replace it with a number, if has prefix +
-			oldVal = "\"" + oldVal + "\""
+			placeholderWithoutPlus := strings.TrimLeft(placeholder, "+")
+			newVal := getPlaceholderVariableValue(placeholderWithoutPlus, session)
+
+			ret = strings.ReplaceAll(ret, oldVal, newVal)
 		}
-
-		placeholderWithoutPlus := strings.TrimLeft(placeholder, "+")
-		newVal := getPlaceholderVariableValue(placeholderWithoutPlus, session)
-
-		ret = strings.ReplaceAll(ret, oldVal, newVal)
-	}
+	*/
 
 	return
+}
+
+func execJsFuncSimple(data interface{}, session *ExecSession) interface{} {
+	if v, ok := data.(string); ok {
+		if strings.HasPrefix(v, "${") && strings.HasSuffix(v, "}") {
+			expression := v[2 : len(v)-1]
+			result, _, _ := NewGojaSimple().ExecJsFuncSimple(expression, session, true)
+			return _stringUtils.InterfToStr(result)
+		}
+
+	}
+	if v, ok := data.(map[string]interface{}); ok {
+		for key, item := range v {
+			v[key] = execJsFuncSimple(item, session)
+		}
+	}
+
+	if v, ok := data.([]interface{}); ok {
+		for i, item := range v {
+			v[i] = execJsFuncSimple(item, session)
+		}
+
+	}
+
+	return data
 }
 
 func parseStatement(statement string) (ret []Placeholder) {

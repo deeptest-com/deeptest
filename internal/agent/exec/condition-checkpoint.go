@@ -64,11 +64,11 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 		}
 
 		checkpoint.ExpectResult = fmt.Sprintf("%v", expectValue)
-
+		checkpoint.ResultStatus = consts.Fail
 		if checkpoint.Operator == consts.Equal && resp.StatusCode == expectCodeNum {
 			checkpoint.ResultStatus = consts.Pass
-		} else {
-			checkpoint.ResultStatus = consts.Fail
+		} else if checkpoint.Operator == consts.NotEqual && resp.StatusCode != expectCodeNum {
+			checkpoint.ResultStatus = consts.Pass
 		}
 
 		return

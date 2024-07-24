@@ -59,7 +59,7 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 		if err1 != nil {
 			expectValue = checkpointValueStr
 			checkpoint.ResultStatus = consts.Fail
-
+			checkpoint.ExpectResult = fmt.Sprintf("%v", expectValue)
 			return
 		}
 

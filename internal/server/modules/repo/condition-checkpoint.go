@@ -53,6 +53,11 @@ func (r *CheckpointRepo) UpdateDesc(tenantId consts.TenantId, po *model.DebugCon
 		result = po.ExpectResult
 	}
 
+	//默认创建用例标题去提取器value
+	if result == "" {
+		result = po.Value
+	}
+
 	desc := checkpointHelpper.GenDesc(po.Type, po.Operator, result, po.Expression,
 		po.ExtractorVariable, po.ExtractorType, po.ExtractorExpression)
 	values := map[string]interface{}{
@@ -120,8 +125,7 @@ func (r *CheckpointRepo) CreateDefault(tenantId consts.TenantId, conditionId uin
 
 	po = model.DebugConditionCheckpoint{
 		CheckpointBase: domain.CheckpointBase{
-			ConditionId: conditionId,
-
+			ConditionId:       conditionId,
 			Type:              consts.ResponseStatus,
 			Operator:          consts.Equal,
 			Expression:        "",

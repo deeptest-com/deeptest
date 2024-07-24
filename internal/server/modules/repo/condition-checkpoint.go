@@ -48,17 +48,14 @@ func (r *CheckpointRepo) Save(tenantId consts.TenantId, checkpoint *model.DebugC
 	return
 }
 func (r *CheckpointRepo) UpdateDesc(tenantId consts.TenantId, po *model.DebugConditionCheckpoint) (err error) {
-	result := po.ActualResult
-	if po.ResultStatus != consts.Pass {
-		result = po.ExpectResult
-	}
+	/*
+		result := po.ActualResult
+		if po.ResultStatus != consts.Pass {
+			result = po.ExpectResult
+		}
+	*/
 
-	//默认创建用例标题去提取器value
-	if result == "" {
-		result = po.Value
-	}
-
-	desc := checkpointHelpper.GenDesc(po.Type, po.Operator, result, po.Expression,
+	desc := checkpointHelpper.GenDesc(po.Type, po.Operator, po.Value, po.Expression,
 		po.ExtractorVariable, po.ExtractorType, po.ExtractorExpression)
 	values := map[string]interface{}{
 		"desc": desc,

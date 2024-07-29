@@ -31,6 +31,8 @@ func InitGojaRuntimeWithSession(session *ExecSession, vuNo int, tenantId consts.
 
 	defineGoFuncs(session)
 
+	defineJsSysFunc(session.GojaRuntime)
+
 	// import other custom libs
 	jslibHelper.RefreshRemoteAgentJslibs(session.GojaRuntime, session.GojaRequire,
 		vuNo, tenantId, session.ProjectId,

@@ -19,8 +19,11 @@ import (
 )
 
 type DiagnoseInterfaceService struct {
-	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
-	DiagnoseInterfaceRepo *repo.DiagnoseInterfaceRepo `inject:""`
+	EndpointInterfaceRepo  *repo.EndpointInterfaceRepo  `inject:""`
+	DiagnoseInterfaceRepo  *repo.DiagnoseInterfaceRepo  `inject:""`
+	WebsocketInterfaceRepo *repo.WebsocketInterfaceRepo `inject:""`
+	GrpcInterfaceRepo      *repo.GrpcInterfaceRepo      `inject:""`
+
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
 	ServeRepo             *repo.ServeRepo             `inject:""`
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
@@ -51,14 +54,6 @@ func (s *DiagnoseInterfaceService) Get(tenantId consts.TenantId, id int) (ret mo
 
 func (s *DiagnoseInterfaceService) Save(tenantId consts.TenantId, req serverDomain.DiagnoseInterfaceSaveReq) (diagnoseInterface model.DiagnoseInterface, err error) {
 	s.CopyValueFromRequest(tenantId, &diagnoseInterface, req)
-
-	//if diagnoseInterface.ID != 0 {
-	//	oldDiagnoseInterface, err := s.DiagnoseInterfaceRepo.Get(diagnoseInterface.ID)
-	//	if err != nil {
-	//		return diagnoseInterface, err
-	//	}
-	//	diagnoseInterface.CreatedBy = oldDiagnoseInterface.CreatedBy
-	//}
 
 	if diagnoseInterface.Type == serverConsts.DiagnoseInterfaceTypeInterface {
 		if req.ID == 0 {
@@ -95,19 +90,11 @@ func (s *DiagnoseInterfaceService) Save(tenantId consts.TenantId, req serverDoma
 			err = s.DiagnoseInterfaceRepo.Save(tenantId, &diagnoseInterface)
 		}
 
-		// create new DebugInterface
-		//debugInterface := model.DebugInterface{
-		//	InterfaceBase: model.InterfaceBase{
-		//		Name: req.Title,
-		//		InterfaceConfigBase: model.InterfaceConfigBase{
-		//			//Url:    server.Url,
-		//			Method: consts.GET,
-		//		},
-		//	},
-		//	ServeId: diagnoseInterface.ServeId,
-		//	//ServerId: server.ID,
-		//	BaseUrl: "",
-		//}
+	} else if req.Type == serverConsts.DiagnoseInterfaceTypeWebsocketInterface {
+		diagnoseInterface, err = s.WebsocketInterfaceRepo.Create(tenantId, req)
+
+	} else if req.Type == serverConsts.DiagnoseInterfaceTypeGrpcInterface {
+		diagnoseInterface, err = s.GrpcInterfaceRepo.Create(tenantId, req)
 
 	} else {
 		if req.ID != 0 {
@@ -115,6 +102,7 @@ func (s *DiagnoseInterfaceService) Save(tenantId consts.TenantId, req serverDoma
 			diagnoseInterface.Title = req.Title
 		}
 		err = s.DiagnoseInterfaceRepo.Save(tenantId, &diagnoseInterface)
+
 	}
 
 	return

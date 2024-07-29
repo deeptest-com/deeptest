@@ -53,16 +53,15 @@ func LoadChaiJslibs(runtime *goja.Runtime) {
 	runtime.Set("expect", chaiInst.Exports().Named["expect"])
 }
 
-func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireModule, tenantId consts.TenantId, projectId uint, serverUrl, token string) {
+func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireModule, vuNo int, tenantId consts.TenantId, projectId uint, serverUrl, token string) {
 	libs := getJslibsFromServer(tenantId, projectId, serverUrl, token)
 
 	for _, lib := range libs {
-		id := lib.Id
 		if tenantId == "" {
 			tenantId = "NA"
 		}
 
-		tmpFile := fmt.Sprintf("%d-%s-%d.js", id, tenantId, lib.UpdatedAt.Unix())
+		tmpFile := fmt.Sprintf("%d-%d-%s-%d.js", lib.Id, vuNo, tenantId, lib.UpdatedAt.Unix())
 		tmpPath := fmt.Sprintf("%s/%s", consts.TmpDirRelativeAgent, tmpFile)
 		tmpContent := lib.Script
 		fileUtils.WriteFileIfNotExist(tmpPath, tmpContent)
@@ -76,29 +75,44 @@ func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireMod
 		if err != nil {
 			logUtils.Errorf(err.Error())
 		}
+		/*
+				x := module.Export()
+				fmt.Println(x)
 
-		//SetAgentCache(projectId, id, lib.UpdatedAt)
-		logUtils.Infof("更新第三方库，projectId：%v,id:%v,lib.Name:%v", projectId, id, lib.Name)
-		//}
+				for key, item := range x.(map[string]interface{}) {
+					a := item.(func(goja.FunctionCall) goja.Value)
+					println(a)
+
+					fun := runtime.Get(key).Export()
+					t := reflect.TypeOf(fun)
+
+					// 输出函数参数的数量和它们的类型
+					for i := 0; i < t.NumIn(); i++ {
+						fmt.Println("Input", i, ":", t.In(i))
+					}
+
+					// 输出函数返回值的数量和它们的类型
+					for i := 0; i < t.NumOut(); i++ {
+						fmt.Println("Output", i, ":", t.Out(i))
+					}
+				}
+
+
+			x := runtime.Get("exports").Export()
+
+			obj := runtime.ToValue(x)
+			y := obj.Export()
+			fmt.Println(y)
+		*/
+
+		logUtils.Infof("更新第三方库，projectId：%v,id:%v,lib.Name:%v", projectId, lib.Id, lib.Name)
 	}
-}
-
-func GetAgentCache(tenantId consts.TenantId, projectId uint, id uint) (val time.Time, ok bool) {
-	mp := GetAgentLoadedLibs(tenantId, projectId)
-	val, ok = (*mp)[id]
-
-	return
-}
-
-func SetAgentCache(tenantId consts.TenantId, projectId uint, id uint, val time.Time) {
-	mp := GetAgentLoadedLibs(tenantId, projectId)
-	(*mp)[id] = val
 }
 
 func getJslibsFromServer(tenantId consts.TenantId, projectId uint, serverUrl, token string) (libs []Jslib) {
 	url := fmt.Sprintf("snippets/getJslibsForAgent?projectId=%d", projectId)
 
-	loadedLibs := &map[uint]time.Time{} // GetAgentLoadedLibs(projectId)
+	loadedLibs := &map[uint]time.Time{} // get all if loaded libs is empty
 
 	body, err := json.Marshal(loadedLibs)
 

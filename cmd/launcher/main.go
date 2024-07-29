@@ -29,7 +29,7 @@ func main() {
 
 	err := cmd.Run()
 	if err != nil {
-		fmt.Printf("Failed to start ztf gui, path %s, err %s", pth, err.Error())
+		fmt.Printf("Failed to start gui, path %s, err %s", pth, err.Error())
 	}
 }
 

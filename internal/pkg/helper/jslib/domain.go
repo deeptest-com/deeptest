@@ -2,14 +2,20 @@ package jslibHelper
 
 import "time"
 
+type JsFunc struct {
+	Name string `json:"name"`
+	Args string `json:"args"`
+}
+
 type Jslib struct {
 	Id uint `json:"id"`
 
-	Name   string `json:"name"`
-	Desc   string `json:"desc"`
-	Script string `json:"script" gorm:"type:text"`
-
+	Name      string    `json:"name"`
+	Desc      string    `json:"desc"`
+	Script    string    `json:"script" gorm:"type:text"`
+	ProjectId uint      `json:"projectId"`
 	UpdatedAt time.Time `json:"updatedAt"`
+	Functions []JsFunc
 }
 
 type SysJslib struct {
@@ -26,6 +32,8 @@ type SysJslib struct {
 
 	CreateUser string `json:"createUser"`
 	UpdateUser string `json:"updateUser"`
+
+	ProjectId uint `json:"projectId"`
 }
 
 func (SysJslib) TableName() string {

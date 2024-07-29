@@ -50,6 +50,7 @@ type CheckpointBase struct {
 
 	Operator     consts.ComparisonOperator `json:"operator"`
 	Value        string                    `json:"value"`
+	ExpectResult string                    `json:"expectResult"`
 	ActualResult string                    `json:"actualResult" gorm:"type:text"`
 
 	ResultStatus consts.ResultStatus `json:"resultStatus"`

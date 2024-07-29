@@ -37,7 +37,7 @@ type ProcessorData struct {
 	VariableName string `json:"variableName,omitempty" yaml:"variableName,omitempty"`
 }
 
-func (entity ProcessorData) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorData) Run(processor *Processor, session *ExecSession) (err error) {
 	logUtils.Infof("data entity")
 
 	startTime := time.Now()
@@ -61,7 +61,7 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	processor.AddResultToParent()
-	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.ScenarioDebug.WsMsg)
 
 	entity.runDataItems(session, processor, processor.Result.Iterator)
 
@@ -71,7 +71,7 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 	return
 }
 
-func (entity *ProcessorData) runDataItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
+func (entity *ProcessorData) runDataItems(session *ExecSession, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)
@@ -88,12 +88,12 @@ func (entity *ProcessorData) runDataItems(session *Session, processor *Processor
 				break
 			}
 
-			SetVariable(processor.ID, iterator.VariableName, item, consts.ExtractorResultTypeString, consts.Public, session.ExecUuid)
+			SetVariable(processor.ID, iterator.VariableName, item, consts.ExtractorResultTypeString, consts.Public, session)
 
 			round := ""
 
 			for _, child := range processor.Children {
-				if GetForceStopExec(session.ExecUuid) {
+				if IsExecCtxCancel(session.ExecUuid) {
 					break
 				}
 				if child.Disable {
@@ -112,13 +112,13 @@ func (entity *ProcessorData) runDataItems(session *Session, processor *Processor
 		}
 	}
 
-	stat := CountSkip(session.ExecUuid, executedProcessorIds, processor.Children)
-	execUtils.SendStatMsg(stat, session.WsMsg)
+	stat := CountSkip(executedProcessorIds, processor.Children, session)
+	execUtils.SendStatMsg(stat, session.ScenarioDebug.WsMsg)
 
 	return
 }
 
-func (entity *ProcessorData) getIterator(session *Session) (iterator agentDomain.ExecIterator, msg string) {
+func (entity *ProcessorData) getIterator(session *ExecSession) (iterator agentDomain.ExecIterator, msg string) {
 	if entity.ID == 0 {
 		msg = "执行前请先配置处理器。"
 		return
@@ -132,9 +132,9 @@ func (entity *ProcessorData) getIterator(session *Session) (iterator agentDomain
 	return
 }
 
-func (entity *ProcessorData) GenerateLoopList(session *Session) (ret agentDomain.ExecIterator, err error) {
+func (entity *ProcessorData) GenerateLoopList(session *ExecSession) (ret agentDomain.ExecIterator, err error) {
 	if entity.Src == consts.SrcDatapool {
-		for name, dp := range GetExecScene(session.ExecUuid).Datapools {
+		for name, dp := range session.ExecScene.Datapools {
 			if name == entity.DatapoolName {
 				ret.Data = dp
 				break
@@ -142,7 +142,7 @@ func (entity *ProcessorData) GenerateLoopList(session *Session) (ret agentDomain
 		}
 
 	} else {
-		pth, _ := DownloadUploadedFile(entity.Url, session.ExecUuid)
+		pth, _ := DownloadUploadedFile(entity.Url, session)
 		if err != nil {
 			logUtils.Infof("Download file %s failed", pth)
 		}

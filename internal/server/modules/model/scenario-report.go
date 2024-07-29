@@ -48,7 +48,7 @@ type ScenarioReport struct {
 	Logs           []*ExecLogProcessor `gorm:"-" json:"logs"`
 
 	ExecEnv   string `gorm:"-" json:"execEnv"`
-	ExecEnvId int    `json:"execEnvId"`
+	ExecEnvId uint   `json:"execEnvId"`
 	Priority  string `gorm:"-" json:"priority"`
 
 	StatRaw string `json:"stat"`

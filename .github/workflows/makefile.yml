@@ -3,7 +3,7 @@ name: demo site deploy
 on:
   workflow_dispatch
   # pull_request:
-  #   branches: [ "main" ]
+#   branches: [ "main" ]
 # push:
 #   branches: [ "main" ]
 
@@ -12,14 +12,14 @@ jobs:
     runs-on: self-hosted
     defaults:
       run:
-        working-directory: /home/ubuntu/rd/project/deeptest
+        working-directory: /rd/project/deeptest
     steps:
       - name: checkout backend codes
         run: git pull
 
       - name: checkout frontend codes
         run: git pull
-        working-directory: /home/ubuntu/rd/project/deeptest-ui
+        working-directory: /rd/project/deeptest-ui
 
       - name: make server
         run: ENV=dp make compile_server_linux
@@ -32,15 +32,16 @@ jobs:
 
       - name: copy files
         run:  |
-          cp -f bin/linux/deeptest-server /home/ubuntu/rd/server/
-          cp -f client/bin/linux/deeptest-agent /home/ubuntu/rd/server/
+          mkdir -p /rd/server
+          cp -f bin/linux/deeptest-server /rd/server/
+          cp -f client/bin/linux/deeptest-agent /rd/server/
           
-          rm -rf /home/ubuntu/rd/server/deeptest-ui
-          cp -fr client/ui /home/ubuntu/rd/server/deeptest-ui
+          rm -rf /rd/server/deeptest-ui
+          cp -fr client/ui /rd/server/deeptest-ui
 
       - name: start service
         run:  |
           ps -ef | grep 'deeptest-' | grep -v grep | awk '{print $2}' | xargs --no-run-if-empty kill -9
-          cd /home/ubuntu/rd/server
+          cd /rd/server
           RUNNER_TRACKING_ID="" && nohup ./deeptest-server > server.log 2>&1 &
           RUNNER_TRACKING_ID="" && nohup ./deeptest-agent > agent.log 2>&1 &

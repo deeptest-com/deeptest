@@ -16,10 +16,7 @@ func Init(lang string, app string) {
 	//once.Do(func() {
 
 	langRes := path.Join("res", lang, "messages.json")
-	fmt.Printf("path %s\n", langRes)
-
 	bytes, _ := deeptest.ReadResData(langRes)
-	fmt.Printf("content %s\n", string(bytes))
 
 	InitResFromAsset(bytes)
 

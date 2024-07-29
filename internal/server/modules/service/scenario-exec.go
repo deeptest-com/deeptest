@@ -59,7 +59,6 @@ func (s *ScenarioExecService) LoadExecData(tenantId consts.TenantId, scenarioId,
 	ret.ScenarioId = scenarioId
 	ret.Name = scenario.Name
 	ret.RootProcessor, _ = s.ScenarioNodeService.GetTree(tenantId, scenario, true)
-	ret.RootProcessor.Session = agentExec.Session{}
 
 	// get variables
 	s.SceneService.LoadEnvVarMapByScenario(tenantId, &ret.ExecScene, scenarioId, environmentId)

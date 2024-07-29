@@ -3,10 +3,7 @@ package agentExec
 import (
 	"fmt"
 	"github.com/Knetic/govaluate"
-	valueUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/utils"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"regexp"
 	"strings"
@@ -32,6 +29,7 @@ var (
 	}
 )
 
+/*
 // called by checkpoint
 func EvaluateGovaluateExpressionWithDebugVariables(expression string, execUuid string) (ret interface{}, params domain.VarKeyValuePair, err error) {
 	// 1
@@ -56,7 +54,8 @@ func EvaluateGovaluateExpressionWithDebugVariables(expression string, execUuid s
 
 	return
 }
-
+*/
+/*
 // called by agent processor interface
 func EvaluateGovaluateExpressionByProcessorScope(expression string, scopeId uint, execUuid string) (ret interface{}, params domain.VarKeyValuePair, err error) {
 	// 1
@@ -78,6 +77,7 @@ func EvaluateGovaluateExpressionByProcessorScope(expression string, scopeId uint
 
 	return
 }
+*/
 
 func convertGovaluateParamAndExpressionForProcessor(params domain.VarKeyValuePair, expr string) (
 	convertParams domain.VarKeyValuePair, convertExpr string) {
@@ -100,6 +100,7 @@ func convertGovaluateParamAndExpressionForProcessor(params domain.VarKeyValuePai
 	return
 }
 
+/*
 // a.1
 func generateGovaluateParamsByScope(expression string, scopeId uint, execUuid string) (ret domain.VarKeyValuePair, err error) {
 	ret = domain.VarKeyValuePair{}
@@ -127,7 +128,9 @@ func generateGovaluateParamsByScope(expression string, scopeId uint, execUuid st
 
 	return
 }
+*/
 
+/*
 // a.2
 func generateGovaluateParamsWithVariables(expression string, execUuid string) (ret domain.VarKeyValuePair, err error) {
 	ret = domain.VarKeyValuePair{}
@@ -152,7 +155,9 @@ func generateGovaluateParamsWithVariables(expression string, execUuid string) (r
 
 	return
 }
+*/
 
+/*
 func ReplaceDatapoolVariInGovaluateExpress(expression string, execUuid string) (ret string) {
 	ret = expression
 	variablePlaceholders := commUtils.GetVariablesInExpressionPlaceholder(expression)
@@ -178,3 +183,4 @@ func ReplaceDatapoolVariInGovaluateExpress(expression string, execUuid string) (
 
 	return
 }
+*/

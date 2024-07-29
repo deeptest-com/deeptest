@@ -10,9 +10,9 @@ type ScenarioExecReq struct {
 	ServerUrl  string          `json:"serverUrl"`
 	Token      string          `json:"token"`
 	TenantId   consts.TenantId `json:"tenantId"`
-	ScenarioId int             `json:"scenarioId"`
+	ScenarioId uint            `json:"scenarioId"`
 
-	EnvironmentId int `json:"environmentId"`
+	EnvironmentId uint `json:"environmentId"`
 }
 
 type ScenarioExecObj struct {
@@ -37,4 +37,16 @@ type ScenarioExecObjBase struct {
 	ServerUrl string          `json:"serverUrl"`
 	Token     string          `json:"token"`
 	TenantId  consts.TenantId `json:"tenantId"`
+}
+
+type WebsocketExecReq struct {
+	ServerUrl string `json:"serverUrl"`
+	Token     string `json:"token"`
+
+	Room string                    `json:"room"`
+	Data domain.WebsocketDebugData `json:"data"`
+
+	WebsocketInterfaceId int             `json:"websocketInterfaceId"`
+	EnvironmentId        int             `json:"environmentId"`
+	TenantId             consts.TenantId `json:"tenantId"`
 }

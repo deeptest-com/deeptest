@@ -1,19 +1,8 @@
 package agentDomain
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/kataras/iris/v12"
 )
-
-type InterfaceCall struct {
-	ExecUuid       string           `json:"execUuid"`
-	ServerUrl      string           `json:"serverUrl"`
-	Token          string           `json:"token"`
-	TenantId       consts.TenantId  `json:"tenantId"`
-	Data           domain.DebugData `json:"data"`
-	LocalVarsCache iris.Map         `json:"localVarsCache"`
-}
 
 type InvokeRequest struct {
 	ServerUrl string `json:"serverUrl"`

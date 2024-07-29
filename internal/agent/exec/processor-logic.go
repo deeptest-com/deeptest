@@ -17,7 +17,7 @@ type ProcessorLogic struct {
 	Expression string `json:"expression" yaml:"expression"`
 }
 
-func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorLogic) Run(processor *Processor, session *ExecSession) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)
@@ -44,17 +44,8 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 	pass := false
 	detail := map[string]interface{}{"name": entity.Name, "expression": entity.Expression}
 	if typ == consts.ProcessorLogicIf {
-		var result interface{}
-		result, _, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, entity.ProcessorID, session.ExecUuid)
-		if err != nil {
-			pass = false
-		} else {
-			var ok bool
-			pass, ok = result.(bool)
-			if !ok {
-				pass = false
-			}
-		}
+		result, _, _ := NewGojaSimple().ExecJsFuncSimple(entity.Expression, session, true)
+		pass, _ = result.(bool)
 
 	} else if typ == consts.ProcessorLogicElse {
 		brother, ok := getPreviousBrother(*processor)
@@ -66,13 +57,13 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 	processor.Result.ResultStatus, processor.Result.Summary = getResultStatus(pass)
 	detail["result"] = pass
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
-	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.ScenarioDebug.WsMsg)
 	processor.AddResultToParent()
 
 	executedProcessorIds := map[uint]bool{}
 	if pass {
 		for _, child := range processor.Children {
-			if GetForceStopExec(session.ExecUuid) {
+			if session.GetForceStop() {
 				break
 			}
 			if child.Disable {
@@ -88,8 +79,8 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
 
-	stat := CountSkip(session.ExecUuid, executedProcessorIds, processor.Children)
-	execUtils.SendStatMsg(stat, session.WsMsg)
+	stat := CountSkip(executedProcessorIds, processor.Children, session)
+	execUtils.SendStatMsg(stat, session.ScenarioDebug.WsMsg)
 
 	return
 }

@@ -7,37 +7,14 @@ import (
 	_intUtils "github.com/aaronchen2k/deeptest/pkg/lib/int"
 )
 
-func InitDebugExecContext(execUuid string) (variables []domain.ExecVariable) {
-	SetScopedVariables(execUuid, map[uint][]domain.ExecVariable{})
-
-	return
-}
-
-func InitScenarioExecContext(execObj *ScenarioExecObj) (variables []domain.ExecVariable) {
-	execUuid := execObj.ExecUuid
-
-	scopeHierarchy := map[uint]*[]uint{}
-	ComputerScopeHierarchy(execObj.RootProcessor, &scopeHierarchy)
-	SetScopeHierarchy(execUuid, scopeHierarchy)
-
-	SetExecScene(execUuid, execObj.ExecScene)
-	SetDatapoolCursor(execUuid, map[string]int{})
-
-	SetScopedVariables(execUuid, map[uint][]domain.ExecVariable{})
-	SetScopedCookies(execUuid, map[uint][]domain.ExecCookie{})
-
-	return
-}
-
-func GetValidScopeIds(processorId uint, execUuid string) (ret *[]uint) {
+func GetValidScopeIds(processorId uint, session *ExecSession) (ret *[]uint) {
 	if processorId == 0 { // return an arr with single 0
 		arr := []uint{processorId}
 		ret = &arr
 		return
 	}
 
-	scopeHierarchy := GetScopeHierarchy(execUuid)
-	ret = scopeHierarchy[processorId]
+	ret = session.ScenarioDebug.ScopeHierarchy[processorId]
 
 	return
 }

@@ -51,39 +51,35 @@ type ProcessorBase struct {
 	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc    `json:"processorInterfaceSrc"`
 
 	Round string `json:"round"`
-
-	Session Session `json:"-"`
 }
 
-func (p *Processor) Run(s *Session) (err error) {
+func (p *Processor) Run(s *ExecSession) (err error) {
 	_logUtils.Infof("%d - %s %s", p.ID, p.Name, p.EntityType)
-	SetCurrScenarioProcessorId(s.ExecUuid, p.ID)
-	SetCurrScenarioProcessor(s.ExecUuid, p)
+	s.SetCurrScenarioProcessorId(p.ID)
+	s.SetCurrScenarioProcessor(p)
 
 	//每个执行器延迟0.1秒，防止发送ws消息过快，导致前端消息错误
 	time.Sleep(100 * time.Microsecond)
-	if !p.Disable && p.Entity != nil && !GetForceStopExec(s.ExecUuid) {
+	if !p.Disable && p.Entity != nil && !s.GetForceStop() {
 		p.Entity.Run(p, s)
 	}
 
 	return
 }
 
-func (p *Processor) Error(s *Session, err interface{}) {
-
+func (p *Processor) Error(s *ExecSession, err interface{}) {
 	var detail map[string]interface{}
 	commonUtils.JsonDecode(p.Result.Detail, &detail)
 	if detail == nil {
 		detail = map[string]interface{}{}
 	}
 
-	detail["exception"] = fmt.Sprintf("错误：%v", err)
+	detail["exception"] = fmt.Sprintf("Processor %s exec error: %v", p.Name, err)
 	p.Result.Detail = commonUtils.JsonEncode(detail)
 	fmt.Printf("err=%v, stack=%s\n", err, string(debug.Stack()))
 	p.AddResultToParent()
-	execUtils.SendExecMsg(p.Result, consts.Processor, s.WsMsg)
 
-	//execUtils.SendExceptionMsg(s.WsMsg)
+	execUtils.SendExecMsg(p.Result, consts.Exception, s.ScenarioDebug.WsMsg)
 }
 
 func (p *Processor) AddResultToParent() (err error) {

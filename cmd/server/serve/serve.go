@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
 	"github.com/aaronchen2k/deeptest/internal/server/middleware"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/snowlyg/helper/arr"
 	"strings"
 	"sync"
 
@@ -14,7 +15,6 @@ import (
 	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12/core/router"
 	"github.com/kataras/iris/v12/middleware/pprof"
-	"github.com/snowlyg/helper/arr"
 )
 
 // WebServer 服务器
@@ -70,12 +70,15 @@ func (webServer *WebServer) GetSources() []map[string]string {
 
 		r := r
 		// 去除非接口路径
-		handerNames := context.HandlersNames(r.Handlers)
-		if !arr.InArrayS([]string{"GET", "POST", "PUT", "DELETE"}, r.Method) ||
-			!arr.InArrayS(strings.Split(handerNames, ","), "github.com/snowlyg/multi.(*Verifier).Verify.func1") {
+		handlerNames := context.HandlersNames(r.Handlers)
+
+		if !isApiMethod(r.Method) || !hasPerm(handlerNames) {
+			logUtils.Infof("NoPerm NAME: %s, PATH: %s, METHOD: %s, NAMES: %s ", r.Name, r.Path, r.Method, handlerNames)
+
 			routeLen--
 			continue
 		}
+
 		go func(r *router.Route) {
 			route := map[string]string{
 				"path": r.Path,
@@ -123,4 +126,21 @@ func DebugParty() module.WebModule {
 		index.Any("/pprof/{action:path}", pprof.New())
 	}
 	return module.NewModule("/debug", handler)
+}
+
+func isApiMethod(method string) bool {
+	return arr.InArrayS([]string{"GET", "POST", "PUT", "DELETE"}, method)
+}
+func hasPerm(handlerNames string) bool {
+	names := strings.Split(handlerNames, ",")
+
+	hasPerm := false
+	for _, name := range names {
+		if strings.Index(name, ".Casbin") > -1 {
+			hasPerm = true
+			break
+		}
+	}
+
+	return hasPerm
 }

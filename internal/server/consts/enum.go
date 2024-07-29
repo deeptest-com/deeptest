@@ -52,6 +52,9 @@ type DiagnoseInterfaceType string
 const (
 	DiagnoseInterfaceTypeDir       DiagnoseInterfaceType = "dir"
 	DiagnoseInterfaceTypeInterface DiagnoseInterfaceType = "interface"
+
+	DiagnoseInterfaceTypeWebsocketInterface DiagnoseInterfaceType = "websocket_interface"
+	DiagnoseInterfaceTypeGrpcInterface      DiagnoseInterfaceType = "grpc_interface"
 )
 
 func (e DiagnoseInterfaceType) String() string {

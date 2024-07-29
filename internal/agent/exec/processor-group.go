@@ -15,7 +15,7 @@ type ProcessorGroup struct {
 	ProcessorEntityBase
 }
 
-func (entity ProcessorGroup) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorGroup) Run(processor *Processor, session *ExecSession) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)
@@ -41,10 +41,10 @@ func (entity ProcessorGroup) Run(processor *Processor, session *Session) (err er
 	processor.AddResultToParent()
 	detail := map[string]interface{}{"name": entity.Name}
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
-	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.ScenarioDebug.WsMsg)
 
 	for _, child := range processor.Children {
-		if GetForceStopExec(session.ExecUuid) {
+		if IsExecCtxCancel(session.ExecUuid) {
 			break
 		}
 		if child.Disable {

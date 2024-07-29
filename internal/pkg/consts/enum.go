@@ -595,11 +595,23 @@ const (
 	ExecPlan     ExecType = "execPlan"
 	ExecCase     ExecType = "execCases"
 	ExecMessage  ExecType = "execMessage"
+
+	ExecWebsocketConnect    ExecType = "execWebsocketConnect"
+	ExecWebsocketDisconnect ExecType = "execWebsocketDisconnect"
+	ExecWebsocketSendMsg    ExecType = "execWebsocketSendMsg"
+
+	StartExecGrpc ExecType = "startExecGrpc"
+	StopExecGrpc  ExecType = "stopExecGrpc"
 )
 
 func (e ExecType) String() string {
 	return string(e)
 }
+
+var WebscoketAtions = []string{
+	ExecWebsocketConnect.String(),
+	ExecWebsocketDisconnect.String(),
+	ExecWebsocketSendMsg.String()}
 
 type DataType string
 
@@ -656,7 +668,6 @@ type PlaceholderPrefix string
 
 const (
 	PlaceholderPrefixDatapool PlaceholderPrefix = "_dp"
-	PlaceholderPrefixFunction PlaceholderPrefix = "_func"
 )
 
 func (e PlaceholderPrefix) String() string {

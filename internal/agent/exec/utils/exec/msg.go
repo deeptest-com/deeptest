@@ -62,9 +62,9 @@ func SendErrorMsg(log interface{}, category consts.WsMsgCategory, wsMsg *websock
 	return
 }
 
-func SendAlreadyRunningMsg(processor consts.WsMsgCategory, wsMsg *websocket.Message) (err error) {
+func SendAlreadyRunningMsg(wsMsg *websocket.Message) (err error) {
 	msg := _i118Utils.Sprintf("pls_stop_previous")
-	websocketHelper.SendExecMsg(msg, agentDomain.ScenarioExecResult{ProgressStatus: consts.InProgress}, processor, wsMsg)
+	websocketHelper.SendExecMsg(msg, agentDomain.ScenarioExecResult{ProgressStatus: consts.InProgress}, consts.Processor, wsMsg)
 	_logUtils.Infof(msg)
 
 	return

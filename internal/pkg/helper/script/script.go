@@ -17,6 +17,13 @@ func GetScript(name ScriptType) string {
 		}
 		return DeepTestScript
 
+	} else if name == ScriptDeepTestSimple {
+		if DeepTestScriptSimple == "" {
+			bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "export", "deeptest-simple.js"))
+			DeepTestScriptSimple = string(bytes)
+		}
+		return DeepTestScriptSimple
+
 	} else if name == DeclareDeepTest {
 		if DeepTestDeclare == "" {
 			bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "export", "deeptest.d.ts"))
@@ -87,13 +94,20 @@ func GetScript(name ScriptType) string {
 		}
 		return VariablesClear
 
+	} else if name == ScriptCustom {
+		if CustomScript == "" {
+			bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "export", "custom.js"))
+			CustomScript = string(bytes)
+		}
+		return CustomScript
+
 	}
 
 	return ""
 }
 
-func GetModule(name string) (ret string) {
-	bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "module", name))
+func GetModule(name ScriptType) (ret string) {
+	bytes, _ := deeptest.ReadResData(path.Join("res", "goja", "module", name.String()))
 	ret = string(bytes)
 
 	return
@@ -123,6 +137,7 @@ func GenResultMsg(po *domain.ScriptBase) {
 
 var (
 	DeepTestScript             = ""
+	DeepTestScriptSimple       = ""
 	DeepTestDeclare            = ""
 	DeepTestDeclarePost        = ""
 	DeepTestScenarioCustomCode = ""
@@ -137,28 +152,32 @@ var (
 	VariablesGet      = ""
 	VariablesSet      = ""
 	VariablesClear    = ""
+	CustomScript      = ""
 )
 
 type ScriptType string
 
 const (
-	ScriptDeepTest                    = "deeptest"
-	DeclareDeepTest                   = "deeptest.d"
-	DeclareDeepTestPost               = "deeptest-post.d"
-	DeclareDeepTestScenarioCustomCode = "deeptest-scenario-custom-code.d"
-	DeclareChai                       = "chai.d"
+	ScriptDeepTest                    ScriptType = "deeptest"
+	ScriptDeepTestSimple              ScriptType = "deeptest-simple"
+	DeclareDeepTest                   ScriptType = "deeptest.d"
+	DeclareDeepTestPost               ScriptType = "deeptest-post.d"
+	DeclareDeepTestScenarioCustomCode ScriptType = "deeptest-scenario-custom-code.d"
+	DeclareChai                       ScriptType = "chai.d"
 
-	ModuleMockJs = "mockjs.js"
+	ModuleMockJs ScriptType = "mockjs.js"
 
-	ScriptMock  = "mock"
-	DeclareMock = "mock.d"
+	ScriptMock  ScriptType = "mock"
+	DeclareMock ScriptType = "mock.d"
 
-	DeclareJslibs = "jslibs"
+	DeclareJslibs ScriptType = "jslibs"
 
-	SnippetDatapoolGet    = "datapool_get"
-	SnippetVariablesGet   = "variables_get"
-	SnippetVariablesSet   = "variables_set"
-	SnippetVariablesClear = "variables_clear"
+	ScriptCustom ScriptType = "custom"
+
+	SnippetDatapoolGet    ScriptType = "datapool_get"
+	SnippetVariablesGet   ScriptType = "variables_get"
+	SnippetVariablesSet   ScriptType = "variables_set"
+	SnippetVariablesClear ScriptType = "variables_clear"
 )
 
 func (e ScriptType) String() string {

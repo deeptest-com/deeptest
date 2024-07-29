@@ -14,7 +14,7 @@ type ProcessorRoot struct {
 	ProcessorEntityBase
 }
 
-func (entity ProcessorRoot) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorRoot) Run(processor *Processor, session *ExecSession) (err error) {
 
 	logUtils.Infof("root entity")
 
@@ -32,10 +32,10 @@ func (entity ProcessorRoot) Run(processor *Processor, session *Session) (err err
 		//ParentLogId:       ,
 	}
 
-	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.ScenarioDebug.WsMsg)
 
 	for _, child := range processor.Children {
-		if GetForceStopExec(session.ExecUuid) {
+		if session.GetForceStop() {
 			break
 		}
 		if child.Disable {

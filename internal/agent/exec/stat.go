@@ -9,11 +9,11 @@ import (
 	"strings"
 )
 
-func ResetStat(execUuid string) {
-	SetInterfaceStat(execUuid, &agentDomain.InterfaceStat{})
+func ResetStat(session ExecSession) {
+	session.InterfaceStat = agentDomain.InterfaceStat{}
 }
 
-func CountInterfaceStat(execUuid string, result *agentDomain.ScenarioExecResult) agentDomain.InterfaceStat {
+func CountInterfaceStat(result *agentDomain.ScenarioExecResult, execUuid string) agentDomain.InterfaceStat {
 	stat := GetInterfaceStat(execUuid)
 
 	stat.InterfaceCount += 1
@@ -61,7 +61,7 @@ func CountInterfaceStat(execUuid string, result *agentDomain.ScenarioExecResult)
 	return *stat
 }
 
-func CountScriptAssertionStat(execUuid string, output string, result *agentDomain.ScenarioExecResult) agentDomain.InterfaceStat {
+func CountScriptAssertionStat(output string, result *agentDomain.ScenarioExecResult, execUuid string) agentDomain.InterfaceStat {
 	stat := GetInterfaceStat(execUuid)
 
 	arr := []string{}
@@ -84,15 +84,15 @@ func CountScriptAssertionStat(execUuid string, output string, result *agentDomai
 	return *stat
 }
 
-func CountSkip(execUuid string, executedProcessorIds map[uint]bool, skippedChildren []*Processor) agentDomain.InterfaceStat {
+func CountSkip(executedProcessorIds map[uint]bool, skippedChildren []*Processor, session *ExecSession) agentDomain.InterfaceStat {
 	countedProcessorIds := map[uint]bool{}
-	countSkipInterface(execUuid, executedProcessorIds, skippedChildren, &countedProcessorIds)
+	countSkipInterface(executedProcessorIds, skippedChildren, &countedProcessorIds, session)
 
-	return *GetInterfaceStat(execUuid)
+	return session.InterfaceStat
 }
 
-func countSkipInterface(execUuid string, executedProcessorIds map[uint]bool, skippedChildren []*Processor, countedProcessorIds *map[uint]bool) agentDomain.InterfaceStat {
-	stat := GetInterfaceStat(execUuid)
+func countSkipInterface(executedProcessorIds map[uint]bool, skippedChildren []*Processor, countedProcessorIds *map[uint]bool, session *ExecSession) agentDomain.InterfaceStat {
+	stat := session.InterfaceStat
 
 	for _, child := range skippedChildren {
 		if child.Disable {
@@ -107,11 +107,12 @@ func countSkipInterface(execUuid string, executedProcessorIds map[uint]bool, ski
 		}
 
 		if len(child.Children) > 0 {
-			countSkipInterface(execUuid, map[uint]bool{}, child.Children, countedProcessorIds)
+			countSkipInterface(map[uint]bool{}, child.Children, countedProcessorIds, session)
 		}
 	}
 
-	return *stat
+	session.InterfaceStat = stat
+	return session.InterfaceStat
 }
 
 func ParseChaiAssertion(output string) (status, name, checkpoint string) {

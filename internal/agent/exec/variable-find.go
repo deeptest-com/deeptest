@@ -7,12 +7,12 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 )
 
-func getDynamicVariableFromScope(processorId uint, propExpression string, execUuid string) (ret domain.ExecVariable, err error) {
-	allValidIds := GetValidScopeIds(processorId, execUuid)
+func getDynamicVariableFromScope(propExpression string, processorId uint, session *ExecSession) (ret domain.ExecVariable, err error) {
+	allValidIds := GetValidScopeIds(processorId, session)
 
 	if allValidIds != nil {
 		for _, id := range *allValidIds {
-			for _, item := range GetScopedVariables(execUuid)[id] {
+			for _, item := range session.ScenarioDebug.ScopedVariables[id] {
 				if !(item.Scope == consts.Public || (item.Scope == consts.Private && id == processorId)) {
 					continue
 				}
@@ -35,20 +35,20 @@ LABEL:
 	return
 }
 
-func getVariableFromShareVar(name string, execUuid string) (ret domain.ExecVariable, err error) {
-	execScene := GetExecScene(execUuid)
+func getVariableFromShareVar(name string, session *ExecSession) (ret domain.ExecVariable, err error) {
+	execScene := session.ExecScene
 
 	ret, err = GetVariableFromList(name, execScene.ShareVars)
 
 	return
 }
 
-func getVariableFromEnvVar(name string, execUuid string) (ret domain.ExecVariable, err error) {
-	execScene := GetExecScene(execUuid)
+func getVariableFromEnvVar(name string, session *ExecSession) (ret domain.ExecVariable, err error) {
+	execScene := session.ExecScene
 
-	envId := uint(GetCurrEnvironmentId(execUuid))
+	envId := session.EnvironmentId
 	if envId == 0 {
-		envId = execScene.DebugInterfaceToEnvMap[GetCurrDebugInterfaceId(execUuid)]
+		envId = execScene.DebugInterfaceToEnvMap[session.GetCurrDebugInterfaceId()]
 	}
 
 	vars := execScene.EnvToVariables[envId]
@@ -57,8 +57,8 @@ func getVariableFromEnvVar(name string, execUuid string) (ret domain.ExecVariabl
 
 	return
 }
-func getVariableFromGlobalVar(name, execUuid string) (ret domain.ExecVariable, err error) {
-	execScene := GetExecScene(execUuid)
+func getVariableFromGlobalVar(name string, session *ExecSession) (ret domain.ExecVariable, err error) {
+	execScene := session.ExecScene
 
 	ret, err = GetVariableFromList(name, execScene.GlobalVars)
 

@@ -1,13 +1,13 @@
 package handler
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/service"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
-	"github.com/snowlyg/helper/dir"
 	"go.uber.org/zap"
 	"path/filepath"
 )
@@ -49,7 +49,8 @@ func (c *FileCtrl) Upload(ctx iris.Context) {
 
 	var data interface{}
 	if isDatapool {
-		absPath := filepath.Join(dir.GetCurrentAbPath(), pth)
+		//absPath := filepath.Join(dir.GetCurrentAbPath(), pth)
+		absPath := filepath.Join(consts.WorkDir, pth)
 		data, err = c.DatapoolService.ReadExcel(absPath)
 
 		if err != nil {

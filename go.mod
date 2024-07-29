@@ -3,6 +3,18 @@ module github.com/aaronchen2k/deeptest
 go 1.19
 
 require (
+	github.com/fullstorydev/grpcurl v1.9.1
+	github.com/jhump/protoreflect v1.16.0
+	google.golang.org/grpc v1.63.2
+)
+
+replace (
+	github.com/fullstorydev/grpcurl v1.9.1 => github.com/fullstorydev/grpcurl v1.3.2
+	github.com/jhump/protoreflect v1.16.0 => github.com/jhump/protoreflect v1.5.0
+	google.golang.org/grpc v1.63.2 => google.golang.org/grpc v1.21.0
+)
+
+require (
 	github.com/474420502/requests v1.35.0
 	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible
 	github.com/andybalholm/brotli v1.0.5
@@ -16,9 +28,9 @@ require (
 	github.com/casbin/gorm-adapter/v3 v3.4.2
 	github.com/clbanning/mxj v1.8.4
 	github.com/d5/tengo/v2 v2.13.0
-	github.com/dlclark/regexp2 v1.7.0
-	github.com/dop251/goja v0.0.0-20230203172422-5460598cfa32
-	github.com/dop251/goja_nodejs v0.0.0-20230121151440-041f29a15066
+	github.com/dlclark/regexp2 v1.11.0
+	github.com/dop251/goja v0.0.0-20240516125602-ccbae20bcec2
+	github.com/dop251/goja_nodejs v0.0.0-20240418154818-2aae10d4cbcf
 	github.com/emirpasic/gods v1.12.0
 	github.com/facebookgo/inject v0.0.0-20180706035515-f23751cae28b
 	github.com/fatih/color v1.13.0
@@ -28,7 +40,7 @@ require (
 	github.com/go-ozzo/ozzo-routing/v2 v2.4.0
 	github.com/go-playground/validator/v10 v10.9.0
 	github.com/go-redis/redis/v8 v8.11.5
-	github.com/go-sourcemap/sourcemap v2.1.3+incompatible
+	github.com/go-sourcemap/sourcemap v2.1.4+incompatible
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/goccy/go-json v0.10.2
 	github.com/gofrs/uuid v4.2.0+incompatible
@@ -66,9 +78,9 @@ require (
 	github.com/xuri/excelize/v2 v2.6.1
 	github.com/zwgblue/yaml-encoder v0.0.0-20221226083717-a0bdbda0d998
 	go.uber.org/zap v1.19.1
-	golang.org/x/crypto v0.11.0
-	golang.org/x/net v0.12.0
-	golang.org/x/text v0.11.0
+	golang.org/x/crypto v0.14.0
+	golang.org/x/net v0.17.0
+	golang.org/x/text v0.15.0
 	google.golang.org/protobuf v1.31.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/yaml.v3 v3.0.1
@@ -113,14 +125,16 @@ require (
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
-	github.com/gobwas/ws v1.1.0 // indirect
+	github.com/gobwas/ws v1.2.1 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
 	github.com/golang/gddo v0.0.0-20210115222349-20d68f94ee1f // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/mock v1.6.0 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
+	github.com/google/pprof v0.0.0-20240521024322-9665fa269a30 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
@@ -200,10 +214,11 @@ require (
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
-	golang.org/x/sys v0.10.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.11.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
+	google.golang.org/genproto v0.0.0-20210602131652-f16073e35f0c // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect

@@ -5,7 +5,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
-	"github.com/snowlyg/helper/dir"
 	"path/filepath"
 	"sync"
 )
@@ -54,10 +53,12 @@ func InitJslibCache(tenantId consts.TenantId) (err error) {
 		Find(&pos).Error
 
 	for _, po := range pos {
-		pth := filepath.Join(dir.GetCurrentAbPath(), po.ScriptFile)
+		pth := filepath.Join(consts.WorkDir, po.ScriptFile)
 		content := fileUtils.ReadFile(pth)
 
 		to := Jslib{
+			Id:        po.ID,
+			ProjectId: po.ProjectId,
 			Name:      po.Name,
 			Script:    content,
 			UpdatedAt: *po.UpdatedAt,

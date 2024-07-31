@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	integrationService "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -13,10 +14,11 @@ import (
 )
 
 type PlanService struct {
-	PlanRepo        *repo.PlanRepo        `inject:""`
-	PlanReportRepo  *repo.PlanReportRepo  `inject:""`
-	UserRepo        *repo.UserRepo        `inject:""`
-	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
+	PlanRepo               *repo.PlanRepo                  `inject:""`
+	PlanReportRepo         *repo.PlanReportRepo            `inject:""`
+	UserRepo               *repo.UserRepo                  `inject:""`
+	EnvironmentRepo        *repo.EnvironmentRepo           `inject:""`
+	IntegrationPlanService *integrationService.PlanService `inject:""`
 }
 
 func (s *PlanService) Paginate(tenantId consts.TenantId, req v1.PlanReqPaginate, projectId int) (ret _domain.PageData, err error) {
@@ -100,12 +102,19 @@ func (s *PlanService) Create(tenantId consts.TenantId, req model.Plan) (po model
 	return
 }
 
-func (s *PlanService) Update(tenantId consts.TenantId, req model.Plan) error {
-	return s.PlanRepo.Update(tenantId, req)
+func (s *PlanService) Update(tenantId consts.TenantId, req model.Plan) (err error) {
+	err = s.PlanRepo.Update(tenantId, req)
+	if !req.IsLy {
+		go s.IntegrationPlanService.SyncPlan(tenantId, req.ID)
+	}
+	return
 }
 
-func (s *PlanService) DeleteById(tenantId consts.TenantId, id uint) error {
-	return s.PlanRepo.DeleteById(tenantId, id)
+func (s *PlanService) DeleteById(tenantId consts.TenantId, id uint) (err error) {
+
+	err = s.PlanRepo.DeleteById(tenantId, id)
+	go s.IntegrationPlanService.SyncPlan(tenantId, id)
+	return
 }
 
 func (s *PlanService) AddScenarios(tenantId consts.TenantId, planId uint, scenarioIds []uint) (err error) {

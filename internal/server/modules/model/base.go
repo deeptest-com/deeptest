@@ -15,7 +15,7 @@ type BaseModel struct {
 	CreatedAt *time.Time `json:"createdAt,omitempty"`
 	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 
-	Deleted  bool `json:"-" gorm:"default:false"`
+	Deleted  bool `json:"deleted" gorm:"default:false"`
 	Disabled bool `json:"disabled,omitempty" gorm:"default:false"`
 }
 

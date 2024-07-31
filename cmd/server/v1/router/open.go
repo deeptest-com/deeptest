@@ -8,8 +8,10 @@ import (
 )
 
 type OpenModule struct {
-	OpenCtrl *handler.OpenCtrl `inject:""`
-	DataCtrl *handler.DataCtrl `inject:""`
+	OpenCtrl       *handler.OpenCtrl       `inject:""`
+	DataCtrl       *handler.DataCtrl       `inject:""`
+	PlanCtrl       *handler.PlanCtrl       `inject:""`
+	PlanReportCtrl *handler.PlanReportCtrl `inject:""`
 }
 
 func (m *OpenModule) Party() module.WebModule {
@@ -20,6 +22,11 @@ func (m *OpenModule) Party() module.WebModule {
 		index.Post("/saveSpaceRelatedProjects", m.OpenCtrl.SaveSpaceRelatedProjects).Name = "保存空间和项目的关系"
 		index.Get("/getProjectRole", m.OpenCtrl.GetProjectRole).Name = "获取用户项目角色"
 		index.Post("/initdb", m.DataCtrl.Init)
+		index.Post("/createPlan", m.PlanCtrl.Create)
+		index.Post("/updatePlan", m.PlanCtrl.Update)
+		index.Post("/copyPlan/{id:uint}", m.PlanCtrl.Clone)
+		index.Post("/getPlan/{id:uint}", m.PlanCtrl.Get)
+		index.Get("/report/{id:uint}", m.PlanReportCtrl.Delete)
 	}
 
 	return module.NewModule("/openApi", handler)

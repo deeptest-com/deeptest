@@ -1,6 +1,8 @@
 package integrationDomain
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+)
 
 type LoginByOauthReq struct {
 	LoginName string `json:"loginName"`
@@ -193,4 +195,21 @@ type LovByCodeRes struct {
 			Name string `json:"externalValue"`
 		} `json:"details"`
 	} `json:"data"`
+}
+
+type CreateReport struct {
+	ApiPlanNumber   string `json:"apiPlanNumber"`
+	ApiReportNumber string `json:"apiReportNumber"`
+	CreatedBy       string `json:"createdBy"`
+	Name            string `json:"name"`
+	EnvName         string `json:"envName"`
+	ExecUserName    string `json:"execUserName"`
+	TestRate        uint   `json:"testRate"`
+}
+
+type SyncPlan struct {
+	Number   string `json:"number"`
+	Status   uint   `json:"status"`
+	Name     string `json:"name"`
+	IsDelete bool   `json:"isDelete"`
 }

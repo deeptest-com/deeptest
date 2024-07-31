@@ -100,9 +100,9 @@ func SetValueToGoja(name string, value interface{}) {
 	_setValueFunc(name, value)
 }
 
-func InitJsRuntime(tenantId consts.TenantId) {
+func InitJsRuntime(tenantId consts.TenantId, projectId uint) {
 	if mockVm.JsRuntime != nil {
-		jslibHelper.LoadServerJslibs(tenantId, mockVm.JsRuntime, mockRequire)
+		jslibHelper.LoadServerJslibs(tenantId, mockVm.JsRuntime, mockRequire, projectId)
 		return
 	}
 
@@ -130,5 +130,5 @@ func InitJsRuntime(tenantId consts.TenantId) {
 	mockVm.JsRuntime.Set("dt", dt)
 
 	// import other custom libs
-	jslibHelper.LoadServerJslibs(tenantId, mockVm.JsRuntime, mockRequire)
+	jslibHelper.LoadServerJslibs(tenantId, mockVm.JsRuntime, mockRequire, projectId)
 }

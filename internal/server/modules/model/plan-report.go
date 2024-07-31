@@ -64,4 +64,6 @@ type PlanReportDetail struct {
 	ExecUserName    string                 `json:"execUserName"`
 	ExecEnv         string                 `json:"execEnv"` //执行环境
 	ScenarioReports []ScenarioReportDetail `json:"scenarioReports"`
+	TestRate        uint                   `json:"testRate"`
+	PlanName        string                 `json:"planName"`
 }

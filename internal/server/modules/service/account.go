@@ -16,6 +16,7 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -110,12 +111,15 @@ func (s *AccountService) Register(tenantId consts.TenantId, req v1.RegisterReq) 
 
 	s.UserRepo.Register(tenantId, &user)
 
-	//mp := map[string]string{
-	//	"name": user.Name,
-	//	"sys":  consts.Sys,
-	//	"url":  consts.Url,
-	//}
-	//_mailUtils.Send(user.Email, _i118Utils.Sprintf("register_success"), "register-success", mp)
+	if strings.ToLower(config.CONFIG.System.Name) == "deeptest" {
+		mp := map[string]string{
+			"name":    user.Name,
+			"sys":     config.CONFIG.System.Name,
+			"url":     config.CONFIG.System.Website,
+			"toEmail": user.Email,
+		}
+		_mailUtils.Send(user.Email, _i118Utils.Sprintf("register_success"), "register-success", mp)
+	}
 
 	return
 }
@@ -125,14 +129,15 @@ func (s *AccountService) ForgotPassword(tenantId consts.TenantId, usernameOrPass
 
 	vcode, err := s.UserRepo.GenAndUpdateVcode(tenantId, user.ID)
 
-	url := consts.Url
+	url := config.CONFIG.System.Website
 	if !consts.IsRelease {
-		url = consts.UrlDev
+		url = consts.WebsiteDev
 	}
 	settings := map[string]string{
-		"name":  user.Username,
-		"url":   url,
-		"vcode": vcode,
+		"name":    user.Username,
+		"url":     url,
+		"vcode":   vcode,
+		"toEmail": user.Email,
 	}
 	_mailUtils.Send(user.Email, _i118Utils.Sprintf("reset_password"), "reset-password", settings)
 

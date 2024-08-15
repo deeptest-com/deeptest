@@ -1,3 +1,4 @@
+
 captcha:
   key-long: 6
   img-width: 240
@@ -9,6 +10,13 @@ limit:
   disable: true
   limit: 0
   burst: 5
+
+mail:
+  smtpAddress: smtp.qq.com
+  smtpPort: 465
+  account:
+  password:
+
 max-size: 1024
 maxsize: 1024
 mcs:
@@ -44,8 +52,12 @@ saas:
     appSecret: ""
   host: ""
 system:
-  name: ""
+  name: "DeepTest"
   sysEnv: ""
+
+  supportMail: chenqi@deeptest.com
+  website: http://demo.deeptest.com/
+
   level: debug
   serverAddress: 0.0.0.0:8085
   agentAddress: ""
@@ -54,6 +66,7 @@ system:
   db-type: mysql
   cache-type: redis
   time-format: "2006-01-02 15:04:05"
+
 thirdparty:
   username: ""
   password: ""
@@ -73,3 +86,6 @@ zap:
   encode-level: ""
   stacktrace-key: stacktrace
   log-in-console: true
+
+chatChatUrl: http://127.0.0.1:7861/
+chatChatControllerAddress: http://127.0.0.1:20001/

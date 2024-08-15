@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/aaronchen2k/deeptest"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -15,34 +15,29 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"path/filepath"
+	"path"
 	"regexp"
 	"strings"
 )
 
-// name
-// inviter
-// sys
-// url
-// vcode
-
 func Send(to, subject, tmpl string, mp map[string]string) (err error) {
 	d := gomail.NewDialer(
-		consts.EmailSmtpAddress,
-		consts.EmailSmtpPort,
-		consts.EmailAccount,
-		consts.EmailPassword)
+		config.CONFIG.Mail.SmtpAddress,
+		config.CONFIG.Mail.SmtpPort,
+		config.CONFIG.Mail.Account,
+		config.CONFIG.Mail.Password)
+
 	s, err := d.Dial()
 	if err != nil {
 		return
 	}
 
 	m := gomail.NewMessage()
-	m.SetHeader("From", consts.SupportEmail)
+	m.SetHeader("From", config.CONFIG.Mail.Account)
 	m.SetAddressHeader("To", to, mp["name"])
 	m.SetHeader("Subject", subject)
 
-	tmplFile := filepath.Join("res", "tmpl", tmpl+".ftl")
+	tmplFile := path.Join("res", "tmpl", tmpl+".ftl")
 	content, _ := deeptest.ReadResData(tmplFile)
 
 	body := os.Expand(string(content), func(k string) string { return mp[k] })

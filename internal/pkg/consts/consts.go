@@ -33,18 +33,10 @@ const (
 	ServerConfigFileName = "server.yaml"
 	CasbinFileName       = "rbac_model.conf" // casbin 规则文件名称
 
-	SupportEmail = "chenqi@deeptest.com"
-	Sys          = "DeepTest"
-	Url          = "https://deeptest.com/"
-	UrlDev       = "http://localhost:8000/"
+	WebsiteDev = "http://localhost:8000/"
 
 	ExtractorErr = "extractor_err"
 	ContentErr   = "content_err"
-
-	EmailSmtpAddress = "smtp.exmail.qq.com"
-	EmailSmtpPort    = 465
-	EmailAccount     = "chenqi@deeptest.com"
-	EmailPassword    = ""
 
 	HttpRequestTimeout = 60 * time.Second
 	DeepestKey         = "com_deeptest_prop_for_selection"

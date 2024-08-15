@@ -23,7 +23,7 @@ export const getUsefulPort = async function (port, maxPort) {
         port: port,    // minimum port
         maxPort: maxPort, // maximum port
     });
-    logInfo(`>> getUsefulPort port ${port} is used ${newPort} : ${newPort !== port}`);
+    logInfo(`>> getUsefulPort: port = ${port}, newPort = ${newPort}`);
     return newPort;
 }
 

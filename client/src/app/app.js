@@ -46,14 +46,18 @@ export class DeepTestApp {
         app.commandLine.appendSwitch('disable-site-isolation-trials')
         app.commandLine.appendSwitch('disable-features','BlockInsecurePrivateNetworkRequests')
         this._windows = new Map();
+
         // 需要启动本地 Agent 服务，之后再会启动 UI 服务
         (async () => {
             port = await getUsefulPort(portAgent,56999);
+
+            logInfo(`>> starting deeptest agent on port ${port}`);
+
             startAgent(port).then((agentUrl)=> {
-                if (agentUrl) logInfo(`>> deeptest server started successfully on : ${agentUrl}`);
+                if (agentUrl) logInfo(`>> deeptest agent started successfully at ${agentUrl}`);
                 this.bindElectronEvents();
             }).catch((err) => {
-                logErr('>> agent started failed, err: ' + err);
+                logErr('>> deeptest agent started failed on port ${port}, err: ' + err);
                 process.exit(1);
             })
         })()
@@ -95,13 +99,16 @@ export class DeepTestApp {
         mainWin.show()
 
         this._windows.set('main', mainWin);
+
         // 最终都是返回 http地址，远端 或者 本地http服务
         const uiPort = process.env.UI_SERVER_PORT || await getUsefulPort(portClient,55999);
         const url = await startUIService(uiPort);
         await mainWin.loadURL(url);
 
         // 通知渲染进程，agent服务端口
-        mainWin.webContents.send(electronMsgUsePort, {uiPort,agentPort:port});
+        const data = {uiPort, agentPort: port}
+        logInfo(`send event to webpage, uiPort=${data.uiPort}, agentPort=${data.agentPort}`)
+        mainWin.webContents.send(electronMsgUsePort, data);
 
         // 读取服务配置
         const confPath = path.join(os.homedir(), App, 'conf.yaml');
@@ -196,6 +203,7 @@ export class DeepTestApp {
         // this.buildAppMenu();
         this.openOrCreateWindow()
         this.setAboutPanel();
+
         // 使用默认的快捷键，和常用的快捷键有冲突
         // globalShortcut.register('CommandOrControl+D', () => {
         //     const mainWin = this._windows.get('main');
@@ -234,6 +242,7 @@ export class DeepTestApp {
             //     createWindow();
             // }
         });
+
         // Quit when all windows are closed, except on macOS. There, it's common
         // for applications and their menu bar to stay active until the user quits
         // explicitly with Cmd + Q.

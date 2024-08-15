@@ -8,6 +8,7 @@ import (
 type Config struct {
 	MaxSize     int64       `mapstructure:"max-size" json:"burst" yaml:"max-size"`
 	System      System      `mapstructure:"system" json:"system" yaml:"system"`
+	Mail        Mail        `mapstructure:"mail" json:"mail" yaml:"mail"`
 	Limit       Limit       `mapstructure:"limit" json:"limit" yaml:"limit"`
 	Zap         myZap.Zap   `mapstructure:"zap" json:"zap" yaml:"zap"`
 	Redis       Redis       `mapstructure:"redis" json:"redis" yaml:"redis"`
@@ -17,12 +18,19 @@ type Config struct {
 	ThirdParty  ThirdParty  `mapstructure:"third-party" json:"third-party" yaml:"third-party"`
 	Mcs         Mcs         `mapstructure:"mcs" json:"mcs" yaml:"mcs"`
 	Environment Environment `mapstructure:"environment" json:"environment" yaml:"environment"`
-	OpenApi     OpenApi     `mapstructure:"openapi" json:"openapi" yaml:"openapi"`
 	Saas        Saas        `mapstructure:"saas" json:"saas" yaml:"saas"`
+
+	OpenApi                   OpenApi `mapstructure:"openapi" json:"openapi" yaml:"openapi"`
+	ChatChatUrl               string  `mapstructure:"chatChatUrl" json:"chatChatUrl" yaml:"chatChatUrl"`
+	ChatChatControllerAddress string  `mapstructure:"chatChatControllerAddress" json:"chatChatControllerAddress" yaml:"chatChatControllerAddress"`
 }
 
 type System struct {
-	Name          string `mapstructure:"name" json:"name" yaml:"name"`
+	Name string `mapstructure:"name" json:"name" yaml:"name"`
+
+	SupportMail string `mapstructure:"supportMail" json:"supportMail" yaml:"supportMail"`
+	Website     string `mapstructure:"website" json:"website" yaml:"website"`
+
 	SysEnv        string `mapstructure:"sysEnv" json:"sysEnv" yaml:"sysEnv"` // dev, leyan_test, deeptest_demo etc.
 	Level         string `mapstructure:"level" json:"level" yaml:"level"`    // debug,release,test
 	ServerAddress string `mapstructure:"serverAddress" json:"serverAddress" yaml:"serverAddress"`
@@ -32,6 +40,13 @@ type System struct {
 	DbType        string `mapstructure:"db-type" json:"dbType" yaml:"db-type"`
 	CacheType     string `mapstructure:"cache-type" json:"cacheType" yaml:"cache-type"`
 	TimeFormat    string `mapstructure:"time-format" json:"timeFormat" yaml:"time-format"`
+}
+
+type Mail struct {
+	SmtpAddress string `mapstructure:"smtpAddress" json:"smtpAddress" yaml:"smtpAddress"`
+	SmtpPort    int    `mapstructure:"smtpPort" json:"smtpPort" yaml:"smtpPort"`
+	Account     string `mapstructure:"account" json:"account" yaml:"account"`
+	Password    string `mapstructure:"password" json:"password" yaml:"password"`
 }
 
 type Limit struct {

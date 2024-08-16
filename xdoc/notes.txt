@@ -85,7 +85,7 @@ gRPC
     int2=='101' && function(x) {return x + 100} (6) == 106
 
 # 版本库
-git push -f github dt:main
+git push -f github master:main
 git push -f github feature/chenqi99/var_in_params:feature/chenqi99/var_in_params
 git push -f github feature/chenqi99/openai:feature/chenqi99/openai
 

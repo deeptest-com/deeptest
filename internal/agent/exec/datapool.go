@@ -2,33 +2,20 @@ package agentExec
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"math/rand"
-	"regexp"
 	"strconv"
-	"strings"
 	"time"
 )
 
-func getDatapoolValue(placeholder string, session *ExecSession) (ret string) {
+func getDatapoolValue(dpName, dpCol string, dpSeq interface{}, session *ExecSession) (ret string) {
 	execScene := session.ExecScene
 	// _dp(name, col, 1 | seq | rand >)
 
-	regex := regexp.MustCompile(fmt.Sprintf("(?Ui)%s\\((.+),(.+),(.+)\\)", consts.PlaceholderPrefixDatapool))
-	arrs := regex.FindAllStringSubmatch(placeholder, -1)
-
-	if !(len(arrs) == 1 && len(arrs[0]) == 4) {
-		return
-	}
-
-	dpName := strings.TrimSpace(arrs[0][1])
-	dpCol := strings.TrimSpace(arrs[0][2])
-	dpSeq := strings.TrimSpace(arrs[0][3])
-
 	dp := execScene.Datapools[dpName]
 	if dp == nil {
-		ret = fmt.Sprintf("${%s}", placeholder)
+		ret = fmt.Sprintf("datapoll ${%s} no found", dpName)
 		return
 	}
 
@@ -49,13 +36,15 @@ func getDatapoolValue(placeholder string, session *ExecSession) (ret string) {
 	return
 }
 
-func getDatapoolRow(dpName, seq string, datapools domain.Datapools, datapoolCursor map[string]int) (ret int) {
+func getDatapoolRow(dpName string, seq interface{}, datapools domain.Datapools, datapoolCursor map[string]int) (ret int) {
 	dp := datapools[dpName]
 	if dp == nil {
 		return
 	}
 
 	total := len(dp)
+
+	seqStr := _stringUtils.InterfToStr(seq)
 
 	if seq == "seq" {
 		ret = datapoolCursor[dpName] % total
@@ -66,7 +55,7 @@ func getDatapoolRow(dpName, seq string, datapools domain.Datapools, datapoolCurs
 		ret = rand.Intn(total)
 
 	} else {
-		seqInt, _ := strconv.Atoi(seq)
+		seqInt, _ := strconv.Atoi(seqStr)
 		ret = seqInt - 1
 		ret = ret % total
 

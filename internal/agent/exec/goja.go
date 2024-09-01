@@ -107,6 +107,11 @@ func defineJsFuncs(runtime *goja.Runtime, require *require.RequireModule, sessio
 		return
 	})
 
+	runtime.Set("_dp", func(dp string, col string, seq interface{}) (ret interface{}) {
+		ret = getDatapoolValue(dp, col, seq, session)
+		return
+	})
+
 	if isSimple {
 		return
 	}

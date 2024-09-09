@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	integrationService "github.com/aaronchen2k/deeptest/integration/leyan/service"
+	integrationService "github.com/aaronchen2k/deeptest/integration/thirdparty/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"

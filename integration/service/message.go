@@ -3,7 +3,7 @@ package service
 import (
 	"fmt"
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
-	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
+	thirdparty "github.com/aaronchen2k/deeptest/integration/thirdparty/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
@@ -14,14 +14,14 @@ import (
 )
 
 type MessageService struct {
-	UserRepo        *repo.UserRepo        `inject:""`
-	ProjectRepo     *repo.ProjectRepo     `inject:""`
-	ProjectRoleRepo *repo.ProjectRoleRepo `inject:""`
-	MessageRepo     *repo.MessageRepo     `inject:""`
-	BaseRepo        *repo.BaseRepo        `inject:""`
-	RoleService     *RoleService          `inject:""`
-	RemoteService   *leyan.RemoteService  `inject:""`
-	Cron            *cron.ServerCron      `inject:""`
+	UserRepo        *repo.UserRepo            `inject:""`
+	ProjectRepo     *repo.ProjectRepo         `inject:""`
+	ProjectRoleRepo *repo.ProjectRoleRepo     `inject:""`
+	MessageRepo     *repo.MessageRepo         `inject:""`
+	BaseRepo        *repo.BaseRepo            `inject:""`
+	RoleService     *RoleService              `inject:""`
+	RemoteService   *thirdparty.RemoteService `inject:""`
+	Cron            *cron.ServerCron          `inject:""`
 }
 
 func (s *MessageService) GetJoinProjectMcsData(tenantId consts.TenantId, senderId, projectId, auditId uint, roleValue consts.RoleType) (mcsData integrationDomain.ApprovalReq, err error) {
@@ -61,7 +61,7 @@ func (s *MessageService) GetJoinProjectMcsData(tenantId consts.TenantId, senderI
 		CreatorId:    sender.Username,
 		ApproveIds:   userAccount,
 		ApprovalType: 1,
-		Title:        "乐研API通知-项目权限申请",
+		Title:        "第三方API通知-项目权限申请",
 		Content:      fmt.Sprintf("您好！%s申请\"%s\"API管理项目的【%s】角色。请审批！\n项目链接：%s", sender.Name, project.Name, applyRole, projectHomePage),
 		SourceIds:    []int{0},
 		Remark:       auditData.Description,

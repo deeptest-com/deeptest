@@ -9328,7 +9328,7 @@
   "servers":[
     {
       "description":"测试环境",
-      "url":"https://leyanapi-test.nancalcloud.com/api/v1"
+      "url":"https://thirdpartyapi-test.nancalcloud.com/api/v1"
     },
     {
       "description":"本地环境",
@@ -9336,7 +9336,7 @@
     },
     {
       "description":"开发环境",
-      "url":"http://leyanapi-dev.nancalcloud.com"
+      "url":"http://thirdpartyapi-dev.nancalcloud.com"
     },
     {
       "description":"Mock环境",

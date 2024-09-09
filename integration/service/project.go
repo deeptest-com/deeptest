@@ -6,7 +6,7 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
 	lecang "github.com/aaronchen2k/deeptest/integration/lecang/service"
-	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
+	thirdparty "github.com/aaronchen2k/deeptest/integration/thirdparty/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -16,7 +16,7 @@ import (
 )
 
 type ProjectService struct {
-	RemoteService   *leyan.RemoteService       `inject:""`
+	RemoteService   *thirdparty.RemoteService  `inject:""`
 	IntegrationRepo *repo.IntegrationRepo      `inject:""`
 	ProjectRepo     *repo.ProjectRepo          `inject:""`
 	UserRepo        *repo.UserRepo             `inject:""`

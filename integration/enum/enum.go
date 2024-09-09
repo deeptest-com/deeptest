@@ -3,8 +3,8 @@ package enum
 type AppName string
 
 const (
-	Lecang AppName = "lecang"
-	Leyan  AppName = "leyan"
+	Lecang     AppName = "lecang"
+	Thirdparty AppName = "thirdparty"
 )
 
 type RoleValue string

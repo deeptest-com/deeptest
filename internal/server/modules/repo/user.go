@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/integration/leyan/service"
+	"github.com/aaronchen2k/deeptest/integration/thirdparty/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"

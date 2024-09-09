@@ -41,7 +41,7 @@ SKIP_AGENT_SERVER=1 UI_SERVER_URL=http://localhost:8000 npm run start
 **模式二：使用本地 UI 静态文件目录**
 
 ```
-UI_SERVER_URL=../../leyanapi-frontend/dist UI_SERVER_PORT=8001 npm run start
+UI_SERVER_URL=../../thirdpartyapi-frontend/dist UI_SERVER_PORT=8001 npm run start
 ```
 
 **模式三：自定义 DeepTest 服务执行文件路径**

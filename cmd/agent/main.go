@@ -25,7 +25,7 @@ var (
 	flagSet *flag.FlagSet
 )
 
-// @title 乐研API文档
+// @title 第三方API文档
 // @version 1.0
 // @contact.name API Support
 

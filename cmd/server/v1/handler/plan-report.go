@@ -104,7 +104,7 @@ func (c *PlanReportCtrl) Delete(ctx iris.Context) {
 	err = c.ReportService.DeleteById(tenantId, req.Id)
 
 	if ctx.Method() == "DELETE" {
-		//同步乐研
+		//同步第三方
 		go c.IntegrationReportService.DeleteReport(tenantId, req.Id)
 	}
 

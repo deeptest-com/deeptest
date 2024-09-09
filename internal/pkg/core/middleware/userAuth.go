@@ -139,7 +139,7 @@ func getAppName(ctx *context.Context) (appName enum.AppName, token, origin strin
 
 	token = ctx.GetHeader("X-Token")
 	if token != "" {
-		appName = enum.Leyan
+		appName = enum.Thirdparty
 		return
 	}
 

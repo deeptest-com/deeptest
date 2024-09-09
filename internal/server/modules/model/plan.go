@@ -31,7 +31,7 @@ type Plan struct {
 	ExecutorName   string            `gorm:"-" json:"executorName"`   //执行人姓名
 	ExecTime       *time.Time        `gorm:"-" json:"execTime"`       //执行时间
 	ExecEnv        string            `gorm:"-" json:"execEnv"`        //执行环境
-	IsLy           bool              `json:"isLy"`                    //是否是leyan计划
+	IsLy           bool              `json:"isLy"`                    //是否是thirdparty计划
 
 }
 

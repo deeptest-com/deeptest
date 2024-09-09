@@ -3,8 +3,8 @@ package handler
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/integration/enum"
-	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
 	integrationService "github.com/aaronchen2k/deeptest/integration/service"
+	thirdparty "github.com/aaronchen2k/deeptest/integration/thirdparty/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -15,7 +15,7 @@ import (
 type OpenCtrl struct {
 	ProjectService            *service.ProjectService            `inject:""`
 	IntegrationProjectService *integrationService.ProjectService `inject:""`
-	UserService               *leyan.User                        `inject:""`
+	UserService               *thirdparty.User                   `inject:""`
 	BaseCtrl
 }
 

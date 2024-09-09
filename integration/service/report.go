@@ -2,16 +2,16 @@ package service
 
 import (
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
-	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
+	thirdparty "github.com/aaronchen2k/deeptest/integration/thirdparty/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
 
 type ReportService struct {
-	PlanReportRepo *repo.PlanReportRepo `inject:""`
-	RemoteService  *leyan.RemoteService `inject:""`
-	PlanRepo       *repo.PlanRepo       `inject:""`
-	UserRepo       *repo.UserRepo       `inject:""`
+	PlanReportRepo *repo.PlanReportRepo      `inject:""`
+	RemoteService  *thirdparty.RemoteService `inject:""`
+	PlanRepo       *repo.PlanRepo            `inject:""`
+	UserRepo       *repo.UserRepo            `inject:""`
 }
 
 func (s *ReportService) SaveReport(tenantId consts.TenantId, id uint) (err error) {
@@ -20,7 +20,7 @@ func (s *ReportService) SaveReport(tenantId consts.TenantId, id uint) (err error
 		return err
 	}
 
-	// 保存到leyan
+	// 保存到thirdparty
 	data := integrationDomain.CreateReport{}
 	data.Name = report.Name
 	data.ApiReportNumber = report.SerialNumber

@@ -36,7 +36,7 @@ func (s *RemoteService) GetUserInfoByToken(tenantId consts.TenantId, token strin
 		Headers:  &headers,
 	}
 
-	logUtils.Infof("leyan-getUserInfoByToken: %s", _commUtils.JsonEncode(httpReq))
+	logUtils.Infof("thirdparty-getUserInfoByToken: %s", _commUtils.JsonEncode(httpReq))
 	var resp domain.DebugResponse
 	resp, err = httpHelper.Get(httpReq)
 	if err != nil {
@@ -170,7 +170,7 @@ func (s *RemoteService) GetUserButtonPermissions(tenantId consts.TenantId, usern
 			},
 		},
 	}
-	logUtils.Infof("leyan-UserButtonPermissions,%s", _commUtils.JsonEncode(httpReq))
+	logUtils.Infof("thirdparty-UserButtonPermissions,%s", _commUtils.JsonEncode(httpReq))
 	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get UserButtonPermissions failed, error, %s", err.Error())
@@ -227,7 +227,7 @@ func (s *RemoteService) GetUserMenuPermissions(tenantId consts.TenantId, usernam
 			},
 		},
 	}
-	logUtils.Infof("leyan-GetUserMenuPermissions %s", _commUtils.JsonEncode(httpReq))
+	logUtils.Infof("thirdparty-GetUserMenuPermissions %s", _commUtils.JsonEncode(httpReq))
 	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get GetUserMenuPermissions failed, error, %s", err.Error())
@@ -319,7 +319,7 @@ func (s *RemoteService) GetRoleMenus(tenantId consts.TenantId, role string) (ret
 			},
 		},
 	}
-	logUtils.Infof("leyan-GetRoleMenus,%s", _commUtils.JsonEncode(httpReq))
+	logUtils.Infof("thirdparty-GetRoleMenus,%s", _commUtils.JsonEncode(httpReq))
 	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get RoleMenus failed, error, %s", err.Error())
@@ -730,7 +730,7 @@ func (s *RemoteService) SaveReport(tenantId consts.TenantId, report integrationD
 		Headers:  &headers,
 		Body:     req,
 	}
-	logUtils.Infof("leyan-SaveReport %s", _commUtils.JsonEncode(httpReq))
+	logUtils.Infof("thirdparty-SaveReport %s", _commUtils.JsonEncode(httpReq))
 	resp, err := httpHelper.Post(httpReq)
 	if err != nil {
 		logUtils.Infof("get SaveReport failed, error, %s", err.Error())
@@ -772,7 +772,7 @@ func (s *RemoteService) SyncPlan(tenantId consts.TenantId, data integrationDomai
 		Headers:  &headers,
 		Body:     req,
 	}
-	logUtils.Infof("leyan-SyncPlan %s", _commUtils.JsonEncode(httpReq))
+	logUtils.Infof("thirdparty-SyncPlan %s", _commUtils.JsonEncode(httpReq))
 	resp, err := httpHelper.Post(httpReq)
 	if err != nil {
 		logUtils.Infof("get SyncPlan failed, error, %s", err.Error())
@@ -812,7 +812,7 @@ func (s *RemoteService) DeleteReport(tenantId consts.TenantId, number string) (e
 		BodyType: consts.ContentTypeJSON,
 		Headers:  &headers,
 	}
-	logUtils.Infof("leyan-DeleteReport %s", _commUtils.JsonEncode(httpReq))
+	logUtils.Infof("thirdparty-DeleteReport %s", _commUtils.JsonEncode(httpReq))
 	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get DeleteReport failed, error, %s", err.Error())

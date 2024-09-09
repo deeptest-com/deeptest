@@ -31,7 +31,7 @@ type System struct {
 	SupportMail string `mapstructure:"supportMail" json:"supportMail" yaml:"supportMail"`
 	Website     string `mapstructure:"website" json:"website" yaml:"website"`
 
-	SysEnv        string `mapstructure:"sysEnv" json:"sysEnv" yaml:"sysEnv"` // dev, leyan_test, deeptest_demo etc.
+	SysEnv        string `mapstructure:"sysEnv" json:"sysEnv" yaml:"sysEnv"` // dev, thirdparty_test, deeptest_demo etc.
 	Level         string `mapstructure:"level" json:"level" yaml:"level"`    // debug,release,test
 	ServerAddress string `mapstructure:"serverAddress" json:"serverAddress" yaml:"serverAddress"`
 	AgentAddress  string `mapstructure:"agentAddress" json:"agentAddress" yaml:"agentAddress"`

@@ -1,13 +1,13 @@
 package service
 
 import (
-	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
+	thirdparty "github.com/aaronchen2k/deeptest/integration/thirdparty/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 )
 
 type RoleService struct {
-	RemoteService *leyan.RemoteService `inject:""`
-	UserService   *leyan.User          `inject:""`
+	RemoteService *thirdparty.RemoteService `inject:""`
+	UserService   *thirdparty.User          `inject:""`
 }
 
 func (s *RoleService) GetRoleValueNameMap(tenantId consts.TenantId) (res map[string]string, err error) {

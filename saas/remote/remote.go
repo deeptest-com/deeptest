@@ -3,7 +3,7 @@ package remote
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/integration/leyan/pkg"
+	"github.com/aaronchen2k/deeptest/integration/thirdparty/pkg"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	v1 "github.com/aaronchen2k/deeptest/internal/pkg/domain"

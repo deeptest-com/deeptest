@@ -3,8 +3,8 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/integration/leyan/service"
 	integrationService "github.com/aaronchen2k/deeptest/integration/service"
+	"github.com/aaronchen2k/deeptest/integration/thirdparty/service"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
 	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"

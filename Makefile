@@ -25,7 +25,7 @@ PKG_W64=npm run package-win64
 PKG_MAC=npm run package-mac
 PKG_W32=npm run package-win32
 PKG_LINUX=npm run package-linux
-ifeq ($(PROJECT),LeyanAPI)
+ifeq ($(PROJECT),ThirdpartyAPI)
 	QINIU_DIR=~/nk2/ly/
 endif
 
@@ -63,7 +63,7 @@ dp-linux-client: prepare build_gui_linux                        compile_server_l
 dp-mac-client:   prepare build_gui_mac        					 compile_server_mac   copy_files_mac   zip_mac_client zip_mac_upgrade
 dp-mac-test-client: compile_ui_client_test build_gui_mac
 
-# 乐研 打包
+# 第三方 打包
 ly-win64-client: prepare compile_ly_ui_client build_gui_win64 compile_ly_launcher_win64 compile_server_win64 copy_files_win64 zip_win64_client zip_win64_upgrade
 ly-win32-client: prepare compile_ly_ui_client build_gui_win32 compile_ly_launcher_win32 compile_server_win32 copy_files_win32 zip_win32_client zip_win32_upgrade
 ly-linux-client: prepare compile_ly_ui_client build_gui_linux                        compile_server_linux copy_files_linux zip_linux_client zip_linux_upgrade
@@ -89,14 +89,14 @@ compile_ui_demo: # DeepTest测试
 compile_ui_nancal: # 内网测试
 	@cd ../deeptest-ui && yarn build:nancal --dest ../deeptest/client/ui && cd ../deeptest
 compile_ui_client:
-	@rm -rf client/ui && cd ../leyanapi-frontend && yarn build:client --dest ../leyanapi-backend/client/ui && cd ..
+	@rm -rf client/ui && cd ../thirdpartyapi-frontend && yarn build:client --dest ../thirdpartyapi-backend/client/ui && cd ..
 compile_ui_client_test:
-	@rm -rf client/ui && cd ../leyanapi-frontend && yarn build:clientTest --dest ../leyanapi-backend/client/ui && cd ..
+	@rm -rf client/ui && cd ../thirdpartyapi-frontend && yarn build:clientTest --dest ../thirdpartyapi-backend/client/ui && cd ..
 compile_ly_ui_client:
-	@cd ../leyanapi-frontend  && yarn build:client && cd ../leyanapi-backend
+	@cd ../thirdpartyapi-frontend  && yarn build:client && cd ../thirdpartyapi-backend
 
 compile_ui_web:
-	@cd ../leyanapi-frontend && yarn build:web --dest ../leyanapi-backend/bin/deeptest-ui && cd ../leyanapi-backend
+	@cd ../thirdpartyapi-frontend && yarn build:web --dest ../thirdpartyapi-backend/bin/deeptest-ui && cd ../thirdpartyapi-backend
 
 # launcher
 compile_launcher_win64:
@@ -306,7 +306,7 @@ zip_mac_web:
 	@cp -rf bin/deeptest-ui ${BIN_DIR}darwin
 
 	@cd ${BIN_DIR}darwin/ && \
-		zip -ry ${QINIU_DIST_DIR}darwin/${PROJECT}-web.zip ./* -x Leyan* && \
+		zip -ry ${QINIU_DIST_DIR}darwin/${PROJECT}-web.zip ./* -x Thirdparty* && \
 		md5sum ${QINIU_DIST_DIR}darwin/${PROJECT}-web.zip | awk '{print $$1}' | \
 			xargs echo > ${QINIU_DIST_DIR}darwin/${PROJECT}-web.zip.md5 && \
         cd ../..; \
@@ -317,7 +317,7 @@ zip_win64_client:
 	@find . -name .DS_Store -print0 | xargs -0 rm -f
 	@mkdir -p ${QINIU_DIST_DIR}win64 && rm -rf ${QINIU_DIST_DIR}win64/${PROJECT}-client.zip
 	@cd ${CLIENT_OUT_DIR_EXECUTABLE}win64 && \
-		zip -ry ${QINIU_DIST_DIR}win64/${PROJECT}-client.zip ./* -x Leyan* && \
+		zip -ry ${QINIU_DIST_DIR}win64/${PROJECT}-client.zip ./* -x Thirdparty* && \
 		md5sum ${QINIU_DIST_DIR}win64/${PROJECT}-client.zip | awk '{print $$1}' | \
 			xargs echo > ${QINIU_DIST_DIR}win64/${PROJECT}-client.zip.md5 && \
         cd ../../..; \
@@ -327,7 +327,7 @@ zip_win32_client:
 	@find . -name .DS_Store -print0 | xargs -0 rm -f
 	@mkdir -p ${QINIU_DIST_DIR}win32 && rm -rf ${QINIU_DIST_DIR}win32/${PROJECT}-client.zip
 	@cd ${CLIENT_OUT_DIR_EXECUTABLE}win32 && \
-		zip -ry ${QINIU_DIST_DIR}win32/${PROJECT}-client.zip ./* -x Leyan* && \
+		zip -ry ${QINIU_DIST_DIR}win32/${PROJECT}-client.zip ./* -x Thirdparty* && \
 		md5sum ${QINIU_DIST_DIR}win32/${PROJECT}-client.zip | awk '{print $$1}' | \
 			xargs echo > ${QINIU_DIST_DIR}win32/${PROJECT}-client.zip.md5 && \
         cd ../../..; \
@@ -337,7 +337,7 @@ zip_linux_client:
 	@find . -name .DS_Store -print0 | xargs -0 rm -f
 	@mkdir -p ${QINIU_DIST_DIR}linux && rm -rf ${QINIU_DIST_DIR}linux/${PROJECT}-client.zip
 	@cd ${CLIENT_OUT_DIR_EXECUTABLE}linux && \
-		zip -ry ${QINIU_DIST_DIR}linux/${PROJECT}-client.zip ./* -x Leyan* && \
+		zip -ry ${QINIU_DIST_DIR}linux/${PROJECT}-client.zip ./* -x Thirdparty* && \
 		md5sum ${QINIU_DIST_DIR}linux/${PROJECT}-client.zip | awk '{print $$1}' | \
 			xargs echo > ${QINIU_DIST_DIR}linux/${PROJECT}-client.zip.md5 && \
         cd ../../..; \
@@ -347,7 +347,7 @@ zip_mac_client:
 	@find . -name .DS_Store -print0 | xargs -0 rm -f
 	@mkdir -p ${QINIU_DIST_DIR}darwin && rm -rf ${QINIU_DIST_DIR}darwin/${PROJECT}-client.zip
 	@cd ${CLIENT_OUT_DIR_EXECUTABLE}darwin && \
-		zip -ry ${QINIU_DIST_DIR}darwin/${PROJECT}-client.zip ./* -x Leyan* && \
+		zip -ry ${QINIU_DIST_DIR}darwin/${PROJECT}-client.zip ./* -x Thirdparty* && \
 		md5sum ${QINIU_DIST_DIR}darwin/${PROJECT}-client.zip | awk '{print $$1}' | \
 			xargs echo > ${QINIU_DIST_DIR}darwin/${PROJECT}-client.zip.md5 && \
         cd ../../..; \

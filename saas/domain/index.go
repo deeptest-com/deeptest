@@ -28,12 +28,12 @@ type Tenant struct {
 	ManagerName   string          `json:"managerName"`
 	ManagerMail   string          `json:"managerMail"`
 
-	DbConfig DbConfig `json:"leyanapiDB"`
+	DbConfig DbConfig `json:"thirdpartyapiDB"`
 }
 
 type temp struct {
 	Id            int64    `json:"id"`
-	DbConfig      DbConfig `json:"leyanapiDB"`
+	DbConfig      DbConfig `json:"thirdpartyapiDB"`
 	SpecCode      string   `json:"specCode"`
 	SkuCode       string   `json:"skuCode"`
 	ManagerId     uint64   `json:"managerId"`

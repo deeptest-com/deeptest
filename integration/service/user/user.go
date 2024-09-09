@@ -4,7 +4,7 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/integration/domain"
 	"github.com/aaronchen2k/deeptest/integration/enum"
 	lecang "github.com/aaronchen2k/deeptest/integration/lecang/service"
-	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
+	thirdparty "github.com/aaronchen2k/deeptest/integration/thirdparty/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 )
 
@@ -27,8 +27,8 @@ func (s *user) getEntity(appName enum.AppName) (u IUser) {
 	switch appName {
 	case enum.Lecang:
 		u = new(lecang.User)
-	case enum.Leyan:
-		u = new(leyan.User)
+	case enum.Thirdparty:
+		u = new(thirdparty.User)
 	}
 	return
 }

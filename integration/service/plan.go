@@ -2,15 +2,15 @@ package service
 
 import (
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
-	"github.com/aaronchen2k/deeptest/integration/leyan/common"
-	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
+	"github.com/aaronchen2k/deeptest/integration/thirdparty/common"
+	thirdparty "github.com/aaronchen2k/deeptest/integration/thirdparty/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
 
 type PlanService struct {
-	PlanRepo      *repo.PlanRepo       `inject:""`
-	RemoteService *leyan.RemoteService `inject:""`
+	PlanRepo      *repo.PlanRepo            `inject:""`
+	RemoteService *thirdparty.RemoteService `inject:""`
 }
 
 func (s *PlanService) SyncPlan(tenantId consts.TenantId, id uint) (err error) {

@@ -4,12 +4,16 @@ import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	mockGenerator "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
+	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 )
 
 type TestsCtrl struct {
 	BaseCtrl
+
+	StreamTestService *service.StreamTestService `inject:""`
 }
 
 func (c *TestsCtrl) Gets(ctx iris.Context) {
@@ -125,4 +129,25 @@ func (c *TestsCtrl) getParams(ctx iris.Context) (reqContentType consts.HttpConte
 	}
 
 	return
+}
+
+func (c *TestsCtrl) Stream(ctx iris.Context) {
+	flusher, ok := ctx.ResponseWriter().Flusher()
+	if !ok {
+		ctx.StopWithText(iris.StatusHTTPVersionNotSupported, "Streaming unsupported!")
+		return
+	}
+
+	//ctx.Header("content-type", "text/event-stream")
+	ctx.ContentType("text/event-stream")
+	ctx.Header("Cache-Control", "no-cache")
+
+	req := serverDomain.StreamTestObj{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	c.StreamTestService.Chat(req, flusher, ctx)
 }

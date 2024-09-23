@@ -15,19 +15,20 @@ type TestsModule struct {
 // Party 脚本
 func (m *TestsModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Get("/", m.TestsCtrl.Gets).Name = "模拟接口测试"
-		index.Post("/", m.TestsCtrl.Posts).Name = "模拟接口测试"
-		index.Put("/", m.TestsCtrl.Posts).Name = "模拟接口测试"
-		index.Delete("/", m.TestsCtrl.Posts).Name = "模拟接口测试"
-
-		index.Patch("/", m.TestsCtrl.Posts).Name = "模拟接口测试"
-		index.Head("/", m.TestsCtrl.Head).Name = "模拟接口测试"
-
-		index.Connect("/", m.TestsCtrl.Connect).Name = "模拟接口测试"
-		index.Trace("/", m.TestsCtrl.Trace).Name = "模拟接口测试"
+		index.Get("/", m.TestsCtrl.Gets).Name = "模拟Get"
+		index.Post("/", m.TestsCtrl.Posts).Name = "模拟Post"
+		index.Put("/", m.TestsCtrl.Posts).Name = "模拟Put"
+		index.Delete("/", m.TestsCtrl.Posts).Name = "模拟Delete"
+		index.Patch("/", m.TestsCtrl.Posts).Name = "模拟Patch"
+		index.Head("/", m.TestsCtrl.Head).Name = "模拟Head"
+		index.Connect("/", m.TestsCtrl.Connect).Name = "模拟Connect"
+		index.Trace("/", m.TestsCtrl.Trace).Name = "模拟Trace"
 
 		index.Post("/upload", iris.LimitRequestBodySize(config.CONFIG.MaxSize*iris.MB),
-			m.FileCtrl.Upload).Name = "上传文件测试"
+			m.FileCtrl.Upload).Name = "模拟上传文件"
+
+		index.Post("/stream", iris.LimitRequestBodySize(config.CONFIG.MaxSize*iris.MB),
+			m.TestsCtrl.Stream).Name = "模拟Stream流"
 	}
 	return module.NewModule("/test", handler)
 }

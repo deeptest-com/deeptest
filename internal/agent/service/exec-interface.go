@@ -14,21 +14,17 @@ import (
 func RunInterface(req *agentExec.InterfaceExecReq, localVarsCache iris.Map, wsMsg *websocket.Message) (err error) {
 	logUtils.Infof("run debug interface %d on environment %d", req.Data.DebugInterfaceId, req.Data.EnvironmentId)
 
-	// start msg
-	execUtils.SendStartMsg(wsMsg)
-
 	// execution
 	resultReq, resultResp, err := ExecInterface(req, localVarsCache, wsMsg)
 
 	// send result
 	result := iris.Map{
+		"source":   "execInterface",
 		"request":  resultReq,
 		"response": resultResp,
 	}
 	execUtils.SendExecMsg(result, consts.ProgressResult, wsMsg)
-
-	// end msg
-	execUtils.SendEndMsg(wsMsg)
+	execUtils.SendExecMsg(iris.Map{"source": "execInterface"}, consts.ProgressEnd, wsMsg)
 
 	return
 }
@@ -102,8 +98,7 @@ func PostRequest(originalReqUri string, req *domain.DebugData) (err error) {
 }
 
 func RequestInterface(req *domain.DebugData, wsMsg *websocket.Message) (ret domain.DebugResponse, err error) {
-
-	ret, err = agentExec.Invoke(&req.BaseRequest)
+	ret, err = agentExec.Invoke(&req.BaseRequest, wsMsg)
 	ret.Id = req.DebugInterfaceId
 
 	return

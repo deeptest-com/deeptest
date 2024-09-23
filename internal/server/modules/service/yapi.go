@@ -65,7 +65,7 @@ func getYapiCatMenu(yapiHost, token string) (yapiCatMenu YapiCatMenu) {
 		Url:         yapiHost + "/api/interface/getCatMenu",
 		QueryParams: &param,
 	}
-	resp, err := httpHelper.Get(req)
+	resp, err := httpHelper.Get(req, nil)
 	if err != nil {
 		logUtils.Infof("from api get yapi catMenu error, %s", err.Error())
 		return
@@ -98,7 +98,7 @@ func (s *YapiService) GetYapiMenuInterfaceList(yapiHost, token, catid string) (y
 		Url:         yapiHost + "/api/interface/list_cat",
 		QueryParams: &param,
 	}
-	resp, err := httpHelper.Get(req)
+	resp, err := httpHelper.Get(req, nil)
 	if err != nil {
 		logUtils.Infof("from api get yapi catMenu error, %s", err.Error())
 		return
@@ -127,7 +127,7 @@ func (s *YapiService) GetYapiInterface(yapiHost, token, interfaceId string) (ret
 		Url:         yapiHost + "/api/interface/get",
 		QueryParams: &param,
 	}
-	resp, err := httpHelper.Get(req)
+	resp, err := httpHelper.Get(req, nil)
 	if err != nil {
 		logUtils.Infof("from api get yapi interface info error, %s", err.Error())
 		return

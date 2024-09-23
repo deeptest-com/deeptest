@@ -46,7 +46,7 @@ func (s *RemoteService) GetUserInfoByToken(token, origin string) (user v1.UserIn
 	}
 
 	var resp domain.DebugResponse
-	resp, err = httpHelper.Post(httpReq)
+	resp, err = httpHelper.Post(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("meta get method detail failed, error, %s", err.Error())
 		return
@@ -117,7 +117,7 @@ func (s *RemoteService) LoginByOauth(loginByOauthReq integrationDomain.LoginByOa
 		Headers:  &headers,
 	}
 
-	resp, err := httpHelper.Post(httpReq)
+	resp, err := httpHelper.Post(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("login by oauth failed, error, %s", err.Error())
 		return
@@ -188,7 +188,7 @@ func (s *RemoteService) GetTokenFromCode(req integrationDomain.GetTokenFromCodeR
 		Headers:  &headers,
 	}
 
-	resp, err := httpHelper.Post(httpReq)
+	resp, err := httpHelper.Post(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("get token from code failed, error, %s", err.Error())
 		return
@@ -234,7 +234,7 @@ func (s *RemoteService) FindClassByServiceCode(req integrationDomain.FindClassBy
 		Body:     string(body),
 	}
 
-	resp, err := httpHelper.Post(httpReq)
+	resp, err := httpHelper.Post(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("find class by serviceCode failed, error, %s", err.Error())
 		return
@@ -279,7 +279,7 @@ func (s *RemoteService) GetFunctionsByClass(req integrationDomain.GetFunctionsBy
 		Body:     string(body),
 	}
 
-	resp, err := httpHelper.Post(httpReq)
+	resp, err := httpHelper.Post(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("get functions by class failed, error, %s", err.Error())
 		return
@@ -328,7 +328,7 @@ func (s *RemoteService) MetaGetMethodDetail(req integrationDomain.MetaGetMethodD
 		Body:     string(body),
 	}
 
-	resp, err := httpHelper.Post(httpReq)
+	resp, err := httpHelper.Post(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("meta get method detail failed, error, %s", err.Error())
 		return
@@ -372,7 +372,7 @@ func (s *RemoteService) GetFunctionDetailsByClass(classCode string, token string
 		},
 	}
 
-	resp, err := httpHelper.Post(httpReq)
+	resp, err := httpHelper.Post(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("get functionDetails by class failed, error, %s", err.Error())
 		return
@@ -418,7 +418,7 @@ func (s *RemoteService) LcContainerQueryAgent(token, baseUrl string) (ret []inte
 		Body:     string(body),
 	}
 
-	resp, err := httpHelper.Post(httpReq)
+	resp, err := httpHelper.Post(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("LcContainerQueryAgent failed, error, %s", err.Error())
 		return
@@ -485,7 +485,7 @@ func (s *RemoteService) LcMlClassQueryAgent(serviceCode, token, baseUrl string) 
 		Body:     string(body),
 	}
 
-	resp, err := httpHelper.Post(httpReq)
+	resp, err := httpHelper.Post(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("LcQueryAgent failed, error, %s", err.Error())
 		return
@@ -552,7 +552,7 @@ func (s *RemoteService) LcQueryMsg(req integrationDomain.QueryMsgReq, token stri
 		Body:     string(body),
 	}
 
-	resp, err := httpHelper.Post(httpReq)
+	resp, err := httpHelper.Post(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("LcQueryMsg failed, error, %s", err.Error())
 		return
@@ -597,7 +597,7 @@ func (s *RemoteService) LcMlServiceQueryAgent(engineering, token, baseUrl string
 		Body:     string(body),
 	}
 
-	resp, err := httpHelper.Post(httpReq)
+	resp, err := httpHelper.Post(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("LcMlServiceQueryAgent failed, error, %s", err.Error())
 		return
@@ -647,7 +647,7 @@ func (s *RemoteService) LcAllServiceList(token, baseUrl string) (ret []integrati
 		Body:     string(body),
 	}
 
-	resp, err := httpHelper.Post(httpReq)
+	resp, err := httpHelper.Post(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("LcAllServiceList failed, error, %s", err.Error())
 		return
@@ -716,7 +716,7 @@ func (s *RemoteService) GetLovByCode(token, baseUrl string) (ret []integrationDo
 		Body:     string(body),
 	}
 
-	resp, err := httpHelper.Post(httpReq)
+	resp, err := httpHelper.Post(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("LcAllServiceList failed, error, %s", err.Error())
 		return

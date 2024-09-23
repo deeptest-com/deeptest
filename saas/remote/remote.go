@@ -27,7 +27,7 @@ func (s *Remote) GetTenant(tenantId consts.TenantId, prefix string) (ret domain.
 		QueryParams: &[]v1.Param{{Name: "id", Value: string(tenantId)}, {Name: "customDomainPrefix", Value: prefix}},
 	}
 
-	resp, err := httpHelper.Get(httpReq)
+	resp, err := httpHelper.Get(httpReq, nil)
 	if err != nil {
 		logUtils.Errorf("get tenant failed, error, %s", err.Error())
 		return
@@ -71,7 +71,7 @@ func (s *Remote) GetTenants() (ret []domain.Tenant) {
 		QueryParams: &[]v1.Param{{Name: "page", Value: "1"}, {Name: "pageSize", Value: "9999999999"}},
 	}
 
-	resp, err := httpHelper.Get(httpReq)
+	resp, err := httpHelper.Get(httpReq, nil)
 	if err != nil {
 		logUtils.Errorf("get tenant/list failed, error, %s", err.Error())
 		return

@@ -81,7 +81,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *ExecSession)
 
 	// send request
 	requestStartTime := time.Now()
-	entity.Response, err = Invoke(&baseRequest)
+	entity.Response, err = Invoke(&baseRequest, nil)
 	requestEndTime := time.Now()
 
 	// exec post-condition

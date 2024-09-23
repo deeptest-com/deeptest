@@ -1,12 +1,14 @@
 package httpHelper
 
 import (
+	"bufio"
 	"bytes"
 	"compress/gzip"
 	"compress/zlib"
 	"crypto/tls"
 	"encoding/base64"
 	"fmt"
+	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
@@ -15,6 +17,8 @@ import (
 	"github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/andybalholm/brotli"
 	"github.com/fatih/color"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/websocket"
 	"go.uber.org/zap"
 	"io"
 	"io/ioutil"
@@ -26,51 +30,51 @@ import (
 
 var Logger *zap.Logger
 
-func Get(req domain.BaseRequest) (ret domain.DebugResponse, err error) {
-	return gets(req, consts.GET, true)
+func Get(req domain.BaseRequest, wsMsg *websocket.Message) (ret domain.DebugResponse, err error) {
+	return gets(req, consts.GET, true, wsMsg)
 }
 
-func Post(req domain.BaseRequest) (
+func Post(req domain.BaseRequest, wsMsg *websocket.Message) (
 	ret domain.DebugResponse, err error) {
 
-	return posts(req, consts.POST, true)
+	return posts(req, consts.POST, true, wsMsg)
 }
 
-func Put(req domain.BaseRequest) (
+func Put(req domain.BaseRequest, wsMsg *websocket.Message) (
 	ret domain.DebugResponse, err error) {
 
-	return posts(req, consts.PUT, true)
+	return posts(req, consts.PUT, true, wsMsg)
 }
 
-func Patch(req domain.BaseRequest) (
+func Patch(req domain.BaseRequest, wsMsg *websocket.Message) (
 	ret domain.DebugResponse, err error) {
 
-	return posts(req, consts.PATCH, true)
+	return posts(req, consts.PATCH, true, wsMsg)
 }
 
-func Delete(req domain.BaseRequest) (
+func Delete(req domain.BaseRequest, wsMsg *websocket.Message) (
 	ret domain.DebugResponse, err error) {
 
-	return posts(req, consts.DELETE, true)
+	return posts(req, consts.DELETE, true, wsMsg)
 }
 
-func Head(req domain.BaseRequest) (ret domain.DebugResponse, err error) {
-	return gets(req, consts.HEAD, false)
+func Head(req domain.BaseRequest, wsMsg *websocket.Message) (ret domain.DebugResponse, err error) {
+	return gets(req, consts.HEAD, false, wsMsg)
 }
 
-func Connect(req domain.BaseRequest) (ret domain.DebugResponse, err error) {
-	return gets(req, consts.CONNECT, false)
+func Connect(req domain.BaseRequest, wsMsg *websocket.Message) (ret domain.DebugResponse, err error) {
+	return gets(req, consts.CONNECT, false, wsMsg)
 }
 
-func Options(req domain.BaseRequest) (ret domain.DebugResponse, err error) {
-	return gets(req, consts.OPTIONS, false)
+func Options(req domain.BaseRequest, wsMsg *websocket.Message) (ret domain.DebugResponse, err error) {
+	return gets(req, consts.OPTIONS, false, wsMsg)
 }
 
-func Trace(req domain.BaseRequest) (ret domain.DebugResponse, err error) {
-	return gets(req, consts.TRACE, false)
+func Trace(req domain.BaseRequest, wsMsg *websocket.Message) (ret domain.DebugResponse, err error) {
+	return gets(req, consts.TRACE, false, wsMsg)
 }
 
-func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
+func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool, wsMsg *websocket.Message) (
 	ret domain.DebugResponse, err error) {
 
 	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
@@ -131,30 +135,57 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	if !readRespData {
 		return
 	}
-	reader := resp.Body
-	if resp.Header.Get("Content-Encoding") == "gzip" {
-		reader, _ = gzip.NewReader(resp.Body)
-	}
 
-	unicodeContent, err := ioutil.ReadAll(reader)
-	if IsImageContent(ret.ContentType.String()) {
-		imgBase64Str := base64.StdEncoding.EncodeToString(unicodeContent)
-		ret.Content = imgBase64Str
-		return
-	}
+	if wsMsg != nil && isStreamResponse(ret.ContentType) {
+		r := bufio.NewReader(resp.Body)
 
-	utf8Content, _ := _stringUtils.UnescapeUnicode(unicodeContent)
-	if _consts.Verbose {
-		_logUtils.Info(string(utf8Content))
-	}
+		for {
+			bytes, err1 := r.ReadBytes('\n')
+			str := string(bytes)
 
-	ret.Content = string(utf8Content)
-	ret.Content = strings.ReplaceAll(ret.Content, "\u0000", "")
+			if err1 != nil && err1 != io.EOF {
+				err = err1
+				break
+			}
+			if err1 == io.EOF {
+				break
+			}
+
+			fmt.Println("\n>>> stream response item: " + str + "\n")
+
+			result := iris.Map{
+				"source":   "execInterface",
+				"response": str,
+			}
+			execUtils.SendExecMsg(result, consts.ProgressResult, wsMsg)
+		}
+
+	} else {
+		reader := resp.Body
+		if resp.Header.Get("Content-Encoding") == "gzip" {
+			reader, _ = gzip.NewReader(resp.Body)
+		}
+
+		unicodeContent, _ := ioutil.ReadAll(reader)
+		if IsImageContent(ret.ContentType.String()) {
+			imgBase64Str := base64.StdEncoding.EncodeToString(unicodeContent)
+			ret.Content = imgBase64Str
+			return
+		}
+
+		utf8Content, _ := _stringUtils.UnescapeUnicode(unicodeContent)
+		if _consts.Verbose {
+			_logUtils.Info(string(utf8Content))
+		}
+
+		ret.Content = string(utf8Content)
+		ret.Content = strings.ReplaceAll(ret.Content, "\u0000", "")
+	}
 
 	return
 }
 
-func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
+func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool, wsMsg *websocket.Message) (
 	ret domain.DebugResponse, err error) {
 
 	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
@@ -237,7 +268,6 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 	resp, err := client.Do(httpReq)
 	if err != nil {
 		wrapperErrInResp(consts.ServiceUnavailable.Int(), "请求错误", err.Error(), &ret)
-		//_logUtils.Error(err.Error())
 		return
 	}
 
@@ -266,19 +296,49 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 		return
 	}
 
-	reader := resp.Body
-	if resp.Header.Get("Content-Encoding") == "gzip" {
-		reader, _ = gzip.NewReader(resp.Body)
+	if wsMsg != nil && isStreamResponse(ret.ContentType) {
+		r := bufio.NewReader(resp.Body)
+
+		for {
+			bytes, err1 := r.ReadBytes('\n')
+			str := string(bytes)
+
+			if err1 != nil && err1 != io.EOF {
+				err = err1
+				break
+			}
+			if err1 == io.EOF {
+				break
+			}
+
+			if strings.TrimSpace(str) == "" {
+				continue
+			}
+
+			fmt.Println("\n>>> stream response item: " + str + "\n")
+
+			result := iris.Map{
+				"source":     "execInterface",
+				"streamItem": str,
+			}
+			execUtils.SendExecMsg(result, consts.ProgressResult, wsMsg)
+		}
+
+	} else {
+		reader := resp.Body
+		if resp.Header.Get("Content-Encoding") == "gzip" {
+			reader, _ = gzip.NewReader(resp.Body)
+		}
+
+		unicodeContent, _ := io.ReadAll(reader)
+		utf8Content, _ := _stringUtils.UnescapeUnicode(unicodeContent)
+
+		if _consts.Verbose {
+			_logUtils.Info(string(utf8Content))
+		}
+
+		ret.Content = string(utf8Content)
 	}
-
-	unicodeContent, _ := ioutil.ReadAll(reader)
-	utf8Content, _ := _stringUtils.UnescapeUnicode(unicodeContent)
-
-	if _consts.Verbose {
-		_logUtils.Info(string(utf8Content))
-	}
-
-	ret.Content = string(utf8Content)
 
 	return
 }
@@ -406,4 +466,8 @@ func Base64(str string) (ret string) {
 	ret = base64.StdEncoding.EncodeToString([]byte(str))
 
 	return
+}
+
+func isStreamResponse(contentType consts.HttpContentType) bool {
+	return strings.Index(contentType.String(), consts.ContentTypeStream.String()) > -1
 }

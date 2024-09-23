@@ -75,7 +75,10 @@ func StartExec(req agentExec.WsReq, wsMsg *websocket.Message) (err error) {
 }
 
 func getExecUuid(req agentExec.WsReq) (ret string) {
-	if req.ScenarioExecReq.ExecUuid != "" {
+	if req.InterfaceExecReq.ExecUuid != "" {
+		ret = req.InterfaceExecReq.ExecUuid
+
+	} else if req.ScenarioExecReq.ExecUuid != "" {
 		ret = req.ScenarioExecReq.ExecUuid
 
 	} else if req.PlanExecReq.ExecUuid != "" {

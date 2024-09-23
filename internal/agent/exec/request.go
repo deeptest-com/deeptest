@@ -8,10 +8,11 @@ import (
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	"github.com/kataras/iris/v12/websocket"
 	"strings"
 )
 
-func Invoke(req *domain.BaseRequest) (resp domain.DebugResponse, err error) {
+func Invoke(req *domain.BaseRequest, wsMsg *websocket.Message) (resp domain.DebugResponse, err error) {
 	GetRequestProps(req)
 
 	if DemoTestSite != "" {
@@ -30,23 +31,23 @@ func Invoke(req *domain.BaseRequest) (resp domain.DebugResponse, err error) {
 	}
 
 	if req.Method == consts.GET {
-		resp, err = httpHelper.Get(*req)
+		resp, err = httpHelper.Get(*req, wsMsg)
 	} else if req.Method == consts.POST {
-		resp, err = httpHelper.Post(*req)
+		resp, err = httpHelper.Post(*req, wsMsg)
 	} else if req.Method == consts.PUT {
-		resp, err = httpHelper.Put(*req)
+		resp, err = httpHelper.Put(*req, wsMsg)
 	} else if req.Method == consts.DELETE {
-		resp, err = httpHelper.Delete(*req)
+		resp, err = httpHelper.Delete(*req, wsMsg)
 	} else if req.Method == consts.PATCH {
-		resp, err = httpHelper.Patch(*req)
+		resp, err = httpHelper.Patch(*req, wsMsg)
 	} else if req.Method == consts.HEAD {
-		resp, err = httpHelper.Head(*req)
+		resp, err = httpHelper.Head(*req, wsMsg)
 	} else if req.Method == consts.CONNECT {
-		resp, err = httpHelper.Connect(*req)
+		resp, err = httpHelper.Connect(*req, wsMsg)
 	} else if req.Method == consts.OPTIONS {
-		resp, err = httpHelper.Options(*req)
+		resp, err = httpHelper.Options(*req, wsMsg)
 	} else if req.Method == consts.TRACE {
-		resp, err = httpHelper.Trace(*req)
+		resp, err = httpHelper.Trace(*req, wsMsg)
 	}
 
 	GetContentProps(req, &resp)

@@ -108,7 +108,7 @@ func (s *Mcs) SendMessage() (msgId string, err error) {
 		Body:     string(body),
 	}
 
-	resp, err := httpHelper.Post(httpReq)
+	resp, err := httpHelper.Post(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("send message by mcs failed, error, %s", err.Error())
 		return

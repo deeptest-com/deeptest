@@ -128,7 +128,7 @@ func getJslibsFromServer(tenantId consts.TenantId, projectId uint, serverUrl, to
 		Headers: &[]domain.Header{{Name: "TenantId", Value: string(tenantId)}},
 	}
 
-	resp, err := httpHelper.Post(httpReq)
+	resp, err := httpHelper.Post(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("get Jslibs failed, error, %s", err.Error())
 		return

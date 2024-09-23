@@ -34,7 +34,7 @@ func GetInterfaceToExec(req agentExec.InterfaceExecReq) (ret agentExec.Interface
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 
-	resp, err := httpHelper.Post(httpReq)
+	resp, err := httpHelper.Post(httpReq, nil)
 	if err != nil {
 		logUtils.Errorf("get interface obj failed, error, %s", err.Error())
 		return
@@ -99,7 +99,7 @@ func SubmitInterfaceResult(execObj agentExec.InterfaceExecObj, respObj domain.De
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(execObj.TenantId)}},
 	}
 
-	resp, err := httpHelper.Post(req)
+	resp, err := httpHelper.Post(req, nil)
 	if err != nil {
 		logUtils.Infof("submit result failed, error, %s", err.Error())
 		return
@@ -146,7 +146,7 @@ func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioE
 	request, err := json.Marshal(httpReq)
 	logUtils.Infof("get exec obj request, request: %s", string(request))
 
-	resp, err := httpHelper.Get(httpReq)
+	resp, err := httpHelper.Get(httpReq, nil)
 
 	logUtils.Infof("get exec obj response, response: %s", resp.Content)
 
@@ -211,7 +211,7 @@ func GetScenarioNormalData(req *agentExec.ScenarioExecReq) (ret agentDomain.Repo
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 
-	resp, err := httpHelper.Get(httpReq)
+	resp, err := httpHelper.Get(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("get exec obj failed, error, %s", err.Error())
 		return
@@ -255,7 +255,7 @@ func SubmitScenarioResult(result agentDomain.ScenarioExecResult, scenarioId uint
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(tenantId)}},
 	}
 
-	resp, err := httpHelper.Post(req)
+	resp, err := httpHelper.Post(req, nil)
 	if err != nil {
 		logUtils.Infof("submit result failed, error, %s", err.Error())
 		return
@@ -305,7 +305,7 @@ func GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExec.PlanExecObj) {
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 
-	resp, err := httpHelper.Get(httpReq)
+	resp, err := httpHelper.Get(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("get exec obj failed, error, %s", err.Error())
 		return
@@ -359,7 +359,7 @@ func GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.Report, err 
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 
-	resp, err := httpHelper.Get(httpReq)
+	resp, err := httpHelper.Get(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("get exec obj failed, error, %s", err.Error())
 		return
@@ -402,7 +402,7 @@ func SubmitPlanResult(result agentDomain.PlanExecResult, planId uint, serverUrl,
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(tenantId)}},
 	}
 
-	resp, err := httpHelper.Post(req)
+	resp, err := httpHelper.Post(req, nil)
 	if err != nil {
 		logUtils.Infof("submit result failed, error, %s", err.Error())
 		return
@@ -447,7 +447,7 @@ func GetCasesToExec(req *agentExec.CasesExecReq) (ret agentExec.CaseExecProcesso
 	request, err := json.Marshal(httpReq)
 	logUtils.Infof("get case exec obj request, request: %s", string(request))
 
-	resp, err := httpHelper.Post(httpReq)
+	resp, err := httpHelper.Post(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("get interface obj failed, error, %s", err.Error())
 		return
@@ -492,7 +492,7 @@ func GetMessageToExec(req *agentExec.MessageExecReq) (ret *agentExec.MessageExec
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 
-	resp, err := httpHelper.Get(httpReq)
+	resp, err := httpHelper.Get(httpReq, nil)
 	if err != nil {
 		logUtils.Infof("get exec obj failed, error, %s", err.Error())
 		return

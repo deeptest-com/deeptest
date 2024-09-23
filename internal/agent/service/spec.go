@@ -69,7 +69,7 @@ func postSpecToServer(doc3 *openapi3.T, req v1.ParseSpecReq) (err error) {
 		},
 	}
 
-	resp, err := httpHelper.Post(httpReq)
+	resp, err := httpHelper.Post(httpReq, nil)
 	if err != nil {
 		return
 	}

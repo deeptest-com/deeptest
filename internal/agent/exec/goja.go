@@ -175,7 +175,7 @@ func defineJsFuncs(runtime *goja.Runtime, require *require.RequireModule, sessio
 
 		errOfCallbackParam := ""
 
-		resp, err2 := Invoke(&req)
+		resp, err2 := Invoke(&req, nil)
 		if err2 != nil {
 			// AppendGojaLog(execUuid, jsErrMsg(err2.Error(), "sendRequest", false))
 			errOfCallbackParam = jsErrMsg(err2.Error(), "sendRequest", false)

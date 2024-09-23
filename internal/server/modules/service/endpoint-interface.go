@@ -32,7 +32,7 @@ func (s *EndpointInterfaceService) ImportEndpointData(tenantId consts.TenantId, 
 	if req.OpenUrlImport {
 		request := domain.BaseRequest{Url: req.FilePath}
 		var response domain.DebugResponse
-		response, err = httpHelper.Get(request)
+		response, err = httpHelper.Get(request, nil)
 		data = []byte(response.Content)
 	} else {
 		data, err = ioutil.ReadFile(req.FilePath)

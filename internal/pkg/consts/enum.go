@@ -135,6 +135,8 @@ const (
 	ContentTypeFormUrlencoded HttpContentType = "application/x-www-form-urlencoded"
 
 	ContentTypeUnixDir HttpContentType = "httpd/unix-directory"
+
+	ContentTypeStream HttpContentType = "text/event-stream"
 )
 
 func (e HttpContentType) String() string {
@@ -182,10 +184,11 @@ func (e ClientAuthenticationWay) String() string {
 type HttpRespLangType string
 
 const (
-	LangJSON HttpRespLangType = "json"
-	LangXML  HttpRespLangType = "xml"
-	LangHTML HttpRespLangType = "html"
-	LangTEXT HttpRespLangType = "text"
+	LangJSON        HttpRespLangType = "json"
+	LangXML         HttpRespLangType = "xml"
+	LangHTML        HttpRespLangType = "html"
+	LangTEXT        HttpRespLangType = "text"
+	LangEventStream HttpRespLangType = "event-stream"
 )
 
 func (e HttpRespLangType) String() string {

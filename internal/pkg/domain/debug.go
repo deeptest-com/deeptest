@@ -4,20 +4,7 @@ import (
 	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
-	"github.com/kataras/iris/v12"
 )
-
-type InterfaceCall struct {
-	ExecUuid  string          `json:"execUuid"`
-	ServerUrl string          `json:"serverUrl"`
-	Token     string          `json:"token"`
-	TenantId  consts.TenantId `json:"tenantId"`
-
-	LocalVarsCache iris.Map `json:"localVarsCache"`
-
-	Data      DebugData `json:"data"`
-	ExecScene ExecScene `json:"execScene"`
-}
 
 type DebugInfo struct {
 	DebugInterfaceId    uint `json:"debugInterfaceId"`

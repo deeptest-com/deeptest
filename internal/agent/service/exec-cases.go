@@ -5,7 +5,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/websocket"
@@ -66,7 +65,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, localVarsCache iris.Map, wsMsg 
 	}
 
 	// init context
-	call := domain.InterfaceCall{
+	call := agentExec.InterfaceExecReq{
 		ExecUuid:  cs.ExecUUid,
 		Data:      cs.Data.DebugData,
 		ExecScene: cs.Data.ExecScene,
@@ -85,7 +84,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, localVarsCache iris.Map, wsMsg 
 		cs.Data.DebugData.BaseRequest = session.GetCurrRequest() // update to the value changed in goja
 	}
 
-	resultResp, err1 := RequestInterface(&cs.Data.DebugData)
+	resultResp, err1 := RequestInterface(&cs.Data.DebugData, nil)
 	if err1 != nil {
 		execUtils.SendResult(err1, wsMsg)
 		return err1

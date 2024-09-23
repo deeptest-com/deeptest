@@ -591,10 +591,11 @@ type ExecType string
 const (
 	ExecStop ExecType = "stop"
 
-	ExecScenario ExecType = "execScenario"
-	ExecPlan     ExecType = "execPlan"
-	ExecCase     ExecType = "execCases"
-	ExecMessage  ExecType = "execMessage"
+	ExecInterface ExecType = "execInterface"
+	ExecScenario  ExecType = "execScenario"
+	ExecPlan      ExecType = "execPlan"
+	ExecCase      ExecType = "execCases"
+	ExecMessage   ExecType = "execMessage"
 
 	ExecWebsocketConnect    ExecType = "execWebsocketConnect"
 	ExecWebsocketDisconnect ExecType = "execWebsocketDisconnect"

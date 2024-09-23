@@ -40,7 +40,11 @@ func StartExec(req agentExec.WsReq, wsMsg *websocket.Message) (err error) {
 
 		agentExec.InitUserExecContext(execUuid)
 
-		if act == consts.ExecScenario {
+		if act == consts.ExecInterface {
+			req.InterfaceExecReq.TenantId = req.TenantId
+			RunInterface(&req.InterfaceExecReq, req.LocalVarsCache, wsMsg)
+
+		} else if act == consts.ExecScenario {
 			req.ScenarioExecReq.TenantId = req.TenantId
 			RunScenario(&req.ScenarioExecReq, req.LocalVarsCache, wsMsg)
 

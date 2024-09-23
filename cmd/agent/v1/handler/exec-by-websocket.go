@@ -27,6 +27,7 @@ func NewWebsocketCtrl() *ExecByWebSocketCtrl {
 	return inst
 }
 
+// OnNamespaceConnected
 func (c *ExecByWebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) error {
 	websocketHelper.SetConn(c.Conn)
 	_logUtils.Infof(_i118Utils.Sprintf("ws_namespace_connected :id=%v room=%v", c.Conn.ID(), wsMsg.Room))
@@ -55,7 +56,8 @@ func (c *ExecByWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Message) err
 	return nil
 }
 
-// OnChat This will call the "OnVisit" event on all clients, including the current one, with the 'newCount' variable.
+// OnChat This will call the "OnVisit" event on all clients,
+// including the current one, with the 'newCount' variable.
 func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	ctx := websocket.GetContext(c.Conn)
 	_logUtils.Infof("WebSocket OnChat: remote address=%s, room=%s, msg=%s", ctx.RemoteAddr(), wsMsg.Room, string(wsMsg.Body))

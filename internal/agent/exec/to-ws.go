@@ -8,9 +8,10 @@ import (
 type WsReq struct {
 	Act consts.ExecType `json:"act"`
 
-	ScenarioExecReq ScenarioExecReq `json:"scenarioExecReq"`
-	PlanExecReq     PlanExecReq     `json:"planExecReq"`
-	CasesExecReq    CasesExecReq    `json:"casesExecReq"`
+	InterfaceExecReq InterfaceExecReq `json:"interfaceExecReq"`
+	ScenarioExecReq  ScenarioExecReq  `json:"scenarioExecReq"`
+	PlanExecReq      PlanExecReq      `json:"planExecReq"`
+	CasesExecReq     CasesExecReq     `json:"casesExecReq"`
 
 	WebsocketExecReq WebsocketExecReq `json:"websocketExecReq"`
 

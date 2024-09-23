@@ -74,7 +74,7 @@ type ScenarioDebugSession struct {
 	Http2Client *http.Client
 }
 
-func NewInterfaceExecSession(call domain.InterfaceCall) (session *ExecSession) {
+func NewInterfaceExecSession(call InterfaceExecReq) (session *ExecSession) {
 	session = &ExecSession{
 		Name:     call.Data.Name,
 		VuNo:     0,

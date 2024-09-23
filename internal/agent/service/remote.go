@@ -78,6 +78,8 @@ func SubmitInterfaceResult(execObj agentExec.InterfaceExecObj, respObj domain.De
 
 	url := fmt.Sprintf("debugs/invoke/submitResult")
 
+	respObj.Data = nil
+
 	data := domain.SubmitDebugResultRequest{
 		ResultStatus:   resultStatus,
 		Request:        execObj.DebugData,

@@ -29,7 +29,9 @@ func RunInterface(req *agentExec.InterfaceExecReq, localVarsCache iris.Map, wsMs
 	return
 }
 
-func ExecInterface(req *agentExec.InterfaceExecReq, localVarsCache iris.Map, wsMsg *websocket.Message) (resultReq domain.DebugData, resultResp domain.DebugResponse, err error) {
+func ExecInterface(req *agentExec.InterfaceExecReq, localVarsCache iris.Map, wsMsg *websocket.Message) (
+	resultReq domain.DebugData, resultResp domain.DebugResponse, err error) {
+
 	interfaceExecObj := GetInterfaceToExec(*req)
 	req.ExecScene = interfaceExecObj.ExecScene
 	updateLocalValues(&interfaceExecObj.ExecScene, localVarsCache)

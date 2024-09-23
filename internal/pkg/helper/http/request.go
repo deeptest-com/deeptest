@@ -7,6 +7,7 @@ import (
 	"compress/zlib"
 	"crypto/tls"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -299,6 +300,7 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool, 
 	if wsMsg != nil && isStreamResponse(ret.ContentType) {
 		r := bufio.NewReader(resp.Body)
 
+		arr := make([]string, 0)
 		for {
 			bytes, err1 := r.ReadBytes('\n')
 			str := string(bytes)
@@ -316,6 +318,7 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool, 
 			}
 
 			fmt.Println("\n>>> stream response item: " + str + "\n")
+			arr = append(arr, str)
 
 			result := iris.Map{
 				"source":     "execInterface",
@@ -323,6 +326,9 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool, 
 			}
 			execUtils.SendExecMsg(result, consts.ProgressResult, wsMsg)
 		}
+
+		bytes, _ := json.Marshal(arr)
+		ret.Content = string(bytes)
 
 	} else {
 		reader := resp.Body

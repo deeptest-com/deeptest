@@ -1,4 +1,4 @@
-package jslibHelper
+package agentExec
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	gojaPlugin "github.com/aaronchen2k/deeptest/internal/pkg/goja/plugin"
-	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
@@ -109,7 +109,7 @@ func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireMod
 	}
 }
 
-func getJslibsFromServer(tenantId consts.TenantId, projectId uint, serverUrl, token string) (libs []Jslib) {
+func getJslibsFromServer(tenantId consts.TenantId, projectId uint, serverUrl, token string) (libs []jslibHelper.Jslib) {
 	url := fmt.Sprintf("snippets/getJslibsForAgent?projectId=%d", projectId)
 
 	loadedLibs := &map[uint]time.Time{} // get all if loaded libs is empty
@@ -128,7 +128,7 @@ func getJslibsFromServer(tenantId consts.TenantId, projectId uint, serverUrl, to
 		Headers: &[]domain.Header{{Name: "TenantId", Value: string(tenantId)}},
 	}
 
-	resp, err := httpHelper.Post(httpReq, nil)
+	resp, err := Post(httpReq)
 	if err != nil {
 		logUtils.Infof("get Jslibs failed, error, %s", err.Error())
 		return

@@ -6,9 +6,9 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
+	httpHelper "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -25,7 +25,7 @@ func ParseSpec(req v1.ParseSpecReq) (err error) {
 		doc3, err = loader.LoadFromFile(req.File)
 	} else { // from url
 		var content []byte
-		content, err = _httpUtils.Get(req.Url)
+		content, _, err = _httpUtils.Get(req.Url, nil)
 		if err != nil {
 			return
 		}
@@ -69,7 +69,7 @@ func postSpecToServer(doc3 *openapi3.T, req v1.ParseSpecReq) (err error) {
 		},
 	}
 
-	resp, err := httpHelper.Post(httpReq, nil)
+	resp, err := httpHelper.Post(httpReq)
 	if err != nil {
 		return
 	}

@@ -84,7 +84,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, localVarsCache iris.Map, wsMsg 
 		cs.Data.DebugData.BaseRequest = session.GetCurrRequest() // update to the value changed in goja
 	}
 
-	resultResp, err1 := RequestInterface(&cs.Data.DebugData, nil)
+	resultResp, err1 := RequestInterface(&cs.Data.DebugData, "", nil)
 	if err1 != nil {
 		execUtils.SendResult(err1, wsMsg)
 		return err1

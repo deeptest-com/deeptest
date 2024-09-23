@@ -7,7 +7,6 @@ import (
 	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/aaronchen2k/deeptest/pkg/lib/http"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -24,7 +23,7 @@ func GetInterfaceToExec(req agentExec.InterfaceExecReq) (ret agentExec.Interface
 	}
 
 	httpReq := domain.BaseRequest{
-		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
+		Url:               _http.AddSepIfNeeded(req.ServerUrl) + url,
 		BodyType:          consts.ContentTypeJSON,
 		Body:              string(body),
 		AuthorizationType: consts.BearerToken,
@@ -34,7 +33,7 @@ func GetInterfaceToExec(req agentExec.InterfaceExecReq) (ret agentExec.Interface
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 
-	resp, err := httpHelper.Post(httpReq, nil)
+	resp, err := agentExec.Post(httpReq)
 	if err != nil {
 		logUtils.Errorf("get interface obj failed, error, %s", err.Error())
 		return
@@ -91,7 +90,7 @@ func SubmitInterfaceResult(execObj agentExec.InterfaceExecObj, respObj domain.De
 	bodyBytes, _ := json.Marshal(data)
 
 	req := domain.BaseRequest{
-		Url:               _httpUtils.AddSepIfNeeded(serverUrl) + url,
+		Url:               _http.AddSepIfNeeded(serverUrl) + url,
 		BodyType:          consts.ContentTypeJSON,
 		Body:              string(bodyBytes),
 		AuthorizationType: consts.BearerToken,
@@ -101,7 +100,7 @@ func SubmitInterfaceResult(execObj agentExec.InterfaceExecObj, respObj domain.De
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(execObj.TenantId)}},
 	}
 
-	resp, err := httpHelper.Post(req, nil)
+	resp, err := agentExec.Post(req)
 	if err != nil {
 		logUtils.Infof("submit result failed, error, %s", err.Error())
 		return
@@ -128,7 +127,7 @@ func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioE
 	url := "scenarios/exec/loadExecScenario"
 
 	httpReq := domain.BaseRequest{
-		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
+		Url:               _http.AddSepIfNeeded(req.ServerUrl) + url,
 		AuthorizationType: consts.BearerToken,
 		BearerToken: domain.BearerToken{
 			Token: req.Token,
@@ -148,7 +147,7 @@ func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioE
 	request, err := json.Marshal(httpReq)
 	logUtils.Infof("get exec obj request, request: %s", string(request))
 
-	resp, err := httpHelper.Get(httpReq, nil)
+	resp, err := agentExec.Get(httpReq)
 
 	logUtils.Infof("get exec obj response, response: %s", resp.Content)
 
@@ -195,7 +194,7 @@ func GetScenarioNormalData(req *agentExec.ScenarioExecReq) (ret agentDomain.Repo
 	url := "scenarios/exec/getScenarioNormalData"
 
 	httpReq := domain.BaseRequest{
-		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
+		Url:               _http.AddSepIfNeeded(req.ServerUrl) + url,
 		AuthorizationType: consts.BearerToken,
 		BearerToken: domain.BearerToken{
 			Token: req.Token,
@@ -213,7 +212,7 @@ func GetScenarioNormalData(req *agentExec.ScenarioExecReq) (ret agentDomain.Repo
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 
-	resp, err := httpHelper.Get(httpReq, nil)
+	resp, err := agentExec.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get exec obj failed, error, %s", err.Error())
 		return
@@ -247,7 +246,7 @@ func SubmitScenarioResult(result agentDomain.ScenarioExecResult, scenarioId uint
 
 	bodyBytes, _ := json.Marshal(result)
 	req := domain.BaseRequest{
-		Url:               _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("scenarios/exec/submitResult/%d", scenarioId),
+		Url:               _http.AddSepIfNeeded(serverUrl) + fmt.Sprintf("scenarios/exec/submitResult/%d", scenarioId),
 		Body:              string(bodyBytes),
 		BodyType:          consts.ContentTypeJSON,
 		AuthorizationType: consts.BearerToken,
@@ -257,7 +256,7 @@ func SubmitScenarioResult(result agentDomain.ScenarioExecResult, scenarioId uint
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(tenantId)}},
 	}
 
-	resp, err := httpHelper.Post(req, nil)
+	resp, err := agentExec.Post(req)
 	if err != nil {
 		logUtils.Infof("submit result failed, error, %s", err.Error())
 		return
@@ -289,7 +288,7 @@ func GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExec.PlanExecObj) {
 	url := "plans/exec/loadExecPlan"
 
 	httpReq := domain.BaseRequest{
-		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
+		Url:               _http.AddSepIfNeeded(req.ServerUrl) + url,
 		AuthorizationType: consts.BearerToken,
 		BearerToken: domain.BearerToken{
 			Token: req.Token,
@@ -307,7 +306,7 @@ func GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExec.PlanExecObj) {
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 
-	resp, err := httpHelper.Get(httpReq, nil)
+	resp, err := agentExec.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get exec obj failed, error, %s", err.Error())
 		return
@@ -343,7 +342,7 @@ func GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.Report, err 
 	url := "plans/exec/getPlanReportNormalData"
 
 	httpReq := domain.BaseRequest{
-		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
+		Url:               _http.AddSepIfNeeded(req.ServerUrl) + url,
 		AuthorizationType: consts.BearerToken,
 		BearerToken: domain.BearerToken{
 			Token: req.Token,
@@ -361,7 +360,7 @@ func GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.Report, err 
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 
-	resp, err := httpHelper.Get(httpReq, nil)
+	resp, err := agentExec.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get exec obj failed, error, %s", err.Error())
 		return
@@ -394,7 +393,7 @@ func SubmitPlanResult(result agentDomain.PlanExecResult, planId uint, serverUrl,
 	report agentDomain.Report, err error) {
 	bodyBytes, _ := json.Marshal(result)
 	req := domain.BaseRequest{
-		Url:               _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("plans/exec/submitResult/%d", planId),
+		Url:               _http.AddSepIfNeeded(serverUrl) + fmt.Sprintf("plans/exec/submitResult/%d", planId),
 		Body:              string(bodyBytes),
 		BodyType:          consts.ContentTypeJSON,
 		AuthorizationType: consts.BearerToken,
@@ -404,7 +403,7 @@ func SubmitPlanResult(result agentDomain.PlanExecResult, planId uint, serverUrl,
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(tenantId)}},
 	}
 
-	resp, err := httpHelper.Post(req, nil)
+	resp, err := agentExec.Post(req)
 	if err != nil {
 		logUtils.Infof("submit result failed, error, %s", err.Error())
 		return
@@ -437,7 +436,7 @@ func GetCasesToExec(req *agentExec.CasesExecReq) (ret agentExec.CaseExecProcesso
 	body, err := json.Marshal(req)
 
 	httpReq := domain.BaseRequest{
-		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
+		Url:               _http.AddSepIfNeeded(req.ServerUrl) + url,
 		AuthorizationType: consts.BearerToken,
 		BearerToken: domain.BearerToken{
 			Token: req.Token,
@@ -449,7 +448,7 @@ func GetCasesToExec(req *agentExec.CasesExecReq) (ret agentExec.CaseExecProcesso
 	request, err := json.Marshal(httpReq)
 	logUtils.Infof("get case exec obj request, request: %s", string(request))
 
-	resp, err := httpHelper.Post(httpReq, nil)
+	resp, err := agentExec.Post(httpReq)
 	if err != nil {
 		logUtils.Infof("get interface obj failed, error, %s", err.Error())
 		return
@@ -486,7 +485,7 @@ func GetMessageToExec(req *agentExec.MessageExecReq) (ret *agentExec.MessageExec
 	url := "message/unreadCount"
 
 	httpReq := domain.BaseRequest{
-		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
+		Url:               _http.AddSepIfNeeded(req.ServerUrl) + url,
 		AuthorizationType: consts.BearerToken,
 		BearerToken: domain.BearerToken{
 			Token: req.Token,
@@ -494,7 +493,7 @@ func GetMessageToExec(req *agentExec.MessageExecReq) (ret *agentExec.MessageExec
 		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 
-	resp, err := httpHelper.Get(httpReq, nil)
+	resp, err := agentExec.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get exec obj failed, error, %s", err.Error())
 		return

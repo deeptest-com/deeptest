@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
+	httpHelper "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -38,7 +38,7 @@ func (s *RemoteService) GetUserInfoByToken(tenantId consts.TenantId, token strin
 
 	logUtils.Infof("thirdparty-getUserInfoByToken: %s", _commUtils.JsonEncode(httpReq))
 	var resp domain.DebugResponse
-	resp, err = httpHelper.Get(httpReq, nil)
+	resp, err = httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Errorf("meta get method detail failed, error, %s", err.Error())
 		return
@@ -84,7 +84,7 @@ func (s *RemoteService) GetProjectInfo(tenantId consts.TenantId, token, spaceCod
 		},
 	}
 
-	resp, err := httpHelper.Get(httpReq, nil)
+	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get project info failed, error, %s", err.Error())
 		return
@@ -171,7 +171,7 @@ func (s *RemoteService) GetUserButtonPermissions(tenantId consts.TenantId, usern
 		},
 	}
 	logUtils.Infof("thirdparty-UserButtonPermissions,%s", _commUtils.JsonEncode(httpReq))
-	resp, err := httpHelper.Get(httpReq, nil)
+	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get UserButtonPermissions failed, error, %s", err.Error())
 		return
@@ -228,7 +228,7 @@ func (s *RemoteService) GetUserMenuPermissions(tenantId consts.TenantId, usernam
 		},
 	}
 	logUtils.Infof("thirdparty-GetUserMenuPermissions %s", _commUtils.JsonEncode(httpReq))
-	resp, err := httpHelper.Get(httpReq, nil)
+	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get GetUserMenuPermissions failed, error, %s", err.Error())
 		return
@@ -271,7 +271,7 @@ func (s *RemoteService) GetSpaceRoles(tenantId consts.TenantId) (ret []integrati
 		Headers:  &headers,
 	}
 
-	resp, err := httpHelper.Get(httpReq, nil)
+	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get SpaceRoles failed, error, %s", err.Error())
 		return
@@ -320,7 +320,7 @@ func (s *RemoteService) GetRoleMenus(tenantId consts.TenantId, role string) (ret
 		},
 	}
 	logUtils.Infof("thirdparty-GetRoleMenus,%s", _commUtils.JsonEncode(httpReq))
-	resp, err := httpHelper.Get(httpReq, nil)
+	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get RoleMenus failed, error, %s", err.Error())
 		return
@@ -377,7 +377,7 @@ func (s *RemoteService) GetUserProductList(tenantId consts.TenantId, page, pageS
 		},
 	}
 
-	resp, err := httpHelper.Get(httpReq, nil)
+	resp, err := httpHelper.Get(httpReq)
 	logUtils.Infof("GetUserProductList userName:%+v, resp:%+v", username, resp)
 	if err != nil {
 		logUtils.Infof("GetUserProductList failed, error, %s", err.Error())
@@ -432,7 +432,7 @@ func (s *RemoteService) GetProductListById(tenantId consts.TenantId, productIds 
 		QueryParams: &queryParams,
 	}
 
-	resp, err := httpHelper.Get(httpReq, nil)
+	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("GetProductListById failed, error, %s", err.Error())
 		return
@@ -483,7 +483,7 @@ func (s *RemoteService) GetSpacesByUsername(tenantId consts.TenantId, username s
 		},
 	}
 
-	resp, err := httpHelper.Get(httpReq, nil)
+	resp, err := httpHelper.Get(httpReq)
 	logUtils.Infof("GetSpacesByUsername username: +%v, resp:%+v", username, resp)
 	if err != nil {
 		logUtils.Infof("GetSpacesByUsername failed, error, %s", err.Error())
@@ -537,7 +537,7 @@ func (s *RemoteService) BatchGetSpacesByCode(tenantId consts.TenantId, spaceCode
 		QueryParams: &queryParams,
 	}
 
-	resp, err := httpHelper.Get(httpReq, nil)
+	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("BatchGetSpacesByCode failed, error, %s", err.Error())
 		return
@@ -590,7 +590,7 @@ func (s *RemoteService) BatchGetMembersBySpaces(tenantId consts.TenantId, spaceC
 		QueryParams: &queryParams,
 	}
 
-	resp, err := httpHelper.Get(httpReq, nil)
+	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("BatchGetMembersBySpaces failed, error, %s", err.Error())
 		return
@@ -634,7 +634,7 @@ func (s *RemoteService) ApprovalAndMsg(tenantId consts.TenantId, req string) (re
 		Body:     req,
 	}
 
-	resp, err := httpHelper.Post(httpReq, nil)
+	resp, err := httpHelper.Post(httpReq)
 	logUtils.Infof("ApprovalAndMsg url:%s, body:%+v,Headers:%+v , response %+v", url, req, headers, resp)
 	if err != nil {
 		logUtils.Infof("ApprovalAndMsg failed, error, %s", err.Error())
@@ -686,7 +686,7 @@ func (s *RemoteService) GetUserOpenRoles(tenantId consts.TenantId, username stri
 		},
 	}
 
-	resp, err := httpHelper.Get(httpReq, nil)
+	resp, err := httpHelper.Get(httpReq)
 	logUtils.Infof("GetUserOpenRoles username: +%v, resp:%+v", username, resp)
 	if err != nil {
 		logUtils.Errorf("GetUserOpenRoles failed, username: +%v,error: %s", username, err.Error())
@@ -731,7 +731,7 @@ func (s *RemoteService) SaveReport(tenantId consts.TenantId, report integrationD
 		Body:     req,
 	}
 	logUtils.Infof("thirdparty-SaveReport %s", _commUtils.JsonEncode(httpReq))
-	resp, err := httpHelper.Post(httpReq, nil)
+	resp, err := httpHelper.Post(httpReq)
 	if err != nil {
 		logUtils.Infof("get SaveReport failed, error, %s", err.Error())
 		return
@@ -773,7 +773,7 @@ func (s *RemoteService) SyncPlan(tenantId consts.TenantId, data integrationDomai
 		Body:     req,
 	}
 	logUtils.Infof("thirdparty-SyncPlan %s", _commUtils.JsonEncode(httpReq))
-	resp, err := httpHelper.Post(httpReq, nil)
+	resp, err := httpHelper.Post(httpReq)
 	if err != nil {
 		logUtils.Infof("get SyncPlan failed, error, %s", err.Error())
 		return
@@ -813,7 +813,7 @@ func (s *RemoteService) DeleteReport(tenantId consts.TenantId, number string) (e
 		Headers:  &headers,
 	}
 	logUtils.Infof("thirdparty-DeleteReport %s", _commUtils.JsonEncode(httpReq))
-	resp, err := httpHelper.Get(httpReq, nil)
+	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get DeleteReport failed, error, %s", err.Error())
 		return

@@ -1,4 +1,4 @@
-package _httpUtils
+package _http
 
 import (
 	"net/url"

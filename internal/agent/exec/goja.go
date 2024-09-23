@@ -7,7 +7,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	gojaUtils "github.com/aaronchen2k/deeptest/internal/pkg/goja"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
-	jslibHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
 	mockData "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
@@ -23,7 +22,7 @@ import (
 func InitGojaRuntimeWithSession(session *ExecSession, vuNo int, tenantId consts.TenantId) {
 	session.GojaRuntime, session.GojaRequire = GenerateGojaRuntime()
 
-	jslibHelper.LoadChaiJslibs(session.GojaRuntime)
+	LoadChaiJslibs(session.GojaRuntime)
 
 	defineJsFuncs(session.GojaRuntime, session.GojaRequire, session, false)
 
@@ -34,7 +33,7 @@ func InitGojaRuntimeWithSession(session *ExecSession, vuNo int, tenantId consts.
 	defineJsSysFunc(session.GojaRuntime)
 
 	// import other custom libs
-	jslibHelper.RefreshRemoteAgentJslibs(session.GojaRuntime, session.GojaRequire,
+	RefreshRemoteAgentJslibs(session.GojaRuntime, session.GojaRequire,
 		vuNo, tenantId, session.ProjectId,
 		session.ServerUrl, session.ServerToken)
 
@@ -175,7 +174,7 @@ func defineJsFuncs(runtime *goja.Runtime, require *require.RequireModule, sessio
 
 		errOfCallbackParam := ""
 
-		resp, err2 := Invoke(&req, nil)
+		resp, err2 := Invoke(&req, "", nil)
 		if err2 != nil {
 			// AppendGojaLog(execUuid, jsErrMsg(err2.Error(), "sendRequest", false))
 			errOfCallbackParam = jsErrMsg(err2.Error(), "sendRequest", false)

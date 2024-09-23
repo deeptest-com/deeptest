@@ -23,6 +23,7 @@ type ExecSession struct {
 	TenantId      consts.TenantId
 
 	// exec status
+	WsMsg      *websocket.Message
 	ExecScene  domain.ExecScene
 	_isRunning bool
 	_forceStop bool

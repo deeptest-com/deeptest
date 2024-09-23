@@ -3,9 +3,9 @@ package service
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	httpHelper "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -32,7 +32,7 @@ func (s *EndpointInterfaceService) ImportEndpointData(tenantId consts.TenantId, 
 	if req.OpenUrlImport {
 		request := domain.BaseRequest{Url: req.FilePath}
 		var response domain.DebugResponse
-		response, err = httpHelper.Get(request, nil)
+		response, err = httpHelper.Get(request)
 		data = []byte(response.Content)
 	} else {
 		data, err = ioutil.ReadFile(req.FilePath)

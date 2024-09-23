@@ -1,10 +1,11 @@
-package _httpUtils
+package _http
 
 import (
 	"compress/gzip"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/fatih/color"
@@ -18,7 +19,7 @@ const (
 	Verbose = true
 )
 
-func Get(url string) (ret []byte, err error) {
+func Get(url string, headers []domain.Header) (ret []byte, code int, err error) {
 	if Verbose {
 		_logUtils.Infof("===DEBUG===  request: %s", url)
 	}
@@ -33,6 +34,10 @@ func Get(url string) (ret []byte, err error) {
 		return
 	}
 
+	for _, v := range headers {
+		req.Header.Set(v.Name, v.Value)
+	}
+
 	resp, err := client.Do(req)
 	if err != nil {
 		_logUtils.Infof(color.RedString("get request failed, error: %s.", err.Error()))
@@ -40,7 +45,8 @@ func Get(url string) (ret []byte, err error) {
 	}
 	defer resp.Body.Close()
 
-	if !IsSuccessCode(resp.StatusCode) {
+	code = resp.StatusCode
+	if !IsSuccessCode(code) {
 		_logUtils.Infof(color.RedString("read response failed, StatusCode: %d.", resp.StatusCode))
 		err = errors.New(resp.Status)
 		return

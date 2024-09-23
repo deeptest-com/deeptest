@@ -1,9 +1,10 @@
-package httpHelper
+package agentExec
 
 import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"net/http"
 	"net/http/cookiejar"
@@ -142,8 +143,7 @@ func dealwithHeader(req domain.BaseRequest, httpReq *http.Request) {
 		}
 	}
 
-	addAuthorInfo(req, httpReq)
-
+	httpHelper.AddAuthorInfo(req, httpReq)
 }
 
 //func dealwithCookie(req domain.BaseRequest, httpReq *http.Request) {

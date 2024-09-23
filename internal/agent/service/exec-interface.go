@@ -45,12 +45,12 @@ func ExecInterface(req *agentExec.InterfaceExecReq, localVarsCache iris.Map, wsM
 
 	agentExec.GetReqValueFromGoja(session)
 
-	// TODO: a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
+	// A new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
 	if session.GetCurrRequest().Url != "" {
 		interfaceExecObj.DebugData.BaseRequest = session.GetCurrRequest() // update to the value changed in goja
 	}
 
-	resultResp, err = RequestInterface(&interfaceExecObj.DebugData, wsMsg)
+	resultResp, err = RequestInterface(&interfaceExecObj.DebugData, req.ExecUuid, wsMsg)
 
 	agentExec.SetRespValueToGoja(&resultResp, session)
 	assertResultStatusPost, _ := agentExec.ExecPostConditions(&interfaceExecObj, resultResp, session)
@@ -99,8 +99,8 @@ func PostRequest(originalReqUri string, req *domain.DebugData) (err error) {
 	return
 }
 
-func RequestInterface(req *domain.DebugData, wsMsg *websocket.Message) (ret domain.DebugResponse, err error) {
-	ret, err = agentExec.Invoke(&req.BaseRequest, wsMsg)
+func RequestInterface(req *domain.DebugData, key string, wsMsg *websocket.Message) (ret domain.DebugResponse, err error) {
+	ret, err = agentExec.Invoke(&req.BaseRequest, key, wsMsg)
 	ret.Id = req.DebugInterfaceId
 
 	return

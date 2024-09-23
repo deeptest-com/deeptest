@@ -2,7 +2,6 @@ package agentExec
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	jslibHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/dop251/goja"
@@ -74,6 +73,6 @@ func (e *GojaSimple) InitJsRuntimeSimple(session *ExecSession, loadCustom bool) 
 
 	// import other custom libs
 	if loadCustom {
-		jslibHelper.RefreshRemoteAgentJslibs(e.execRuntime, e.execRequire, session.VuNo, session.TenantId, session.ProjectId, session.ServerUrl, session.ServerToken)
+		RefreshRemoteAgentJslibs(e.execRuntime, e.execRequire, session.VuNo, session.TenantId, session.ProjectId, session.ServerUrl, session.ServerToken)
 	}
 }

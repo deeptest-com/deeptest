@@ -3,10 +3,10 @@ package im
 import (
 	"encoding/json"
 	"fmt"
+	httpHelper "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
@@ -108,7 +108,7 @@ func (s *Mcs) SendMessage() (msgId string, err error) {
 		Body:     string(body),
 	}
 
-	resp, err := httpHelper.Post(httpReq, nil)
+	resp, err := httpHelper.Post(httpReq)
 	if err != nil {
 		logUtils.Infof("send message by mcs failed, error, %s", err.Error())
 		return

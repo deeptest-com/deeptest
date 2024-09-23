@@ -56,7 +56,7 @@ func (s AuthService) GenOAuth2AccessToken(tenantId consts.TenantId, accessTokenU
 		accessTokenURL, clientId, clientSecret, code,
 	)
 
-	bytes, err := _httpUtils.Get(url)
+	bytes, _, err := _httpUtils.Get(url, nil)
 
 	result = iris.Map{}
 

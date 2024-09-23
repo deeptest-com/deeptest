@@ -27,7 +27,7 @@ func InitUserExecContext(execUuid string) {
 
 func GetUserExecContext(execUuid string) (val *UserContext) {
 	inf, ok := ExecContextStore.Load(execUuid)
-	if !ok {
+	if !ok || inf == nil {
 		return
 	}
 
@@ -48,6 +48,9 @@ func GetExecCtx(execUuid string) (ctx context.Context, cancel context.CancelFunc
 
 func CancelExecCtx(execUuid string) {
 	userContext := GetUserExecContext(execUuid)
+	if userContext == nil {
+		return
+	}
 
 	if userContext.ExecCancel != nil {
 		userContext.ExecCancel()
@@ -63,7 +66,7 @@ func CancelExecCtx(execUuid string) {
 func IsExecCtxCancel(execUuid string) (ret bool) {
 	userContext := GetUserExecContext(execUuid)
 
-	ret = userContext.ExecCtx == nil
+	ret = userContext == nil || userContext.ExecCtx == nil
 
 	return
 }

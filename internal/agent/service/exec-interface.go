@@ -5,6 +5,7 @@ import (
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	websocketHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
@@ -24,7 +25,7 @@ func RunInterface(req *agentExec.InterfaceExecReq, localVarsCache iris.Map, wsMs
 		"response": resultResp,
 	}
 	execUtils.SendExecMsg(result, consts.ProgressResult, wsMsg)
-	execUtils.SendExecMsg(iris.Map{"source": "execInterface"}, consts.ProgressEnd, wsMsg)
+	websocketHelper.SendExecStatus(consts.ProgressEnd, wsMsg)
 
 	return
 }

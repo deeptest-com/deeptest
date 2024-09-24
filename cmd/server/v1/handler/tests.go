@@ -141,6 +141,7 @@ func (c *TestsCtrl) Stream(ctx iris.Context) {
 	//ctx.Header("content-type", "text/event-stream")
 	ctx.ContentType("text/event-stream")
 	ctx.Header("Cache-Control", "no-cache")
+	ctx.SetCookieKV("cookie_from_server", "value123")
 
 	req := serverDomain.StreamTestObj{}
 	err := ctx.ReadJSON(&req)

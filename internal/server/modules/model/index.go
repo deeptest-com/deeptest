@@ -142,5 +142,11 @@ var (
 		&ProjectCron{},
 		&CronConfigLecang{},
 		&ProjectEngineeringRel{},
+
+		&AiMeasurement{},
+		&AiMetrics{},
+		&AiMetricsAnswerRelevancy{},
+		&AiModel{},
+		&AiTemplate{},
 	}
 )

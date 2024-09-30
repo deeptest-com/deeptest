@@ -2,6 +2,7 @@ module github.com/deeptest-com/deeptest
 
 go 1.22.0
 
+
 require (
 	github.com/fullstorydev/grpcurl v1.9.1
 	github.com/jhump/protoreflect v1.17.0

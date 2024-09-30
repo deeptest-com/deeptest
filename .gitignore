@@ -26,16 +26,12 @@ tmp/
 /cmd/test/nodejs/package-lock.json
 .yarn
 
-/ui/
+
 my-app
 node_modules
 
-client/icon/ly
-client/src/app/package-ly.json
-client/node_modules
-client-ly/node_modules
-client-ly/out
-client-ly/.webpack
-client/icon/ly
+/internal/agent/
+/ui/
+/client/
 
 

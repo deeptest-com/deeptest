@@ -1,9 +1,9 @@
 package handler
 
 import (
-	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/agent/service"
-	"github.com/aaronchen2k/deeptest/pkg/domain"
+	agentDomain "github.com/deeptest-com/deeptest/cmd/agent/v1/domain"
+	agentService "github.com/deeptest-com/deeptest/internal/agent/service"
+	_domain "github.com/deeptest-com/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
 )
 
@@ -19,7 +19,7 @@ func (c *SpecCtrl) Parse(ctx iris.Context) {
 		return
 	}
 
-	err = service.ParseSpec(req)
+	err = agentService.ParseSpec(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

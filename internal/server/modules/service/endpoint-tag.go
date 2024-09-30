@@ -1,10 +1,10 @@
 package service
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	_commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/server/modules/repo"
+	_commonUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
 )
 
 type EndpointTagService struct {

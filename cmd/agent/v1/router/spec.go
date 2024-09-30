@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/aaronchen2k/deeptest/cmd/agent/v1/handler"
-	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
+	"github.com/deeptest-com/deeptest/cmd/agent/v1/handler"
+	"github.com/deeptest-com/deeptest/internal/pkg/core/module"
 	"github.com/kataras/iris/v12"
 )
 

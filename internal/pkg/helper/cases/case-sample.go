@@ -2,7 +2,7 @@ package casesHelper
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
 	"github.com/getkin/kin-openapi/openapi3"
 	"math"
 )

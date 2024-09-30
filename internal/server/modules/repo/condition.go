@@ -3,12 +3,12 @@ package repo
 import (
 	"encoding/json"
 	"fmt"
-	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	serverDomain "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	model "github.com/deeptest-com/deeptest/internal/server/modules/model"
+	commonUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )

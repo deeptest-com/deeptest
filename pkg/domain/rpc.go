@@ -2,7 +2,7 @@ package _domain
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/pkg/consts"
+	"github.com/deeptest-com/deeptest/pkg/consts"
 )
 
 type RpcReq struct {

@@ -1,8 +1,8 @@
 package openapi
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	_commUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
 	"github.com/getkin/kin-openapi/openapi3"
 	"strings"
 )

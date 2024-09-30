@@ -1,9 +1,9 @@
 package repo
 
 import (
-	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	serverDomain "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 	"strconv"
 )

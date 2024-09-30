@@ -2,10 +2,10 @@ package service
 
 import (
 	"fmt"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	queryHelper "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/antchfx/jsonquery"
+	v1 "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	queryUtils "github.com/deeptest-com/deeptest/internal/agent/exec/utils/query"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
 	"strings"
 )
 
@@ -30,7 +30,7 @@ func (s *ParserJsonService) ParseJson(req *v1.ParserRequest) (ret v1.ParserRespo
 
 	expr = strings.Replace(expr, consts.DeepestKey, req.SelectContent, 1)
 
-	result, resultType := queryHelper.JsonQuery(req.DocContent, expr)
+	result, resultType := queryUtils.JsonQuery(req.DocContent, expr)
 	fmt.Printf("%s: %v, %v", expr, result, resultType)
 
 	ret = v1.ParserResponse{

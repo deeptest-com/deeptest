@@ -1,11 +1,11 @@
 package user
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/integration/domain"
-	"github.com/aaronchen2k/deeptest/integration/enum"
-	lecang "github.com/aaronchen2k/deeptest/integration/lecang/service"
-	thirdparty "github.com/aaronchen2k/deeptest/integration/thirdparty/service"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	v1 "github.com/deeptest-com/deeptest/integration/domain"
+	"github.com/deeptest-com/deeptest/integration/enum"
+	lecang "github.com/deeptest-com/deeptest/integration/lecang/service"
+	thirdparty "github.com/deeptest-com/deeptest/integration/thirdparty/service"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
 )
 
 type user struct {

@@ -1,6 +1,6 @@
 package serverDomain
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import "github.com/deeptest-com/deeptest/internal/pkg/consts"
 
 type ParserRequest struct {
 	DocContent    string `json:"docContent" validate:"required"`

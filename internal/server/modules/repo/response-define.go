@@ -1,11 +1,11 @@
 package repo
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	responseDefineHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	responseDefineHelper "github.com/deeptest-com/deeptest/internal/pkg/helper/schema"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	_commUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 	"strings"

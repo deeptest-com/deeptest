@@ -1,8 +1,8 @@
 package model
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	mockData "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	mockData "github.com/deeptest-com/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
 )
 
 type ProjectMockSetting struct {

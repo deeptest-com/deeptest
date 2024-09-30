@@ -1,10 +1,10 @@
 package handler
 
 import (
-	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
-	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	serverDomain "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	"github.com/deeptest-com/deeptest/internal/server/modules/service"
+	_domain "github.com/deeptest-com/deeptest/pkg/domain"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
 	"go.uber.org/zap"

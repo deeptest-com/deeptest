@@ -1,10 +1,10 @@
 package repo
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/agent/exec"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	agentExec "github.com/deeptest-com/deeptest/internal/agent/exec"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	serverConsts "github.com/deeptest-com/deeptest/internal/server/consts"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
 	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
 )

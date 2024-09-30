@@ -2,11 +2,11 @@ package service
 
 import (
 	"errors"
-	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
-	v1 "github.com/aaronchen2k/deeptest/integration/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	integrationDomain "github.com/deeptest-com/deeptest/integration/domain"
+	v1 "github.com/deeptest-com/deeptest/integration/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	_commUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
 )
 
 type User struct {

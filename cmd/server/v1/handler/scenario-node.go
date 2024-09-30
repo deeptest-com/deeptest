@@ -1,12 +1,12 @@
 package handler
 
 import (
-	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
-	"github.com/aaronchen2k/deeptest/pkg/domain"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	agentExec "github.com/deeptest-com/deeptest/internal/agent/exec"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/server/modules/service"
+	"github.com/deeptest-com/deeptest/pkg/domain"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
 )

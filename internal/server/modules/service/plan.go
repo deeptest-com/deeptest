@@ -2,12 +2,12 @@ package service
 
 import (
 	"errors"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	integrationService "github.com/aaronchen2k/deeptest/integration/service"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	"github.com/aaronchen2k/deeptest/pkg/domain"
+	v1 "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	integrationService "github.com/deeptest-com/deeptest/integration/service"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	repo "github.com/deeptest-com/deeptest/internal/server/modules/repo"
+	"github.com/deeptest-com/deeptest/pkg/domain"
 	"gorm.io/gorm"
 	"strconv"
 	"time"

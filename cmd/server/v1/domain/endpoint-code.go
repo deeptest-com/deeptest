@@ -1,6 +1,6 @@
 package serverDomain
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/generate/template"
+import "github.com/deeptest-com/deeptest/internal/pkg/helper/openapi/generate/template"
 
 type EndpointCodeReq struct {
 	ProjectId uint              `json:"projectId"`

@@ -2,9 +2,9 @@ package commUtils
 
 import (
 	"encoding/json"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
-	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	commonUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
+	fileUtils "github.com/deeptest-com/deeptest/pkg/lib/file"
 	"os"
 	"path/filepath"
 	"regexp"

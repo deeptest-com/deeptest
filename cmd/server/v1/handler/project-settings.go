@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
-	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
-	"github.com/aaronchen2k/deeptest/saas/common"
-	"github.com/aaronchen2k/deeptest/saas/tenant"
+	"github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/core/cron"
+	"github.com/deeptest-com/deeptest/internal/server/modules/service"
+	_domain "github.com/deeptest-com/deeptest/pkg/domain"
+	"github.com/deeptest-com/deeptest/saas/common"
+	"github.com/deeptest-com/deeptest/saas/tenant"
 	"github.com/kataras/iris/v12"
 )
 

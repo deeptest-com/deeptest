@@ -3,14 +3,14 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	integrationService "github.com/aaronchen2k/deeptest/integration/service"
-	"github.com/aaronchen2k/deeptest/integration/thirdparty/service"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec"
-	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	integrationService "github.com/deeptest-com/deeptest/integration/service"
+	"github.com/deeptest-com/deeptest/integration/thirdparty/service"
+	agentDomain2 "github.com/deeptest-com/deeptest/internal/agent/domain"
+	agentExec "github.com/deeptest-com/deeptest/internal/agent/exec"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/server/modules/repo"
 	"gorm.io/gorm"
 	"time"
 )
@@ -62,7 +62,7 @@ func (s *PlanExecService) LoadExecData(tenantId consts.TenantId, planId, environ
 	return
 }
 
-func (s *PlanExecService) SaveReport(tenantId consts.TenantId, planId int, userId uint, result agentDomain.PlanExecResult) (
+func (s *PlanExecService) SaveReport(tenantId consts.TenantId, planId int, userId uint, result agentDomain2.PlanExecResult) (
 	report model.PlanReport, err error) {
 	plan, err := s.PlanRepo.Get(tenantId, uint(planId))
 	if err != nil {
@@ -159,7 +159,7 @@ func (s *PlanExecService) CombineReport(tenantId consts.TenantId, scenarioReport
 	return
 }
 
-func (s *PlanExecService) countRequest(result agentDomain.ScenarioExecResult, report *model.PlanReport) {
+func (s *PlanExecService) countRequest(result agentDomain2.ScenarioExecResult, report *model.PlanReport) {
 	if result.ProcessorType == consts.ProcessorInterfaceDefault {
 		s.countInterface(result.DebugInterfaceId, result.ResultStatus, report)
 
@@ -232,7 +232,7 @@ func (s *PlanExecService) summarizeInterface(report *model.PlanReport) {
 	}
 }
 
-func (s *PlanExecService) GetPlanReportNormalData(tenantId consts.TenantId, planId, environmentId uint) (ret agentDomain.Report, err error) {
+func (s *PlanExecService) GetPlanReportNormalData(tenantId consts.TenantId, planId, environmentId uint) (ret agentDomain2.Report, err error) {
 	plan, err := s.PlanRepo.Get(tenantId, planId)
 	if err != nil {
 		return

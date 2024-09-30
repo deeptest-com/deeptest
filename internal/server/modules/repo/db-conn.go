@@ -3,9 +3,9 @@ package repo
 import (
 	"errors"
 	"fmt"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	v1 "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	model "github.com/deeptest-com/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 )
 

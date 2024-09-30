@@ -1,10 +1,10 @@
 package service
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/helper/openapi"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	repo "github.com/deeptest-com/deeptest/internal/server/modules/repo"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 

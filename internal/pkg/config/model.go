@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	myZap "github.com/aaronchen2k/deeptest/pkg/core/zap"
+	myZap "github.com/deeptest-com/deeptest/pkg/core/zap"
 )
 
 type Config struct {

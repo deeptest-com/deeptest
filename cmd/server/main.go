@@ -2,9 +2,9 @@ package main
 
 import (
 	"flag"
-	"github.com/aaronchen2k/deeptest/cmd/server/serve"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
-	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/deeptest-com/deeptest/cmd/server/serve"
+	"github.com/deeptest-com/deeptest/internal/pkg/helper/websocket"
+	_logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/fatih/color"
 	"os"
 	"os/signal"

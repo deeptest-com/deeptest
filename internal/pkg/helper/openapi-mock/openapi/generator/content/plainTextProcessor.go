@@ -2,8 +2,8 @@ package mockContent
 
 import (
 	"context"
-	mockLogcontext "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/logcontext"
-	mockData "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
+	mockLogcontext "github.com/deeptest-com/deeptest/internal/pkg/helper/openapi-mock/logcontext"
+	mockData "github.com/deeptest-com/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 

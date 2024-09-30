@@ -3,8 +3,8 @@ package openapi
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
 	"github.com/getkin/kin-openapi/openapi3"
 	"path"
 	"strings"

@@ -1,14 +1,14 @@
 package service
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	"github.com/aaronchen2k/deeptest/pkg/domain"
-	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
-	_mailUtils "github.com/aaronchen2k/deeptest/pkg/lib/mail"
+	v1 "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/server/modules/repo"
+	"github.com/deeptest-com/deeptest/pkg/domain"
+	_i118Utils "github.com/deeptest-com/deeptest/pkg/lib/i118"
+	_mailUtils "github.com/deeptest-com/deeptest/pkg/lib/mail"
 	"strconv"
 )
 

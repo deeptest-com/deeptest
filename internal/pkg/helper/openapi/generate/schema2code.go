@@ -2,10 +2,10 @@ package generate
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/generate/fields"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/generate/template"
-	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
-	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	"github.com/deeptest-com/deeptest/internal/pkg/helper/openapi/generate/fields"
+	"github.com/deeptest-com/deeptest/internal/pkg/helper/openapi/generate/template"
+	schemaHelper "github.com/deeptest-com/deeptest/internal/pkg/helper/schema"
+	commonUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
 	"github.com/getkin/kin-openapi/openapi3"
 	"strings"
 )

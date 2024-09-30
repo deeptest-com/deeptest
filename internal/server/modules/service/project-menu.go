@@ -1,13 +1,13 @@
 package service
 
 import (
-	"github.com/aaronchen2k/deeptest/integration/service"
-	thirdparty "github.com/aaronchen2k/deeptest/integration/thirdparty/service"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	"github.com/deeptest-com/deeptest/integration/service"
+	thirdparty "github.com/deeptest-com/deeptest/integration/thirdparty/service"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/server/modules/repo"
+	commonUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
 )
 
 type ProjectMenuService struct {

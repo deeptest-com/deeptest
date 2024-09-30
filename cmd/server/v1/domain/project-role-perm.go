@@ -1,6 +1,6 @@
 package serverDomain
 
-import _domain "github.com/aaronchen2k/deeptest/pkg/domain"
+import _domain "github.com/deeptest-com/deeptest/pkg/domain"
 
 type ProjectRolePermBase struct {
 	ProjectRoleId uint `gorm:"index:index_project_role,unique;not null" json:"project_role_id"`

@@ -1,14 +1,14 @@
 package agentDomain
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	v1 "github.com/deeptest-com/deeptest/internal/pkg/domain"
 )
 
 type InvokeRequest struct {
 	ServerUrl string `json:"serverUrl"`
 	Token     string `json:"token"`
 
-	Data domain.DebugData `json:"data"`
+	Data v1.DebugData `json:"data"`
 }
 
 type InvokeObject struct {

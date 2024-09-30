@@ -3,16 +3,16 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
-	lecang "github.com/aaronchen2k/deeptest/integration/lecang/service"
-	thirdparty "github.com/aaronchen2k/deeptest/integration/thirdparty/service"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
-	"github.com/aaronchen2k/deeptest/saas/tenant"
+	v1 "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	integrationDomain "github.com/deeptest-com/deeptest/integration/domain"
+	lecang "github.com/deeptest-com/deeptest/integration/lecang/service"
+	thirdparty "github.com/deeptest-com/deeptest/integration/thirdparty/service"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/server/modules/repo"
+	_commUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
+	"github.com/deeptest-com/deeptest/saas/tenant"
 )
 
 type ProjectService struct {

@@ -2,11 +2,11 @@ package service
 
 import (
 	"fmt"
-	queryUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	queryUtils "github.com/deeptest-com/deeptest/internal/agent/exec/utils/query"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	httpHelper "github.com/deeptest-com/deeptest/internal/pkg/helper/http"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/server/modules/repo"
 	"github.com/tidwall/gjson"
 	"regexp"
 	"strconv"

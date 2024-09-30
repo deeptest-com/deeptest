@@ -1,3 +1,0 @@
-package commandConsts
-
-const ()

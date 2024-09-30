@@ -1,13 +1,13 @@
 package v1
 
 import (
-	"github.com/aaronchen2k/deeptest/cmd/agent/v1/router"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
+	"github.com/deeptest-com/deeptest/cmd/agent/v1/router"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/core/module"
+	"github.com/kataras/iris/v12"
 	"time"
 
-	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/middleware/rate"
 )
 

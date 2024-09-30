@@ -1,12 +1,12 @@
 package service
 
 import (
-	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	v1 "github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	domain "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	agentExec "github.com/deeptest-com/deeptest/internal/agent/exec"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	v1 "github.com/deeptest-com/deeptest/internal/pkg/domain"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
 )
 

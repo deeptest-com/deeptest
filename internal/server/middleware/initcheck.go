@@ -2,11 +2,11 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
-	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
-	"github.com/aaronchen2k/deeptest/pkg/domain"
-	"github.com/aaronchen2k/deeptest/saas/common"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/server/core/cache"
+	"github.com/deeptest-com/deeptest/internal/server/core/dao"
+	"github.com/deeptest-com/deeptest/pkg/domain"
+	"github.com/deeptest-com/deeptest/saas/common"
 	"net/http"
 
 	"github.com/kataras/iris/v12"

@@ -1,10 +1,10 @@
 package service
 
 import (
-	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
-	thirdparty "github.com/aaronchen2k/deeptest/integration/thirdparty/service"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	integrationDomain "github.com/deeptest-com/deeptest/integration/domain"
+	thirdparty "github.com/deeptest-com/deeptest/integration/thirdparty/service"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/server/modules/repo"
 )
 
 type ReportService struct {

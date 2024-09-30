@@ -3,8 +3,8 @@ package repo
 import (
 	"database/sql"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
 	"gorm.io/gorm"
 )
 

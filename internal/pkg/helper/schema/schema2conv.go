@@ -3,9 +3,9 @@ package schemaHelper
 import (
 	"encoding/json"
 	"fmt"
-	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	mockjsHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/mockjs"
-	mockData "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
+	serverDomain "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	mockjsHelper "github.com/deeptest-com/deeptest/internal/pkg/helper/mockjs"
+	mockData "github.com/deeptest-com/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
 	"github.com/getkin/kin-openapi/openapi3"
 	"math/rand"
 	"reflect"

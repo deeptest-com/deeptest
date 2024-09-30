@@ -1,7 +1,7 @@
 package test
 
 import (
-	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	commonUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/routers/gorillamux"
 	"log"

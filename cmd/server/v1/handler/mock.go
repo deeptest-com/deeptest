@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
-	"github.com/aaronchen2k/deeptest/pkg/domain"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/server/modules/service"
+	"github.com/deeptest-com/deeptest/pkg/domain"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 )
 

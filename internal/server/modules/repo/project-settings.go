@@ -1,9 +1,9 @@
 package repo
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	mockData "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	mockData "github.com/deeptest-com/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
 	"time"
 )
 

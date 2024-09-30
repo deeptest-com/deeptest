@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
-	lecang "github.com/aaronchen2k/deeptest/integration/lecang/service"
-	integrationService "github.com/aaronchen2k/deeptest/integration/service"
-	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
-	"github.com/aaronchen2k/deeptest/pkg/domain"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	integrationDomain "github.com/deeptest-com/deeptest/integration/domain"
+	lecang "github.com/deeptest-com/deeptest/integration/lecang/service"
+	integrationService "github.com/deeptest-com/deeptest/integration/service"
+	"github.com/deeptest-com/deeptest/internal/server/core/web/validate"
+	"github.com/deeptest-com/deeptest/internal/server/modules/service"
+	"github.com/deeptest-com/deeptest/pkg/domain"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
 	"go.uber.org/zap"

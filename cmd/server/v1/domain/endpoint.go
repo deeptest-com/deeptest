@@ -1,10 +1,10 @@
 package serverDomain
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
-	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/helper/openapi/convert"
+	_domain "github.com/deeptest-com/deeptest/pkg/domain"
 	"github.com/lib/pq"
 )
 

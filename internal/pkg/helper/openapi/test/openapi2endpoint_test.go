@@ -2,8 +2,8 @@ package test
 
 import (
 	"fmt"
-	responseDefineHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
-	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	responseDefineHelper "github.com/deeptest-com/deeptest/internal/pkg/helper/schema"
+	_commUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
 	"testing"
 )
 

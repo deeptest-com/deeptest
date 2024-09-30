@@ -10,7 +10,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/emirpasic/gods/maps"
 	"math/rand"
 	"net"

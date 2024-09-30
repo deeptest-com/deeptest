@@ -2,11 +2,11 @@ package commService
 
 import (
 	"errors"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	dateUtils "github.com/aaronchen2k/deeptest/pkg/lib/date"
-	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	dateUtils "github.com/deeptest-com/deeptest/pkg/lib/date"
+	_fileUtils "github.com/deeptest-com/deeptest/pkg/lib/file"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
+	stringUtils "github.com/deeptest-com/deeptest/pkg/lib/string"
 	"mime/multipart"
 	"path/filepath"
 	"strings"

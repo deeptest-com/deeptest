@@ -1,7 +1,7 @@
 package repo
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 )
 

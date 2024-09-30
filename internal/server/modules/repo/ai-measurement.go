@@ -1,11 +1,11 @@
 package repo
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	v1 "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	_logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )

@@ -1,10 +1,10 @@
 package handler
 
 import (
-	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
-	"github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/deeptest-com/deeptest/internal/agent/domain"
+	"github.com/deeptest-com/deeptest/internal/agent/exec"
+	"github.com/deeptest-com/deeptest/internal/server/modules/service"
+	"github.com/deeptest-com/deeptest/pkg/domain"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"

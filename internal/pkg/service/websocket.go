@@ -3,7 +3,7 @@ package commService
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12/websocket"
 	"github.com/kataras/neffos"
 )

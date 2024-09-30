@@ -5,5 +5,5 @@ import (
 )
 
 func TestSchema2code(t *testing.T) {
-	
+
 }

@@ -1,10 +1,10 @@
 package handler
 
 import (
-	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
-	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	serverDomain "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/server/modules/service"
+	_domain "github.com/deeptest-com/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
 )

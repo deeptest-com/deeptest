@@ -1,6 +1,6 @@
 package model
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import "github.com/deeptest-com/deeptest/internal/pkg/consts"
 
 type EndpointCase struct {
 	BaseModel

@@ -3,7 +3,7 @@ package mockjsHelper
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
 	"github.com/getkin/kin-openapi/openapi3"
 	"strconv"
 	"strings"

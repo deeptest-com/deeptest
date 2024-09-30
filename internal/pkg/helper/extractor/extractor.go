@@ -2,12 +2,12 @@ package extractorHelper
 
 import (
 	"fmt"
-	queryUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
-	valueUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
-	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	queryUtils "github.com/deeptest-com/deeptest/internal/agent/exec/utils/query"
+	valueUtils "github.com/deeptest-com/deeptest/internal/agent/exec/utils/value"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/helper/http"
+	"github.com/deeptest-com/deeptest/pkg/lib/log"
 	"strings"
 )
 

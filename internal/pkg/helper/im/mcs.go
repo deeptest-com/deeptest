@@ -3,11 +3,11 @@ package im
 import (
 	"encoding/json"
 	"fmt"
-	httpHelper "github.com/aaronchen2k/deeptest/internal/agent/exec"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	agentExec "github.com/deeptest-com/deeptest/internal/agent/exec"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 )
 
 type Mcs struct {
@@ -108,7 +108,7 @@ func (s *Mcs) SendMessage() (msgId string, err error) {
 		Body:     string(body),
 	}
 
-	resp, err := httpHelper.Post(httpReq)
+	resp, err := agentExec.Post(httpReq)
 	if err != nil {
 		logUtils.Infof("send message by mcs failed, error, %s", err.Error())
 		return

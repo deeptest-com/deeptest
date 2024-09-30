@@ -2,11 +2,11 @@ package middleware
 
 import (
 	"bytes"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"github.com/aaronchen2k/deeptest/saas/common"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/server/core/dao"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
+	"github.com/deeptest-com/deeptest/saas/common"
 	"io/ioutil"
 	"strings"
 	"time"

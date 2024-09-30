@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
-	"github.com/aaronchen2k/deeptest/pkg/domain"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	serverConsts "github.com/deeptest-com/deeptest/internal/server/consts"
+	"github.com/deeptest-com/deeptest/internal/server/modules/service"
+	"github.com/deeptest-com/deeptest/pkg/domain"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/snowlyg/multi"
 
 	"github.com/kataras/iris/v12"

@@ -3,8 +3,8 @@ package commUtils
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	_stringUtils "github.com/deeptest-com/deeptest/pkg/lib/string"
 	"strconv"
 )
 

@@ -2,8 +2,8 @@ package repo
 
 import (
 	"database/sql"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 	"time"
 )
@@ -62,7 +62,7 @@ func (r *SummaryDetailsRepo) FindAllProjectInfo(tenantId consts.TenantId, engine
 
 		db = db.Where("biz_project.id in ?", projectIds)
 	}
-	
+
 	err = db.Order("id desc").Find(&projectsInfo).Error
 
 	return

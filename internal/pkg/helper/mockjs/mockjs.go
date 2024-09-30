@@ -2,11 +2,11 @@ package mockjsHelper
 
 import (
 	"fmt"
-	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
-	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
-	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	serverDomain "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	scriptHelper "github.com/deeptest-com/deeptest/internal/pkg/helper/script"
+	fileUtils "github.com/deeptest-com/deeptest/pkg/lib/file"
+	_logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
 )

@@ -1,10 +1,10 @@
 package service
 
 import (
-	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	serverDomain "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	model "github.com/deeptest-com/deeptest/internal/server/modules/model"
+	repo "github.com/deeptest-com/deeptest/internal/server/modules/repo"
 )
 
 type ConditionService struct {

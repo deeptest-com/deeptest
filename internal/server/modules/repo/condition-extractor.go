@@ -1,11 +1,11 @@
 package repo
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
-	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	extractorHelper "github.com/deeptest-com/deeptest/internal/pkg/helper/extractor"
+	model "github.com/deeptest-com/deeptest/internal/server/modules/model"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 	"go.uber.org/zap"
 	"gorm.io/gorm"

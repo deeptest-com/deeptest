@@ -1,7 +1,7 @@
 package casesHelper
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 

@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	commonUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
 	"os"
 	"os/exec"
 	"os/signal"

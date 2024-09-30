@@ -2,7 +2,7 @@ package deeptest
 
 import (
 	"embed"
-	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	commonUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
 	"os"
 )
 

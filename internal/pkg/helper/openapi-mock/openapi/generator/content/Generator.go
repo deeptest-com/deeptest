@@ -2,7 +2,7 @@ package mockContent
 
 import (
 	"context"
-	mockData "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
+	mockData "github.com/deeptest-com/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
 	"regexp"
 
 	"github.com/getkin/kin-openapi/openapi3"

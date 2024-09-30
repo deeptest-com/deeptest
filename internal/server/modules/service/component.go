@@ -1,11 +1,11 @@
 package service
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	v1 "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	serverConsts "github.com/deeptest-com/deeptest/internal/server/consts"
+	"github.com/deeptest-com/deeptest/internal/server/modules/repo"
+	_domain "github.com/deeptest-com/deeptest/pkg/domain"
 )
 
 type ComponentService struct {

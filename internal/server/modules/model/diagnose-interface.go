@@ -1,8 +1,8 @@
 package model
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	serverConsts "github.com/deeptest-com/deeptest/internal/server/consts"
 	"github.com/kataras/iris/v12"
 )
 

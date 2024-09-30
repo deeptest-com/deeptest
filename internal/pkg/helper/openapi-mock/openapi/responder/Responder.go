@@ -2,8 +2,8 @@ package mockResponder
 
 import (
 	"context"
-	mockGenerator "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator"
-	mockSerializer "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/responder/serializer"
+	mockGenerator "github.com/deeptest-com/deeptest/internal/pkg/helper/openapi-mock/openapi/generator"
+	mockSerializer "github.com/deeptest-com/deeptest/internal/pkg/helper/openapi-mock/openapi/responder/serializer"
 	"net/http"
 	"regexp"
 )

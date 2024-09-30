@@ -1,9 +1,9 @@
 package jmeterHelper
 
 import (
-	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
-	jmeterProcessor "github.com/aaronchen2k/deeptest/internal/pkg/helper/jmeter/processor"
 	"github.com/beevik/etree"
+	agentExec "github.com/deeptest-com/deeptest/internal/agent/exec"
+	jmeterProcessor "github.com/deeptest-com/deeptest/internal/pkg/helper/jmeter/processor"
 	"log"
 )
 

@@ -1,9 +1,9 @@
 package serverDomain
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
-	"github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	serverConsts "github.com/deeptest-com/deeptest/internal/server/consts"
+	"github.com/deeptest-com/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
 )
 

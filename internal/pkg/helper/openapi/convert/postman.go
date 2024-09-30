@@ -3,8 +3,8 @@ package convert
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert/postman"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/deeptest-com/deeptest/internal/pkg/helper/openapi/convert/postman"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/getkin/kin-openapi/openapi3"
 	"os"
 	"os/exec"

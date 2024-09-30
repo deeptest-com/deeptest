@@ -2,8 +2,8 @@ package domain
 
 import (
 	"encoding/json"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	serverConsts "github.com/deeptest-com/deeptest/internal/server/consts"
 )
 
 type DebugInfo struct {

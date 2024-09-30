@@ -3,8 +3,8 @@ package mockData
 import (
 	"context"
 	"fmt"
-	mockjsHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/mockjs"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	mockjsHelper "github.com/deeptest-com/deeptest/internal/pkg/helper/mockjs"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/pkg/errors"
 )

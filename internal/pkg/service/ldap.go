@@ -3,8 +3,8 @@ package commService
 import (
 	"errors"
 	"fmt"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	v1 "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/go-ldap/ldap"
 )
 
@@ -83,7 +83,7 @@ func (s *LdapService) LdapUserInfo(req v1.LoginReq) (userBase v1.UserBase, err e
 			userBase.Name = entry.GetAttributeValue("displayName")
 			userBase.Username = entry.GetAttributeValue("uid")
 			userBase.Email = entry.GetAttributeValue("mail")
-			userBase.ImAccount =  entry.GetAttributeValue("title") //企业微信账号
+			userBase.ImAccount = entry.GetAttributeValue("title") //企业微信账号
 			for _, attribute := range entry.Attributes {
 				fmt.Printf("%s: %s\n", attribute.Name, attribute.Values)
 			}

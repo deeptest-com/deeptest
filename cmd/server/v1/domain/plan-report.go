@@ -1,7 +1,7 @@
 package serverDomain
 
 import (
-	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	_domain "github.com/deeptest-com/deeptest/pkg/domain"
 )
 
 type PlanReportReqPaginate struct {

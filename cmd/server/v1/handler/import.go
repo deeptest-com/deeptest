@@ -2,11 +2,11 @@ package handler
 
 import (
 	"fmt"
-	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	commService "github.com/aaronchen2k/deeptest/internal/pkg/service"
-	service "github.com/aaronchen2k/deeptest/internal/server/modules/service"
-	"github.com/aaronchen2k/deeptest/pkg/domain"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	domain "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	commService "github.com/deeptest-com/deeptest/internal/pkg/service"
+	service "github.com/deeptest-com/deeptest/internal/server/modules/service"
+	"github.com/deeptest-com/deeptest/pkg/domain"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/kataras/iris/v12"
 )

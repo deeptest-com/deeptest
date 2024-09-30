@@ -1,13 +1,13 @@
 package service
 
 import (
-	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	serverDomain "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	serverConsts "github.com/deeptest-com/deeptest/internal/server/consts"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/server/modules/repo"
+	_domain "github.com/deeptest-com/deeptest/pkg/domain"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
 	"strconv"

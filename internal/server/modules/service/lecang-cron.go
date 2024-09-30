@@ -1,11 +1,11 @@
 package service
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/server/modules/repo"
+	_commUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 )
 
 type LecangCronService struct {

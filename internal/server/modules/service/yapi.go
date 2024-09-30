@@ -2,12 +2,12 @@ package service
 
 import (
 	"encoding/json"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	httpHelper "github.com/aaronchen2k/deeptest/internal/agent/exec"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	m "github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	v1 "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	agentExec "github.com/deeptest-com/deeptest/internal/agent/exec"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	m "github.com/deeptest-com/deeptest/internal/server/modules/model"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -65,7 +65,7 @@ func getYapiCatMenu(yapiHost, token string) (yapiCatMenu YapiCatMenu) {
 		Url:         yapiHost + "/api/interface/getCatMenu",
 		QueryParams: &param,
 	}
-	resp, err := httpHelper.Get(req)
+	resp, err := agentExec.Get(req)
 	if err != nil {
 		logUtils.Infof("from api get yapi catMenu error, %s", err.Error())
 		return
@@ -98,7 +98,7 @@ func (s *YapiService) GetYapiMenuInterfaceList(yapiHost, token, catid string) (y
 		Url:         yapiHost + "/api/interface/list_cat",
 		QueryParams: &param,
 	}
-	resp, err := httpHelper.Get(req)
+	resp, err := agentExec.Get(req)
 	if err != nil {
 		logUtils.Infof("from api get yapi catMenu error, %s", err.Error())
 		return
@@ -127,7 +127,7 @@ func (s *YapiService) GetYapiInterface(yapiHost, token, interfaceId string) (ret
 		Url:         yapiHost + "/api/interface/get",
 		QueryParams: &param,
 	}
-	resp, err := httpHelper.Get(req)
+	resp, err := agentExec.Get(req)
 	if err != nil {
 		logUtils.Infof("from api get yapi interface info error, %s", err.Error())
 		return

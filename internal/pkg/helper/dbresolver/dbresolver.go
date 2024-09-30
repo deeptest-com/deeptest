@@ -2,8 +2,8 @@ package dbresolver
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
 	"sync"
 )

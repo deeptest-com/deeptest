@@ -2,10 +2,10 @@ package openapi
 
 import (
 	"encoding/json"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	schemaHelper "github.com/deeptest-com/deeptest/internal/pkg/helper/schema"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	_commUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
 	"github.com/jinzhu/copier"
 	"strings"
 )

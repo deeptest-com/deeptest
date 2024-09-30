@@ -2,9 +2,9 @@ package service
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	repo "github.com/deeptest-com/deeptest/internal/server/modules/repo"
 )
 
 type VariableService struct {

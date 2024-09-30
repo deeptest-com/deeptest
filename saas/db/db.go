@@ -1,9 +1,9 @@
 package db
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/saas/tenant"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/saas/tenant"
 )
 
 func GetByTenantId(tenantId consts.TenantId) (m config.Mysql) {

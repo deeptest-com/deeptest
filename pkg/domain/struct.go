@@ -1,8 +1,8 @@
 package _domain
 
 import (
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
-	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	serverConsts "github.com/deeptest-com/deeptest/internal/server/consts"
+	stringUtils "github.com/deeptest-com/deeptest/pkg/lib/string"
 )
 
 type Model struct {

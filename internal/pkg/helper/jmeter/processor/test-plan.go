@@ -1,8 +1,8 @@
 package jmeterProcessor
 
 import (
-	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/beevik/etree"
+	agentExec "github.com/deeptest-com/deeptest/internal/agent/exec"
 )
 
 func TestPlan(elem *etree.Element) (processor *agentExec.Processor) {

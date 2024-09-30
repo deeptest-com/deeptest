@@ -2,8 +2,8 @@ package mockData
 
 import (
 	"context"
-	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	mockjsHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/mockjs"
+	serverDomain "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	mockjsHelper "github.com/deeptest-com/deeptest/internal/pkg/helper/mockjs"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 

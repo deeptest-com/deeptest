@@ -1,6 +1,6 @@
 package domain
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import "github.com/deeptest-com/deeptest/internal/pkg/consts"
 
 type AiMeasurementBase struct {
 	Name             string `json:"name"`

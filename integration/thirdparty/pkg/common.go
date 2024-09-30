@@ -1,10 +1,10 @@
 package pkg
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
-	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	commUtils "github.com/deeptest-com/deeptest/internal/pkg/utils"
+	_commUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
 	"strconv"
 	"time"
 )

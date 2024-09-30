@@ -2,9 +2,9 @@ package service
 
 import (
 	"fmt"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	queryHelper "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	v1 "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	queryUtils "github.com/deeptest-com/deeptest/internal/agent/exec/utils/query"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
 	"strings"
 )
 
@@ -19,14 +19,14 @@ func (s *ParserService) TestExpr(req *v1.TestExprRequest) (ret v1.TestExprRespon
 
 	if req.ExprType == "xpath" {
 		if req.Type == consts.LangHTML {
-			result = queryHelper.HtmlQuery(req.Content, req.Expr)
+			result = queryUtils.HtmlQuery(req.Content, req.Expr)
 		} else if req.Type == consts.LangXML {
-			result = queryHelper.XmlQuery(req.Content, req.Expr)
+			result = queryUtils.XmlQuery(req.Content, req.Expr)
 		} else if req.Type == consts.LangJSON {
-			result, resultType = queryHelper.JsonQuery(req.Content, req.Expr)
+			result, resultType = queryUtils.JsonQuery(req.Content, req.Expr)
 		}
 	} else if req.ExprType == "regx" {
-		result = queryHelper.RegxQuery(req.Content, req.Expr)
+		result = queryUtils.RegxQuery(req.Content, req.Expr)
 	}
 
 	ret = v1.TestExprResponse{

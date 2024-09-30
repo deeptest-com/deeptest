@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/oklog/ulid/v2"
 	"github.com/snowlyg/helper/str"
 	"io"

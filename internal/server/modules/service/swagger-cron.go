@@ -1,14 +1,14 @@
 package service
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	v1 "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/core/cron"
+	"github.com/deeptest-com/deeptest/internal/pkg/helper/openapi/convert"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/server/modules/repo"
+	_commUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 )
 
 type SwaggerCron struct {

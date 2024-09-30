@@ -1,7 +1,7 @@
 package mockNegotiator
 
 import (
-	mockLogcontext "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/logcontext"
+	mockLogcontext "github.com/deeptest-com/deeptest/internal/pkg/helper/openapi-mock/logcontext"
 	"net/http"
 
 	"github.com/getkin/kin-openapi/openapi3"

@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	model "github.com/deeptest-com/deeptest/internal/server/modules/model"
+	repo "github.com/deeptest-com/deeptest/internal/server/modules/repo"
 )
 
 type ScriptService struct {

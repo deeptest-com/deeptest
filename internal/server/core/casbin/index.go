@@ -1,9 +1,9 @@
 package casbin
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/server/core/dao"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"path/filepath"
 	"strconv"
 	"sync"

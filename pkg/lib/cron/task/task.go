@@ -2,10 +2,10 @@ package task
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/core/cron"
+	"github.com/deeptest-com/deeptest/internal/server/modules/service"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 )
 
 type Task interface {
@@ -88,7 +88,7 @@ func (p Proxy) getTaskFunc(options map[string]interface{}) (taskFunc func()) {
 		runFunc := p.task.Run(options)
 
 		runFunc()
-		
+
 	}
 
 	return

@@ -2,10 +2,10 @@ package service
 
 import (
 	"encoding/json"
-	valueUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	valueUtils "github.com/deeptest-com/deeptest/internal/agent/exec/utils/value"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	repo "github.com/deeptest-com/deeptest/internal/server/modules/repo"
 )
 
 type ExecConditionService struct {

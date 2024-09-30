@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"fmt"
-	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	_domain "github.com/deeptest-com/deeptest/pkg/domain"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"runtime/debug"

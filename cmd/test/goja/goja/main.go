@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	gojaPlugin "github.com/aaronchen2k/deeptest/internal/pkg/goja/plugin"
+	gojaPlugin "github.com/deeptest-com/deeptest/internal/pkg/goja/plugin"
 	"github.com/dop251/goja"
 	"log"
 )

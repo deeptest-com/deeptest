@@ -1,10 +1,10 @@
 package handler
 
 import (
-	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	mockjsHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/mockjs"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
-	"github.com/aaronchen2k/deeptest/pkg/domain"
+	domain "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	mockjsHelper "github.com/deeptest-com/deeptest/internal/pkg/helper/mockjs"
+	"github.com/deeptest-com/deeptest/internal/server/modules/service"
+	"github.com/deeptest-com/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
 )
 

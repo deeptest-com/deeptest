@@ -2,17 +2,17 @@ package service
 
 import (
 	"fmt"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	httpHelper "github.com/aaronchen2k/deeptest/internal/agent/exec"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
-	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	v1 "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	agentExec "github.com/deeptest-com/deeptest/internal/agent/exec"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/helper/openapi"
+	"github.com/deeptest-com/deeptest/internal/pkg/helper/openapi/convert"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/server/modules/repo"
+	_domain "github.com/deeptest-com/deeptest/pkg/domain"
+	commonUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
 	"io/ioutil"
 )
@@ -32,7 +32,7 @@ func (s *EndpointInterfaceService) ImportEndpointData(tenantId consts.TenantId, 
 	if req.OpenUrlImport {
 		request := domain.BaseRequest{Url: req.FilePath}
 		var response domain.DebugResponse
-		response, err = httpHelper.Get(request)
+		response, err = agentExec.Get(request)
 		data = []byte(response.Content)
 	} else {
 		data, err = ioutil.ReadFile(req.FilePath)

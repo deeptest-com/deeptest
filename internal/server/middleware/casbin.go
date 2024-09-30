@@ -3,11 +3,11 @@ package middleware
 import (
 	"errors"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	casbinServer "github.com/aaronchen2k/deeptest/internal/server/core/casbin"
-	"github.com/aaronchen2k/deeptest/pkg/domain"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"github.com/aaronchen2k/deeptest/saas/common"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	casbinServer "github.com/deeptest-com/deeptest/internal/server/core/casbin"
+	"github.com/deeptest-com/deeptest/pkg/domain"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
+	"github.com/deeptest-com/deeptest/saas/common"
 	"net/http"
 	"strconv"
 

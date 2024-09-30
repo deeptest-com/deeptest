@@ -2,10 +2,10 @@ package jmeterProcessor
 
 import (
 	"fmt"
-	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/beevik/etree"
+	agentExec "github.com/deeptest-com/deeptest/internal/agent/exec"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
 )
 
 func HTTPSamplerProxy(elem *etree.Element) (processor *agentExec.Processor) {

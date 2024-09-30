@@ -1,9 +1,9 @@
 package mockGenerator
 
 import (
-	mockContent "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/content"
-	mockData "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
-	mockNegotiator "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/negotiator"
+	mockContent "github.com/deeptest-com/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/content"
+	mockData "github.com/deeptest-com/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
+	mockNegotiator "github.com/deeptest-com/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/negotiator"
 	"net/http"
 
 	"github.com/getkin/kin-openapi/routers"

@@ -1,11 +1,11 @@
 package dao
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	SaasDBresolver "github.com/aaronchen2k/deeptest/internal/pkg/helper/dbresolver"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	sassDB "github.com/aaronchen2k/deeptest/saas/db"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	SaasDBresolver "github.com/deeptest-com/deeptest/internal/pkg/helper/dbresolver"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
+	sassDB "github.com/deeptest-com/deeptest/saas/db"
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"

@@ -1,8 +1,8 @@
 package casesHelper
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	_stringUtils "github.com/deeptest-com/deeptest/pkg/lib/string"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/kataras/iris/v12"
 	"path"

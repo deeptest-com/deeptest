@@ -1,9 +1,9 @@
 package test
 
 import (
-	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
-	jmeterHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jmeter"
 	"github.com/beevik/etree"
+	agentExec "github.com/deeptest-com/deeptest/internal/agent/exec"
+	jmeterHelper "github.com/deeptest-com/deeptest/internal/pkg/helper/jmeter"
 	"log"
 	"testing"
 )

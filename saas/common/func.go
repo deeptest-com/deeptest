@@ -2,10 +2,10 @@ package common
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"github.com/aaronchen2k/deeptest/saas/tenant"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
+	"github.com/deeptest-com/deeptest/saas/tenant"
 	"github.com/kataras/iris/v12/context"
 	"runtime/debug"
 	"strings"

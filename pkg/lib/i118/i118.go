@@ -3,7 +3,7 @@ package _i118Utils
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aaronchen2k/deeptest"
+	"github.com/deeptest-com/deeptest"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 	"path"

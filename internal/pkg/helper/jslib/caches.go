@@ -2,9 +2,9 @@ package jslibHelper
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
-	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/server/core/dao"
+	fileUtils "github.com/deeptest-com/deeptest/pkg/lib/file"
 	"path/filepath"
 	"sync"
 )

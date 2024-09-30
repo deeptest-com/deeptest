@@ -2,10 +2,10 @@ package gojaUtils
 
 import (
 	"encoding/json"
-	valueUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	valueUtils "github.com/deeptest-com/deeptest/internal/agent/exec/utils/value"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	httpHelper "github.com/deeptest-com/deeptest/internal/pkg/helper/http"
 	"github.com/dop251/goja"
 	"log"
 	"reflect"

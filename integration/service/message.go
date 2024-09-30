@@ -2,15 +2,15 @@ package service
 
 import (
 	"fmt"
-	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
-	thirdparty "github.com/aaronchen2k/deeptest/integration/thirdparty/service"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	integrationDomain "github.com/deeptest-com/deeptest/integration/domain"
+	thirdparty "github.com/deeptest-com/deeptest/integration/thirdparty/service"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/core/cron"
+	serverConsts "github.com/deeptest-com/deeptest/internal/server/consts"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/server/modules/repo"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 )
 
 type MessageService struct {

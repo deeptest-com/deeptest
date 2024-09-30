@@ -2,7 +2,7 @@ package test
 
 import (
 	"fmt"
-	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
+	commUtils "github.com/deeptest-com/deeptest/internal/pkg/utils"
 	"log"
 	"regexp"
 	"strings"

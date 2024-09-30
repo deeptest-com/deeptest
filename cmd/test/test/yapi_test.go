@@ -2,7 +2,7 @@ package test
 
 import (
 	"context"
-	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
+	fileUtils "github.com/deeptest-com/deeptest/pkg/lib/file"
 	"github.com/getkin/kin-openapi/openapi3"
 	"testing"
 )

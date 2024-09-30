@@ -2,10 +2,10 @@ package agentServe
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/pkg/core/middleware"
-	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/pkg/core/middleware"
+	"github.com/deeptest-com/deeptest/internal/pkg/core/module"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"strings"
 	"sync"
 

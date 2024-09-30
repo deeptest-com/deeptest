@@ -2,10 +2,10 @@ package service
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	model "github.com/deeptest-com/deeptest/internal/server/modules/model"
+	repo2 "github.com/deeptest-com/deeptest/internal/server/modules/repo"
+	_httpUtils "github.com/deeptest-com/deeptest/pkg/lib/http"
 	"github.com/kataras/iris/v12"
 	"net/url"
 	"strings"

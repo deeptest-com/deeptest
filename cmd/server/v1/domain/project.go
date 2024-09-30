@@ -1,10 +1,10 @@
 package serverDomain
 
 import (
-	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
-	"github.com/aaronchen2k/deeptest/pkg/domain"
+	integrationDomain "github.com/deeptest-com/deeptest/integration/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	serverConsts "github.com/deeptest-com/deeptest/internal/server/consts"
+	"github.com/deeptest-com/deeptest/pkg/domain"
 )
 
 type ProjectReq struct {

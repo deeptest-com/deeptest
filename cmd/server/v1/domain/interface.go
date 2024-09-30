@@ -1,8 +1,8 @@
 package serverDomain
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	serverConsts "github.com/deeptest-com/deeptest/internal/server/consts"
 )
 
 type InterfaceReq struct {

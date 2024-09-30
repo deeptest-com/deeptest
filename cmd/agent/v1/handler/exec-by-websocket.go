@@ -2,14 +2,14 @@ package handler
 
 import (
 	"encoding/json"
-	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
-	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
-	"github.com/aaronchen2k/deeptest/internal/agent/service"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
-	"github.com/aaronchen2k/deeptest/pkg/domain"
-	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
-	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	agentExec "github.com/deeptest-com/deeptest/internal/agent/exec"
+	execUtils "github.com/deeptest-com/deeptest/internal/agent/exec/utils/exec"
+	agentService "github.com/deeptest-com/deeptest/internal/agent/service"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	websocketHelper "github.com/deeptest-com/deeptest/internal/pkg/helper/websocket"
+	_domain "github.com/deeptest-com/deeptest/pkg/domain"
+	_i118Utils "github.com/deeptest-com/deeptest/pkg/lib/i118"
+	_logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12/websocket"
 )
 
@@ -74,7 +74,7 @@ func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 		return
 	}
 
-	err = service.StartExec(req, &wsMsg)
+	err = agentService.StartExec(req, &wsMsg)
 
 	return
 }

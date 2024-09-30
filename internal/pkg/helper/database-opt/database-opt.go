@@ -2,9 +2,9 @@ package databaseOptHelpper
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	_i118Utils "github.com/deeptest-com/deeptest/pkg/lib/i118"
 )
 
 func GenDesc(typ consts.DatabaseType, sql string) (ret string) {

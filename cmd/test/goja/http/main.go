@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
-	gojaUtils "github.com/aaronchen2k/deeptest/internal/pkg/goja"
+	agentExec "github.com/deeptest-com/deeptest/internal/agent/exec"
+	gojaUtils "github.com/deeptest-com/deeptest/internal/pkg/goja"
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
 	"log"

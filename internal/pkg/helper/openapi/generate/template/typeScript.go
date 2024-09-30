@@ -2,7 +2,7 @@ package template
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/generate/fields"
+	"github.com/deeptest-com/deeptest/internal/pkg/helper/openapi/generate/fields"
 	"strings"
 )
 

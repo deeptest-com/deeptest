@@ -2,9 +2,9 @@ package zapLog
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/snowlyg/helper/dir"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

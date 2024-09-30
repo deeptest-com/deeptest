@@ -2,12 +2,12 @@ package service
 
 import (
 	"encoding/json"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec"
-	execDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	agentDomain2 "github.com/deeptest-com/deeptest/internal/agent/domain"
+	agentExec "github.com/deeptest-com/deeptest/internal/agent/exec"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/server/modules/repo"
 	"sync"
 )
 
@@ -67,7 +67,7 @@ func (s *ScenarioExecService) LoadExecData(tenantId consts.TenantId, scenarioId,
 	return
 }
 
-func (s *ScenarioExecService) SaveReport(tenantId consts.TenantId, scenarioId int, userId uint, rootResult execDomain.ScenarioExecResult) (report model.ScenarioReport, err error) {
+func (s *ScenarioExecService) SaveReport(tenantId consts.TenantId, scenarioId int, userId uint, rootResult agentDomain2.ScenarioExecResult) (report model.ScenarioReport, err error) {
 	scenario, _ := s.ScenarioRepo.Get(tenantId, uint(scenarioId))
 	rootResult.Name = scenario.Name
 
@@ -111,7 +111,7 @@ func (s *ScenarioExecService) SaveReport(tenantId consts.TenantId, scenarioId in
 	return
 }
 
-func (s *ScenarioExecService) dealwithResult(tenantId consts.TenantId, result *execDomain.ScenarioExecResult, processorToInvokeIdMap *map[uint]uint) (
+func (s *ScenarioExecService) dealwithResult(tenantId consts.TenantId, result *agentDomain2.ScenarioExecResult, processorToInvokeIdMap *map[uint]uint) (
 	err error) {
 
 	processor, err := s.ScenarioProcessorRepo.Get(tenantId, result.ProcessorId)
@@ -152,7 +152,7 @@ func (s *ScenarioExecService) dealwithResult(tenantId consts.TenantId, result *e
 	return
 }
 
-func (s *ScenarioExecService) GenerateReport(tenantId consts.TenantId, scenarioId int, userId uint, rootResult execDomain.ScenarioExecResult) (report model.ScenarioReport, err error) {
+func (s *ScenarioExecService) GenerateReport(tenantId consts.TenantId, scenarioId int, userId uint, rootResult agentDomain2.ScenarioExecResult) (report model.ScenarioReport, err error) {
 	scenario, _ := s.ScenarioRepo.Get(tenantId, uint(scenarioId))
 	rootResult.Name = scenario.Name
 
@@ -179,7 +179,7 @@ func (s *ScenarioExecService) GenerateReport(tenantId consts.TenantId, scenarioI
 	return
 }
 
-func (s *ScenarioExecService) countRequest(tenantId consts.TenantId, result execDomain.ScenarioExecResult, report *model.ScenarioReport) {
+func (s *ScenarioExecService) countRequest(tenantId consts.TenantId, result agentDomain2.ScenarioExecResult, report *model.ScenarioReport) {
 	report.TotalProcessorNum++
 	report.FinishProcessorNum++
 	if result.ProcessorType == consts.ProcessorInterfaceDefault {
@@ -265,7 +265,7 @@ func (s *ScenarioExecService) summarizeInterface(report *model.ScenarioReport) {
 	}
 }
 
-func (s *ScenarioExecService) GetScenarioNormalData(tenantId consts.TenantId, id, environmentId uint) (ret execDomain.Report, err error) {
+func (s *ScenarioExecService) GetScenarioNormalData(tenantId consts.TenantId, id, environmentId uint) (ret agentDomain2.Report, err error) {
 	_ = s.ScenarioRepo.UpdateCurrEnvId(tenantId, id, environmentId)
 	ret.ScenarioId = id
 

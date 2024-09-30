@@ -1,0 +1,4 @@
+
+[submodule "ui"]
+	path = ui
+	url = git@github.com:deeptest-com/deeptest-ui.git

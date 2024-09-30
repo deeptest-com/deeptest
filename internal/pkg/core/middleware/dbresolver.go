@@ -2,9 +2,9 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
-	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
-	"github.com/aaronchen2k/deeptest/saas/common"
+	"github.com/deeptest-com/deeptest/internal/server/core/dao"
+	_domain "github.com/deeptest-com/deeptest/pkg/domain"
+	"github.com/deeptest-com/deeptest/saas/common"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"gorm.io/gorm"

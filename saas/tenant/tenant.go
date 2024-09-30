@@ -1,10 +1,10 @@
 package tenant
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/saas/domain"
-	"github.com/aaronchen2k/deeptest/saas/remote"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/saas/domain"
+	"github.com/deeptest-com/deeptest/saas/remote"
 	"strings"
 )
 

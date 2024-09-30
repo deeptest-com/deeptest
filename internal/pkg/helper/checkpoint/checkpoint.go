@@ -2,10 +2,10 @@ package checkpointHelpper
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
-	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	extractorHelper "github.com/deeptest-com/deeptest/internal/pkg/helper/extractor"
+	_i118Utils "github.com/deeptest-com/deeptest/pkg/lib/i118"
 )
 
 func GenDesc(typ consts.CheckpointType, operator consts.ComparisonOperator, actualResult, expression,

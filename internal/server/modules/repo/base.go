@@ -2,12 +2,12 @@ package repo
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	serverConsts "github.com/deeptest-com/deeptest/internal/server/consts"
 
-	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/server/core/dao"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 )
 

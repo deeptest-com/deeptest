@@ -1,14 +1,14 @@
 package service
 
 import (
-	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	grpcHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/grpc"
-	grpcDomain "github.com/aaronchen2k/deeptest/internal/pkg/helper/grpc/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	serverDomain "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	grpcHelper "github.com/deeptest-com/deeptest/internal/pkg/helper/grpc"
+	grpcDomain "github.com/deeptest-com/deeptest/internal/pkg/helper/grpc/domain"
+	"github.com/deeptest-com/deeptest/internal/server/modules/model"
+	"github.com/deeptest-com/deeptest/internal/server/modules/repo"
+	_stringUtils "github.com/deeptest-com/deeptest/pkg/lib/string"
 	"github.com/jinzhu/copier"
 	"path/filepath"
 	"strings"

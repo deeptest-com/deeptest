@@ -3,12 +3,12 @@ package remote
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/integration/thirdparty/pkg"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	_http "github.com/aaronchen2k/deeptest/pkg/lib/http"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"github.com/aaronchen2k/deeptest/saas/domain"
+	"github.com/deeptest-com/deeptest/integration/thirdparty/pkg"
+	"github.com/deeptest-com/deeptest/internal/pkg/config"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	_http "github.com/deeptest-com/deeptest/pkg/lib/http"
+	logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
+	"github.com/deeptest-com/deeptest/saas/domain"
 )
 
 type Remote struct {

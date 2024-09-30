@@ -3,7 +3,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	serverDomain "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
 	"github.com/kataras/iris/v12"
 	"net/http"
 	"time"

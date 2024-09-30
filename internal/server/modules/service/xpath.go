@@ -2,9 +2,9 @@ package service
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/antchfx/jsonquery"
 	"github.com/antchfx/xmlquery"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
 	"golang.org/x/net/html"
 )
 

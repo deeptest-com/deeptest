@@ -2,10 +2,10 @@ package cron
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/pkg/lib/cron"
-	"github.com/aaronchen2k/deeptest/pkg/lib/date"
-	"github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/pkg/lib/cron"
+	"github.com/deeptest-com/deeptest/pkg/lib/date"
+	"github.com/deeptest-com/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"sync"
 	"time"

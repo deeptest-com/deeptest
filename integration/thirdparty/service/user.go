@@ -1,11 +1,11 @@
 package service
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/integration/domain"
-	"github.com/aaronchen2k/deeptest/integration/enum"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
+	v1 "github.com/deeptest-com/deeptest/integration/domain"
+	"github.com/deeptest-com/deeptest/integration/enum"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	serverConsts "github.com/deeptest-com/deeptest/internal/server/consts"
+	"github.com/deeptest-com/deeptest/internal/server/core/cache"
 	"github.com/snowlyg/helper/arr"
 	"time"
 )

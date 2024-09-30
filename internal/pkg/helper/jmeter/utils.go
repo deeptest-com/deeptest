@@ -1,8 +1,8 @@
 package jmeterHelper
 
 import (
-	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/beevik/etree"
+	stringUtils "github.com/deeptest-com/deeptest/pkg/lib/string"
 	"strings"
 )
 

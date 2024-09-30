@@ -2,8 +2,8 @@ package websocketHelper
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/pkg/core/mq"
-	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/deeptest-com/deeptest/pkg/core/mq"
+	_domain "github.com/deeptest-com/deeptest/pkg/domain"
 	"time"
 )
 

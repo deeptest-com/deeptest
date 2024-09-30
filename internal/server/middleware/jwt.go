@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/deeptest-com/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"github.com/snowlyg/multi"

@@ -3,7 +3,7 @@ package mockContent
 import (
 	"context"
 	"fmt"
-	mockErrors "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/errors"
+	mockErrors "github.com/deeptest-com/deeptest/internal/pkg/helper/openapi-mock/errors"
 	"regexp"
 
 	"github.com/getkin/kin-openapi/openapi3"

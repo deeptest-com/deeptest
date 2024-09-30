@@ -2,10 +2,10 @@ package service
 
 import (
 	"fmt"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	queryHelper "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/antchfx/htmlquery"
+	v1 "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
+	queryUtils "github.com/deeptest-com/deeptest/internal/agent/exec/utils/query"
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
 	"golang.org/x/net/html"
 	"strings"
 )
@@ -47,7 +47,7 @@ func (s *ParserHtmlService) ParseHtml(req *v1.ParserRequest) (ret v1.ParserRespo
 		return
 	}
 
-	result := queryHelper.HtmlQuery(req.DocContent, expr1)
+	result := queryUtils.HtmlQuery(req.DocContent, expr1)
 	fmt.Printf("%s - %s: %v", selectionType, expr1, result)
 
 	ret = v1.ParserResponse{

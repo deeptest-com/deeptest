@@ -1,9 +1,9 @@
 package test
 
 import (
-	httpHelper "github.com/aaronchen2k/deeptest/internal/agent/exec"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
+	httpHelper "github.com/deeptest-com/deeptest/internal/agent/exec"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
+	"github.com/deeptest-com/deeptest/internal/pkg/helper/openapi/convert"
 	"log"
 	"testing"
 )

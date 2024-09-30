@@ -2,7 +2,7 @@ package service
 
 import (
 	"errors"
-	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
+	integrationDomain "github.com/deeptest-com/deeptest/integration/domain"
 )
 
 type EngineeringService struct {

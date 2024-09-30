@@ -1,6 +1,6 @@
 package serverDomain
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import "github.com/deeptest-com/deeptest/internal/pkg/consts"
 
 type EndpointDiffReq struct {
 	EndpointId uint `json:"endpointId"`

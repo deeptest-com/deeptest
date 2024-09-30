@@ -1,6 +1,6 @@
 package serverDomain
 
-import _domain "github.com/aaronchen2k/deeptest/pkg/domain"
+import _domain "github.com/deeptest-com/deeptest/pkg/domain"
 
 type ProjectRecentlyVisitedBase struct {
 	UserId    uint `gorm:"index:user_id_index;not null" json:"userId"`

@@ -1,6 +1,6 @@
 package serverDomain
 
-import _domain "github.com/aaronchen2k/deeptest/pkg/domain"
+import _domain "github.com/deeptest-com/deeptest/pkg/domain"
 
 // LoginReq 登录请求字段
 type LoginReq struct {

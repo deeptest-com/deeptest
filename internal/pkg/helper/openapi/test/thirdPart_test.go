@@ -2,8 +2,8 @@ package test
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/thirdPart"
-	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	"github.com/deeptest-com/deeptest/internal/pkg/helper/openapi/thirdPart"
+	_commUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
 	"testing"
 )
 

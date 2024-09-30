@@ -1,6 +1,6 @@
 package serverDomain
 
-import "github.com/aaronchen2k/deeptest/pkg/consts"
+import "github.com/deeptest-com/deeptest/pkg/consts"
 
 type RpcResult struct {
 	Code    _consts.ResultCode `json:"code"`

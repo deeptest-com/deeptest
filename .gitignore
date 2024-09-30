@@ -38,5 +38,4 @@ client-ly/out
 client-ly/.webpack
 client/icon/ly
 
-/deeptest-ui/
-/internal/agent/
+

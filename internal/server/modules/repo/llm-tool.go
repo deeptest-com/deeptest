@@ -97,7 +97,7 @@ func (r *LlmToolRepo) SetDefault(tenantId consts.TenantId, id uint) (err error) 
 	return
 }
 
-func (r *LlmToolRepo) UpdateName(tenantId consts.TenantId, req v1.DbConnReq) (err error) {
+func (r *LlmToolRepo) UpdateName(tenantId consts.TenantId, req v1.ToolLlmReq) (err error) {
 	exist, _ := r.GetByName(tenantId, req.Id, req.ProjectId, req.Name)
 	if exist.ID > 0 {
 		err = errors.New("名称不能和已存在的记录相同")

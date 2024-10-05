@@ -84,7 +84,7 @@ func (c *LlmToolCtrl) UpdateName(ctx iris.Context) {
 	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 
-	req := v1.DbConnReq{}
+	req := v1.ToolLlmReq{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

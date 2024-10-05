@@ -36,7 +36,7 @@ func (s *LlmToolService) Disable(tenantId consts.TenantId, id uint) (err error) 
 	return s.LlmToolRepo.Disable(tenantId, id)
 }
 
-func (s *LlmToolService) UpdateName(tenantId consts.TenantId, req v1.DbConnReq) (err error) {
+func (s *LlmToolService) UpdateName(tenantId consts.TenantId, req v1.ToolLlmReq) (err error) {
 	err = s.LlmToolRepo.UpdateName(tenantId, req)
 
 	return

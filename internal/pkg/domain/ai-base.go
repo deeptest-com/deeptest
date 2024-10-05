@@ -31,7 +31,47 @@ type AiModelBase struct {
 	ApiKey string `json:"apiKey"`
 }
 
+type AiMetricsSummarizationBase struct {
+	TemplStatements string `json:"templStatements" gorm:"type:text"`
+	TemplVerdicts   string `json:"templ_verdicts" gorm:"type:text"`
+	TemplReason     string `json:"templReason" gorm:"type:text"`
+}
 type AiMetricsAnswerRelevancyBase struct {
+	TemplStatements string `json:"templStatements" gorm:"type:text"`
+	TemplVerdicts   string `json:"templ_verdicts" gorm:"type:text"`
+	TemplReason     string `json:"templReason" gorm:"type:text"`
+}
+type AiMetricsFaithfulnessBase struct {
+	TemplStatements string `json:"templStatements" gorm:"type:text"`
+	TemplVerdicts   string `json:"templ_verdicts" gorm:"type:text"`
+	TemplReason     string `json:"templReason" gorm:"type:text"`
+}
+type AiMetricsContextualPrecisionBase struct {
+	TemplStatements string `json:"templStatements" gorm:"type:text"`
+	TemplVerdicts   string `json:"templ_verdicts" gorm:"type:text"`
+	TemplReason     string `json:"templReason" gorm:"type:text"`
+}
+type AiMetricsContextualRecallBase struct {
+	TemplStatements string `json:"templStatements" gorm:"type:text"`
+	TemplVerdicts   string `json:"templ_verdicts" gorm:"type:text"`
+	TemplReason     string `json:"templReason" gorm:"type:text"`
+}
+type AiMetricsContextualRelevancyBase struct {
+	TemplStatements string `json:"templStatements" gorm:"type:text"`
+	TemplVerdicts   string `json:"templ_verdicts" gorm:"type:text"`
+	TemplReason     string `json:"templReason" gorm:"type:text"`
+}
+type AiMetricsHallucinationBase struct {
+	TemplStatements string `json:"templStatements" gorm:"type:text"`
+	TemplVerdicts   string `json:"templ_verdicts" gorm:"type:text"`
+	TemplReason     string `json:"templReason" gorm:"type:text"`
+}
+type AiMetricsBiasBase struct {
+	TemplStatements string `json:"templStatements" gorm:"type:text"`
+	TemplVerdicts   string `json:"templ_verdicts" gorm:"type:text"`
+	TemplReason     string `json:"templReason" gorm:"type:text"`
+}
+type AiMetricsToxicityBase struct {
 	TemplStatements string `json:"templStatements" gorm:"type:text"`
 	TemplVerdicts   string `json:"templ_verdicts" gorm:"type:text"`
 	TemplReason     string `json:"templReason" gorm:"type:text"`

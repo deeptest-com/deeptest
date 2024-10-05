@@ -27,7 +27,55 @@ func (r *AiMetricsRepo) Get(id uint) (po model.AiMeasurement, err error) {
 
 	return
 }
+func (r *AiMetricsRepo) GetSummarization(id uint) (po model.AiMetricsSummarization, err error) {
+	err = r.DB.Where("id = ?", id).
+		First(&po).Error
+
+	return
+}
 func (r *AiMetricsRepo) GetAnswerRelevancy(id uint) (po model.AiMetricsAnswerRelevancy, err error) {
+	err = r.DB.Where("id = ?", id).
+		First(&po).Error
+
+	return
+}
+func (r *AiMetricsRepo) GetFaithfulness(id uint) (po model.AiMetricsFaithfulness, err error) {
+	err = r.DB.Where("id = ?", id).
+		First(&po).Error
+
+	return
+}
+func (r *AiMetricsRepo) GetContextualPrecision(id uint) (po model.AiMetricsContextualPrecision, err error) {
+	err = r.DB.Where("id = ?", id).
+		First(&po).Error
+
+	return
+}
+func (r *AiMetricsRepo) GetContextualRecall(id uint) (po model.AiMetricsContextualRecall, err error) {
+	err = r.DB.Where("id = ?", id).
+		First(&po).Error
+
+	return
+}
+func (r *AiMetricsRepo) GetContextualRelevancy(id uint) (po model.AiMetricsContextualRelevancy, err error) {
+	err = r.DB.Where("id = ?", id).
+		First(&po).Error
+
+	return
+}
+func (r *AiMetricsRepo) GetHallucination(id uint) (po model.AiMetricsHallucination, err error) {
+	err = r.DB.Where("id = ?", id).
+		First(&po).Error
+
+	return
+}
+func (r *AiMetricsRepo) GetBias(id uint) (po model.AiMetricsBias, err error) {
+	err = r.DB.Where("id = ?", id).
+		First(&po).Error
+
+	return
+}
+func (r *AiMetricsRepo) GetToxicity(id uint) (po model.AiMetricsToxicity, err error) {
 	err = r.DB.Where("id = ?", id).
 		First(&po).Error
 

@@ -146,8 +146,17 @@ var (
 
 		&AiMeasurement{},
 		&AiMetrics{},
-		&AiMetricsAnswerRelevancy{},
 		&AiModel{},
 		&AiTemplate{},
+
+		&AiMetricsSummarization{},
+		&AiMetricsAnswerRelevancy{},
+		&AiMetricsFaithfulness{},
+		&AiMetricsContextualPrecision{},
+		&AiMetricsContextualRecall{},
+		&AiMetricsContextualRelevancy{},
+		&AiMetricsHallucination{},
+		&AiMetricsBias{},
+		&AiMetricsToxicity{},
 	}
 )

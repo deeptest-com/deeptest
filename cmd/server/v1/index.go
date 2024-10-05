@@ -85,6 +85,7 @@ type IndexModule struct {
 	EndpointCodeModule *router.EndpointCodeModule `inject:""`
 	DatabaseConnModule *router.DatabaseConnModule `inject:""`
 	DatabaseOptModule  *router.DatabaseOptModule  `inject:""`
+	LlmToolModule      *router.LlmToolModule      `inject:""`
 	OpenModule         *router.OpenModule         `inject:""`
 	ProjectCronModule  *router.ProjectCronModule  `inject:""`
 	SaaSModule         *router.SaaSModule         `inject:""`
@@ -180,6 +181,7 @@ func (m *IndexModule) ApiParty() module.WebModule {
 		m.EndpointCodeModule.Party(),
 		m.DatabaseConnModule.Party(),
 		m.DatabaseOptModule.Party(),
+		m.LlmToolModule.Party(),
 		m.OpenModule.Party(),
 		m.ProjectCronModule.Party(),
 		m.SaaSModule.Party(),

@@ -3,8 +3,15 @@ package consts
 type MetricsType string
 
 const (
-	AnswerRelevancy MetricsType = "answer_relevancy"
-	Others          MetricsType = "others"
+	Summarization       MetricsType = "summarization"
+	AnswerRelevancy     MetricsType = "answer_relevancy"
+	Faithfulness        MetricsType = "faithfulness"
+	ContextualPrecision MetricsType = "contextual_precision"
+	ContextualRecall    MetricsType = "contextual_recall"
+	ContextualRelevancy MetricsType = "contextual_relevancy"
+	Hallucination       MetricsType = "hallucination"
+	Bias                MetricsType = "bias"
+	Toxicity            MetricsType = "toxicity"
 )
 
 func (e MetricsType) String() string {

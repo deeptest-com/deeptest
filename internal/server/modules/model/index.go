@@ -111,6 +111,7 @@ var (
 		&ProjectRecentlyVisited{},
 		&ProjectMemberAudit{},
 		&DatabaseConn{},
+		&LlmTool{},
 		&DebugConditionDatabaseOpt{},
 
 		&SwaggerSync{},
@@ -126,7 +127,7 @@ var (
 		&ExecLogResponseDefine{},
 
 		&SysConfig{},
-		&SysJslib{},
+		&Jslib{},
 		&SysAgent{},
 		&ProjectUserServer{},
 		&ThirdPartySync{},

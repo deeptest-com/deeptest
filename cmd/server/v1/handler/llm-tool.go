@@ -9,12 +9,12 @@ import (
 	"github.com/snowlyg/multi"
 )
 
-type JslibCtrl struct {
-	JslibService *service.JslibService `inject:""`
+type LlmToolCtrl struct {
+	LlmToolService *service.LlmToolService `inject:""`
 	BaseCtrl
 }
 
-func (c *JslibCtrl) List(ctx iris.Context) {
+func (c *LlmToolCtrl) List(ctx iris.Context) {
 	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
@@ -23,8 +23,9 @@ func (c *JslibCtrl) List(ctx iris.Context) {
 	}
 
 	keywords := ctx.URLParam("keywords")
+	ignoreDisabled, err := ctx.URLParamBool("ignoreDisabled")
 
-	res, err := c.JslibService.List(tenantId, keywords, projectId)
+	res, err := c.LlmToolService.List(tenantId, keywords, projectId, ignoreDisabled)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
@@ -33,7 +34,7 @@ func (c *JslibCtrl) List(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 }
 
-func (c *JslibCtrl) Get(ctx iris.Context) {
+func (c *LlmToolCtrl) Get(ctx iris.Context) {
 	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
@@ -41,27 +42,23 @@ func (c *JslibCtrl) Get(ctx iris.Context) {
 		return
 	}
 
-	datapool, err := c.JslibService.Get(tenantId, uint(id))
+	po, err := c.LlmToolService.Get(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: datapool, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: po})
 }
 
-func (c *JslibCtrl) Save(ctx iris.Context) {
+func (c *LlmToolCtrl) Save(ctx iris.Context) {
 	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
-	if projectId == 0 {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
-		return
-	}
 
-	req := model.Jslib{}
+	req := model.LlmTool{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -74,7 +71,7 @@ func (c *JslibCtrl) Save(ctx iris.Context) {
 		req.CreateUser = userName
 	}
 
-	err = c.JslibService.Save(tenantId, &req)
+	err = c.LlmToolService.Save(tenantId, &req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ErrNameExist.Code, Msg: err.Error()})
 		return
@@ -83,11 +80,11 @@ func (c *JslibCtrl) Save(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
-func (c *JslibCtrl) UpdateName(ctx iris.Context) {
+func (c *LlmToolCtrl) UpdateName(ctx iris.Context) {
 	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 
-	req := v1.JslibReq{}
+	req := v1.DbConnReq{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -97,7 +94,7 @@ func (c *JslibCtrl) UpdateName(ctx iris.Context) {
 	req.ProjectId = uint(projectId)
 	req.UpdateUser = multi.GetUsername(ctx)
 
-	err = c.JslibService.UpdateName(tenantId, req)
+	err = c.LlmToolService.UpdateName(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ErrNameExist.Code, Data: err.Error()})
 		return
@@ -106,7 +103,7 @@ func (c *JslibCtrl) UpdateName(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
-func (c *JslibCtrl) Delete(ctx iris.Context) {
+func (c *LlmToolCtrl) Delete(ctx iris.Context) {
 	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
@@ -114,7 +111,7 @@ func (c *JslibCtrl) Delete(ctx iris.Context) {
 		return
 	}
 
-	err = c.JslibService.Delete(tenantId, uint(id))
+	err = c.LlmToolService.Delete(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -123,7 +120,7 @@ func (c *JslibCtrl) Delete(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
-func (c *JslibCtrl) Disable(ctx iris.Context) {
+func (c *LlmToolCtrl) SetDefault(ctx iris.Context) {
 	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
@@ -131,7 +128,24 @@ func (c *JslibCtrl) Disable(ctx iris.Context) {
 		return
 	}
 
-	err = c.JslibService.Disable(tenantId, uint(id))
+	err = c.LlmToolService.SetDefault(tenantId, uint(id))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+func (c *LlmToolCtrl) Disable(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
+	id, err := ctx.Params().GetInt("id")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	err = c.LlmToolService.Disable(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

@@ -12,16 +12,16 @@ type JslibService struct {
 	JslibRepo *repo.JslibRepo `inject:""`
 }
 
-func (s *JslibService) List(tenantId consts.TenantId, keywords string, projectId int) (ret []model.SysJslib, err error) {
+func (s *JslibService) List(tenantId consts.TenantId, keywords string, projectId int) (ret []model.Jslib, err error) {
 	ret, err = s.JslibRepo.List(tenantId, keywords, projectId, false)
 	return
 }
 
-func (s *JslibService) Get(tenantId consts.TenantId, id uint) (model.SysJslib, error) {
+func (s *JslibService) Get(tenantId consts.TenantId, id uint) (model.Jslib, error) {
 	return s.JslibRepo.Get(tenantId, id)
 }
 
-func (s *JslibService) Save(tenantId consts.TenantId, req *model.SysJslib) (err error) {
+func (s *JslibService) Save(tenantId consts.TenantId, req *model.Jslib) (err error) {
 	err = s.JslibRepo.Save(tenantId, req)
 	if err != nil {
 		return

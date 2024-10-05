@@ -1,6 +1,6 @@
 package model
 
-type SysJslib struct {
+type Jslib struct {
 	BaseModel
 
 	Name string `json:"name"`
@@ -17,6 +17,6 @@ type SysJslib struct {
 	UpdateUser string `json:"updateUser"`
 }
 
-func (SysJslib) TableName() string {
-	return "sys_jslib"
+func (Jslib) TableName() string {
+	return "biz_jslib"
 }

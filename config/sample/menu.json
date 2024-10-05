@@ -105,6 +105,13 @@
     "parent":"p-setting-api"
   },
   {
+    "code":"p-setting-api-llm",
+    "title":"工具大模型设置",
+    "path":"/:projectNameAbbr/project-setting/llm",
+    "type":"menu",
+    "parent":"p-setting-api"
+  },
+  {
     "code":"p-setting-api-autosync",
     "title":"自动同步",
     "path":"/:projectNameAbbr/project-setting/swaggerSync",

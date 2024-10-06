@@ -494,7 +494,7 @@ func (r *ConditionRepo) CreateDefaultResponseDefine(tenantId consts.TenantId, de
 		return
 	}
 
-	po, err := r.GetByDebugInterfaceId(tenantId, debugInterfaceId, endpointInterfaceId, usedBy)
+	po, err := r.GetResponseDefineByDebugInterfaceId(tenantId, debugInterfaceId, endpointInterfaceId)
 	if err == gorm.ErrRecordNotFound {
 		po, err = r.saveDefault(tenantId, debugInterfaceId, endpointInterfaceId, codes, usedBy)
 		if err != nil {
@@ -512,7 +512,7 @@ func (r *ConditionRepo) CreateDefaultResponseDefine(tenantId consts.TenantId, de
 	return
 }
 
-func (r *ConditionRepo) GetByDebugInterfaceId(tenantId consts.TenantId, debugInterfaceId, endpointInterfaceId uint, by consts.UsedBy) (po model.DebugCondition, err error) {
+func (r *ConditionRepo) GetResponseDefineByDebugInterfaceId(tenantId consts.TenantId, debugInterfaceId, endpointInterfaceId uint) (po model.DebugCondition, err error) {
 	err = r.GetDB(tenantId).
 		Where("debug_interface_id=? and endpoint_interface_id=? and entity_type=?", debugInterfaceId, endpointInterfaceId, consts.ConditionTypeResponseDefine).
 		Where("NOT deleted").

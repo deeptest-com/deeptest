@@ -1,6 +1,8 @@
 package domain
 
-import "github.com/deeptest-com/deeptest/internal/pkg/consts"
+import (
+	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+)
 
 type AiMeasurementBase struct {
 	Name             string `json:"name"`
@@ -31,50 +33,93 @@ type AiModelBase struct {
 	ApiKey string `json:"apiKey"`
 }
 
+type AiMetricsEntityBase struct {
+	Output       string              `gorm:"type:longtext;" json:"output"`
+	ResultStatus consts.ResultStatus `json:"resultStatus"`
+	ResultMsg    string              `gorm:"type:longtext" json:"resultMsg"`
+
+	MetricsId         uint               `json:"conditionId"`
+	MetricsEntityId   uint               `gorm:"-" json:"conditionEntityId"`   // refer to po id in domain object
+	MetricsEntityType consts.MetricsType `gorm:"-" json:"conditionEntityType"` // for log only
+	InvokeId          uint               `json:"invokeId"`                     // for log only
+
+	Disabled bool `json:"disabled"`
+}
+
+func (to AiMetricsEntityBase) SetInfo(id, entityId uint, typ consts.MetricsType, disabled bool) {
+	to.Output = ""
+	to.MetricsId = id
+	to.MetricsEntityId = entityId
+	to.MetricsEntityType = typ
+	to.Disabled = disabled
+}
+
+type EntityToInterface interface {
+	SetInfo(id, entityId uint, typ consts.MetricsType, disabled bool)
+}
+
 type AiMetricsSummarizationBase struct {
 	TemplStatements string `json:"templStatements" gorm:"type:text"`
 	TemplVerdicts   string `json:"templ_verdicts" gorm:"type:text"`
 	TemplReason     string `json:"templReason" gorm:"type:text"`
+
+	AiMetricsEntityBase
 }
 type AiMetricsAnswerRelevancyBase struct {
 	TemplStatements string `json:"templStatements" gorm:"type:text"`
 	TemplVerdicts   string `json:"templ_verdicts" gorm:"type:text"`
 	TemplReason     string `json:"templReason" gorm:"type:text"`
+
+	AiMetricsEntityBase
 }
 type AiMetricsFaithfulnessBase struct {
 	TemplStatements string `json:"templStatements" gorm:"type:text"`
 	TemplVerdicts   string `json:"templ_verdicts" gorm:"type:text"`
 	TemplReason     string `json:"templReason" gorm:"type:text"`
+
+	AiMetricsEntityBase
 }
 type AiMetricsContextualPrecisionBase struct {
 	TemplStatements string `json:"templStatements" gorm:"type:text"`
 	TemplVerdicts   string `json:"templ_verdicts" gorm:"type:text"`
 	TemplReason     string `json:"templReason" gorm:"type:text"`
+
+	AiMetricsEntityBase
 }
 type AiMetricsContextualRecallBase struct {
 	TemplStatements string `json:"templStatements" gorm:"type:text"`
 	TemplVerdicts   string `json:"templ_verdicts" gorm:"type:text"`
 	TemplReason     string `json:"templReason" gorm:"type:text"`
+
+	AiMetricsEntityBase
 }
 type AiMetricsContextualRelevancyBase struct {
 	TemplStatements string `json:"templStatements" gorm:"type:text"`
 	TemplVerdicts   string `json:"templ_verdicts" gorm:"type:text"`
 	TemplReason     string `json:"templReason" gorm:"type:text"`
+
+	AiMetricsEntityBase
 }
 type AiMetricsHallucinationBase struct {
 	TemplStatements string `json:"templStatements" gorm:"type:text"`
 	TemplVerdicts   string `json:"templ_verdicts" gorm:"type:text"`
 	TemplReason     string `json:"templReason" gorm:"type:text"`
+
+	AiMetricsEntityBase
 }
 type AiMetricsBiasBase struct {
 	TemplStatements string `json:"templStatements" gorm:"type:text"`
 	TemplVerdicts   string `json:"templ_verdicts" gorm:"type:text"`
 	TemplReason     string `json:"templReason" gorm:"type:text"`
+
+	AiMetricsEntityBase
 }
 type AiMetricsToxicityBase struct {
 	TemplStatements string `json:"templStatements" gorm:"type:text"`
 	TemplVerdicts   string `json:"templ_verdicts" gorm:"type:text"`
 	TemplReason     string `json:"templReason" gorm:"type:text"`
+
+	AiMetricsEntityBase
 }
 
 type AiMetricsBase struct {
@@ -93,9 +138,13 @@ type AiMetricsBase struct {
 
 	ModelId uint        `json:"modelId"`
 	Model   AiModelBase `gorm:"-" json:"model"`
+	Ordr    int         `json:"ordr"`
 
 	EntityType consts.MetricsType `json:"entity_type"`
 	EntityId   uint               `json:"entity_id"`
+
+	DebugInterfaceId    uint `gorm:"default:0" json:"debugInterfaceId"`
+	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
 
 	//EntityObj interface{} `json:"entityObj" gorm:"-"`
 }

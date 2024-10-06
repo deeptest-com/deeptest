@@ -83,6 +83,11 @@ type InterfaceExecCondition struct {
 	Desc string               `json:"desc"`
 	Raw  json.RawMessage      `json:"raw"`
 }
+type InterfaceExecMetrics struct {
+	Type consts.MetricsType `json:"type"`
+	Desc string             `json:"desc"`
+	Raw  json.RawMessage    `json:"raw"`
+}
 
 type WebsocketDebugData struct {
 	ID        uint   `json:"id"`

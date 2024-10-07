@@ -124,56 +124,56 @@ func (r *MetricsRepo) ListTo(tenantId consts.TenantId, debugInterfaceId, endpoin
 	for _, po := range pos {
 		typ := po.EntityType
 
-		if typ == consts.Summarization {
+		switch typ {
+		case consts.Summarization:
 			to := domain.AiMetricsSummarizationBase{}
-
 			item, _ := r.CopyEntity(to, po, tenantId)
 
 			ret = append(ret, item)
 
-		} else if typ == consts.AnswerRelevancy {
+		case consts.AnswerRelevancy:
 			to := domain.AiMetricsAnswerRelevancyBase{}
 			item, _ := r.CopyEntity(to, po, tenantId)
 
 			ret = append(ret, item)
 
-		} else if typ == consts.Faithfulness {
+		case consts.Faithfulness:
 			to := domain.AiMetricsFaithfulnessBase{}
 			item, _ := r.CopyEntity(to, po, tenantId)
 
 			ret = append(ret, item)
 
-		} else if typ == consts.ContextualPrecision {
+		case consts.ContextualPrecision:
 			to := domain.AiMetricsContextualPrecisionBase{}
 			item, _ := r.CopyEntity(to, po, tenantId)
 
 			ret = append(ret, item)
 
-		} else if typ == consts.ContextualRecall {
+		case consts.ContextualRecall:
 			to := domain.AiMetricsContextualRecallBase{}
 			item, _ := r.CopyEntity(to, po, tenantId)
 
 			ret = append(ret, item)
 
-		} else if typ == consts.ContextualRelevancy {
+		case consts.ContextualRelevancy:
 			to := domain.AiMetricsContextualRelevancyBase{}
 			item, _ := r.CopyEntity(to, po, tenantId)
 
 			ret = append(ret, item)
 
-		} else if typ == consts.Hallucination {
+		case consts.Hallucination:
 			to := domain.AiMetricsHallucinationBase{}
 			item, _ := r.CopyEntity(to, po, tenantId)
 
 			ret = append(ret, item)
 
-		} else if typ == consts.Bias {
+		case consts.Bias:
 			to := domain.AiMetricsBiasBase{}
 			item, _ := r.CopyEntity(to, po, tenantId)
 
 			ret = append(ret, item)
 
-		} else if typ == consts.Toxicity {
+		case consts.Toxicity:
 			to := domain.AiMetricsToxicityBase{}
 			item, _ := r.CopyEntity(to, po, tenantId)
 
@@ -216,39 +216,40 @@ func (r *MetricsRepo) GetMaxOrder(tenantId consts.TenantId, debugInterfaceId, en
 }
 
 func (r *MetricsRepo) GetEntity(tenantId consts.TenantId, id uint, typ consts.MetricsType) (entity interface{}, err error) {
-	if typ == consts.Summarization {
+	switch typ {
+	case consts.Summarization:
 		entity = model.AiMetricsSummarization{}
 		err = r.GetDB(tenantId).Where("id = ?", id).First(&entity).Error
 
-	} else if typ == consts.AnswerRelevancy {
+	case consts.AnswerRelevancy:
 		entity = model.AiMetricsAnswerRelevancy{}
 		err = r.GetDB(tenantId).Where("id = ?", id).First(&entity).Error
 
-	} else if typ == consts.Faithfulness {
+	case consts.Faithfulness:
 		entity = model.AiMetricsFaithfulness{}
 		err = r.GetDB(tenantId).Where("id = ?", id).First(&entity).Error
 
-	} else if typ == consts.ContextualPrecision {
+	case consts.ContextualPrecision:
 		entity = model.AiMetricsContextualPrecision{}
 		err = r.GetDB(tenantId).Where("id = ?", id).First(&entity).Error
 
-	} else if typ == consts.ContextualRecall {
+	case consts.ContextualRecall:
 		entity = model.AiMetricsContextualRecall{}
 		err = r.GetDB(tenantId).Where("id = ?", id).First(&entity).Error
 
-	} else if typ == consts.ContextualRelevancy {
+	case consts.ContextualRelevancy:
 		entity = model.AiMetricsContextualRelevancy{}
 		err = r.GetDB(tenantId).Where("id = ?", id).First(&entity).Error
 
-	} else if typ == consts.Hallucination {
+	case consts.Hallucination:
 		entity = model.AiMetricsHallucination{}
 		err = r.GetDB(tenantId).Where("id = ?", id).First(&entity).Error
 
-	} else if typ == consts.Bias {
+	case consts.Bias:
 		entity = model.AiMetricsBias{}
 		err = r.GetDB(tenantId).Where("id = ?", id).First(&entity).Error
 
-	} else if typ == consts.Toxicity {
+	case consts.Toxicity:
 		entity = model.AiMetricsToxicity{}
 		err = r.GetDB(tenantId).Where("id = ?", id).First(&entity).Error
 	}
@@ -269,6 +270,104 @@ func (r *MetricsRepo) CopyEntity(to domain.EntityToInterface, po model.AiMetrics
 	ret = domain.InterfaceExecMetrics{
 		Type: po.EntityType,
 		Raw:  raw,
+	}
+
+	return
+}
+
+func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, typ consts.MetricsType) (
+	entityId uint, err error) {
+
+	switch typ {
+	case consts.Summarization:
+		entity := model.AiMetricsSummarization{
+			AiMetricsSummarizationBase: domain.AiMetricsSummarizationBase{
+				AiMetricsEntityBase: domain.AiMetricsEntityBase{
+					MetricsId: metricsId,
+				},
+			},
+		}
+		err = r.GetDB(tenantId).Save(&entity).Error
+
+	case consts.AnswerRelevancy:
+		entity := model.AiMetricsAnswerRelevancy{
+			AiMetricsAnswerRelevancyBase: domain.AiMetricsAnswerRelevancyBase{
+				AiMetricsEntityBase: domain.AiMetricsEntityBase{
+					MetricsId: metricsId,
+				},
+			},
+		}
+		err = r.GetDB(tenantId).Save(&entity).Error
+
+	case consts.Faithfulness:
+		entity := model.AiMetricsFaithfulness{
+			AiMetricsFaithfulnessBase: domain.AiMetricsFaithfulnessBase{
+				AiMetricsEntityBase: domain.AiMetricsEntityBase{
+					MetricsId: metricsId,
+				},
+			},
+		}
+		err = r.GetDB(tenantId).Save(&entity).Error
+
+	case consts.ContextualPrecision:
+		entity := model.AiMetricsContextualPrecision{
+			AiMetricsContextualPrecisionBase: domain.AiMetricsContextualPrecisionBase{
+				AiMetricsEntityBase: domain.AiMetricsEntityBase{
+					MetricsId: metricsId,
+				},
+			},
+		}
+		err = r.GetDB(tenantId).Save(&entity).Error
+
+	case consts.ContextualRecall:
+		entity := model.AiMetricsContextualRecall{
+			AiMetricsContextualRecallBase: domain.AiMetricsContextualRecallBase{
+				AiMetricsEntityBase: domain.AiMetricsEntityBase{
+					MetricsId: metricsId,
+				},
+			},
+		}
+		err = r.GetDB(tenantId).Save(&entity).Error
+
+	case consts.ContextualRelevancy:
+		entity := model.AiMetricsContextualRelevancy{
+			AiMetricsContextualRelevancyBase: domain.AiMetricsContextualRelevancyBase{
+				AiMetricsEntityBase: domain.AiMetricsEntityBase{
+					MetricsId: metricsId,
+				},
+			},
+		}
+		err = r.GetDB(tenantId).Save(&entity).Error
+
+	case consts.Hallucination:
+		entity := model.AiMetricsHallucination{
+			AiMetricsHallucinationBase: domain.AiMetricsHallucinationBase{
+				AiMetricsEntityBase: domain.AiMetricsEntityBase{
+					MetricsId: metricsId,
+				},
+			},
+		}
+		err = r.GetDB(tenantId).Save(&entity).Error
+
+	case consts.Bias:
+		entity := model.AiMetricsBias{
+			AiMetricsBiasBase: domain.AiMetricsBiasBase{
+				AiMetricsEntityBase: domain.AiMetricsEntityBase{
+					MetricsId: metricsId,
+				},
+			},
+		}
+		err = r.GetDB(tenantId).Save(&entity).Error
+
+	case consts.Toxicity:
+		entity := model.AiMetricsToxicity{
+			AiMetricsToxicityBase: domain.AiMetricsToxicityBase{
+				AiMetricsEntityBase: domain.AiMetricsEntityBase{
+					MetricsId: metricsId,
+				},
+			},
+		}
+		err = r.GetDB(tenantId).Save(&entity).Error
 	}
 
 	return

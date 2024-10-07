@@ -12,6 +12,8 @@ const (
 	Hallucination       MetricsType = "hallucination"
 	Bias                MetricsType = "bias"
 	Toxicity            MetricsType = "toxicity"
+
+	Empty MetricsType = ""
 )
 
 func (e MetricsType) String() string {

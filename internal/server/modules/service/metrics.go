@@ -19,38 +19,21 @@ func (s *MetricsService) List(tenantId consts.TenantId, debugInterfaceId, endpoi
 	return
 }
 
-func (s *MetricsService) Get(tenantId consts.TenantId, id uint) (condition model.DebugMetrics, err error) {
+func (s *MetricsService) Get(tenantId consts.TenantId, id uint) (condition model.AiMetrics, err error) {
 	condition, err = s.MetricsRepo.Get(tenantId, id)
 
 	return
 }
 
-func (s *MetricsService) Create(tenantId consts.TenantId, condition *model.DebugMetrics) (err error) {
-	err = s.MetricsRepo.Save(tenantId, condition)
+func (s *MetricsService) Create(tenantId consts.TenantId, metrics *model.AiMetrics) (err error) {
+	err = s.MetricsRepo.Save(tenantId, metrics)
 
-	var entityId uint
-
-	if condition.EntityType == consts.MetricsTypeScript {
-		po := s.ScriptRepo.CreateDefault(tenantId, condition.ID, condition.MetricsSrc)
-		entityId = po.ID
-
-	} else if condition.EntityType == consts.MetricsTypeDatabase {
-		po := s.DatabaseOptRepo.CreateDefault(tenantId, condition.ID, condition.MetricsSrc)
-		entityId = po.ID
-
-	} else if condition.EntityType == consts.MetricsTypeExtractor {
-		po := s.ExtractorRepo.CreateDefault(tenantId, condition.ID)
-		entityId = po.ID
-
-	} else if condition.EntityType == consts.MetricsTypeCheckpoint {
-		po := s.CheckpointRepo.CreateDefault(tenantId, condition.ID)
-		entityId = po.ID
-
-	} else if condition.EntityType == consts.MetricsTypeResponseDefine {
-		//保存定义结构体
+	entityId, err := s.MetricsRepo.CreateDefault(tenantId, metrics.ID, metrics.EntityType)
+	if err != nil {
+		return
 	}
 
-	err = s.MetricsRepo.UpdateEntityId(tenantId, condition.ID, entityId)
+	err = s.MetricsRepo.UpdateEntityId(tenantId, metrics.ID, entityId)
 
 	return
 }
@@ -67,14 +50,14 @@ func (s *MetricsService) Disable(tenantId consts.TenantId, reqId uint) (err erro
 	return
 }
 
-func (s *MetricsService) Move(tenantId consts.TenantId, req serverDomain.MetricsMoveReq) (err error) {
+func (s *MetricsService) Move(tenantId consts.TenantId, req serverDomain.ConditionMoveReq) (err error) {
 	err = s.MetricsRepo.UpdateOrders(tenantId, req)
 
 	return
 }
 
-func (s *MetricsService) GetEntity(tenantId consts.TenantId, id uint) (entity interface{}, err error) {
-	entity, err = s.MetricsRepo.GetEntity(tenantId, id)
+func (s *MetricsService) GetEntity(tenantId consts.TenantId, id uint, typ consts.MetricsType) (entity interface{}, err error) {
+	entity, err = s.MetricsRepo.GetEntity(tenantId, id, typ)
 
 	return
 }

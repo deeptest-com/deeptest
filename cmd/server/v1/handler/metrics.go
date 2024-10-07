@@ -19,9 +19,6 @@ func (c *MetricsCtrl) List(ctx iris.Context) {
 	tenantId := c.getTenantId(ctx)
 	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
-	category := consts.ConditionCategory(ctx.URLParam("category"))
-	usedBy := ctx.URLParam("usedBy")
-	src := consts.ConditionSrc(ctx.URLParam("conditionSrc"))
 
 	if debugInterfaceId <= 0 && endpointInterfaceId <= 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -35,8 +32,7 @@ func (c *MetricsCtrl) List(ctx iris.Context) {
 		endpointInterfaceId = 0
 	}
 
-	data, err := c.MetricsService.List(tenantId, uint(debugInterfaceId), uint(endpointInterfaceId),
-		category, consts.UsedBy(usedBy), src)
+	data, err := c.MetricsService.List(tenantId, uint(debugInterfaceId), uint(endpointInterfaceId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -48,14 +44,14 @@ func (c *MetricsCtrl) List(ctx iris.Context) {
 // Create 添加
 func (c *MetricsCtrl) Create(ctx iris.Context) {
 	tenantId := c.getTenantId(ctx)
-	condition := model.DebugCondition{}
-	err := ctx.ReadJSON(&condition)
+	metrics := model.AiMetrics{}
+	err := ctx.ReadJSON(&metrics)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.MetricsService.Create(tenantId, &condition)
+	err = c.MetricsService.Create(tenantId, &metrics)
 	if err != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -63,7 +59,7 @@ func (c *MetricsCtrl) Create(ctx iris.Context) {
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: condition, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: metrics, Msg: _domain.NoErr.Msg})
 }
 
 // Delete 删除
@@ -124,12 +120,13 @@ func (c *MetricsCtrl) Move(ctx iris.Context) {
 func (c *MetricsCtrl) GetEntity(ctx iris.Context) {
 	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
+	typ := consts.MetricsType(ctx.Params().GetString("type"))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	entity, err := c.MetricsService.GetEntity(tenantId, uint(id))
+	entity, err := c.MetricsService.GetEntity(tenantId, uint(id), typ)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return

@@ -283,6 +283,7 @@ func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, ty
 		entity := model.AiMetricsSummarization{
 			AiMetricsSummarizationBase: domain.AiMetricsSummarizationBase{
 				AiMetricsEntityBase: domain.AiMetricsEntityBase{
+					Name:      "摘要",
 					MetricsId: metricsId,
 				},
 			},
@@ -293,6 +294,7 @@ func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, ty
 		entity := model.AiMetricsAnswerRelevancy{
 			AiMetricsAnswerRelevancyBase: domain.AiMetricsAnswerRelevancyBase{
 				AiMetricsEntityBase: domain.AiMetricsEntityBase{
+					Name:      "回答相关性",
 					MetricsId: metricsId,
 				},
 			},
@@ -303,6 +305,7 @@ func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, ty
 		entity := model.AiMetricsFaithfulness{
 			AiMetricsFaithfulnessBase: domain.AiMetricsFaithfulnessBase{
 				AiMetricsEntityBase: domain.AiMetricsEntityBase{
+					Name:      "忠实度",
 					MetricsId: metricsId,
 				},
 			},
@@ -313,6 +316,7 @@ func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, ty
 		entity := model.AiMetricsContextualPrecision{
 			AiMetricsContextualPrecisionBase: domain.AiMetricsContextualPrecisionBase{
 				AiMetricsEntityBase: domain.AiMetricsEntityBase{
+					Name:      "检索查准率",
 					MetricsId: metricsId,
 				},
 			},
@@ -323,6 +327,7 @@ func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, ty
 		entity := model.AiMetricsContextualRecall{
 			AiMetricsContextualRecallBase: domain.AiMetricsContextualRecallBase{
 				AiMetricsEntityBase: domain.AiMetricsEntityBase{
+					Name:      "检索查全率",
 					MetricsId: metricsId,
 				},
 			},
@@ -333,6 +338,7 @@ func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, ty
 		entity := model.AiMetricsContextualRelevancy{
 			AiMetricsContextualRelevancyBase: domain.AiMetricsContextualRelevancyBase{
 				AiMetricsEntityBase: domain.AiMetricsEntityBase{
+					Name:      "检索相关性",
 					MetricsId: metricsId,
 				},
 			},
@@ -343,6 +349,7 @@ func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, ty
 		entity := model.AiMetricsHallucination{
 			AiMetricsHallucinationBase: domain.AiMetricsHallucinationBase{
 				AiMetricsEntityBase: domain.AiMetricsEntityBase{
+					Name:      "幻觉",
 					MetricsId: metricsId,
 				},
 			},
@@ -353,6 +360,7 @@ func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, ty
 		entity := model.AiMetricsBias{
 			AiMetricsBiasBase: domain.AiMetricsBiasBase{
 				AiMetricsEntityBase: domain.AiMetricsEntityBase{
+					Name:      "歧视",
 					MetricsId: metricsId,
 				},
 			},
@@ -363,6 +371,7 @@ func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, ty
 		entity := model.AiMetricsToxicity{
 			AiMetricsToxicityBase: domain.AiMetricsToxicityBase{
 				AiMetricsEntityBase: domain.AiMetricsEntityBase{
+					Name:      "毒性",
 					MetricsId: metricsId,
 				},
 			},

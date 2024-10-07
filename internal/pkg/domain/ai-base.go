@@ -34,6 +34,7 @@ type AiModelBase struct {
 }
 
 type AiMetricsEntityBase struct {
+	Name         string              `json:"name"`
 	Output       string              `gorm:"type:longtext;" json:"output"`
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 	ResultMsg    string              `gorm:"type:longtext" json:"resultMsg"`
@@ -140,8 +141,8 @@ type AiMetricsBase struct {
 	Model   AiModelBase `gorm:"-" json:"model"`
 	Ordr    int         `json:"ordr"`
 
-	EntityType consts.MetricsType `json:"entity_type"`
-	EntityId   uint               `json:"entity_id"`
+	EntityType consts.MetricsType `json:"entityType"`
+	EntityId   uint               `json:"entityId"`
 
 	DebugInterfaceId    uint `gorm:"default:0" json:"debugInterfaceId"`
 	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`

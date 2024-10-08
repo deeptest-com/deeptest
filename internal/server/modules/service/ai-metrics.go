@@ -13,7 +13,7 @@ type AiMetricsService struct {
 	AiMetricsResultRelevancyService *AiMetricsResultRelevancyService `inject:""`
 }
 
-func (s *AiMetricsService) LoadForExec(req agentDomain.AiMeasurementExecReq) (cs domain.AiMeasurement, metricsArr []domain.AiMetricsAnswerRelevancy, err error) {
+func (s *AiMetricsService) LoadForExec(req agentDomain.AiMeasurementExecReq) (cs domain.AiMeasurement, metricsArr []domain.AiMetricsInterface, err error) {
 	cs, metricsArr, err = s.AiMeasurementRepo.LoadForExec(req.AiMeasurement.ID)
 
 	return

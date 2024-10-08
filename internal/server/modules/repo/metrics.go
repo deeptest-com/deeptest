@@ -225,6 +225,7 @@ func (r *MetricsRepo) GetEntity(tenantId consts.TenantId, id uint, typ consts.Me
 	case consts.AnswerRelevancy:
 		po := model.AiMetricsAnswerRelevancy{}
 		err = r.GetDB(tenantId).Where("id = ?", id).First(&po).Error
+
 		entity = po
 
 	case consts.Faithfulness:

@@ -32,7 +32,7 @@ func (r *AiMeasurementRepo) Get(id uint) (po model.AiMeasurement, err error) {
 	return
 }
 
-func (r *AiMeasurementRepo) LoadForExec(id uint) (cs domain.AiMeasurement, metricsArr []domain.AiMetricsAnswerRelevancy, err error) {
+func (r *AiMeasurementRepo) LoadForExec(id uint) (cs domain.AiMeasurement, metricsArr []domain.AiMetricsInterface, err error) {
 	casePo, err := r.Get(id)
 	if err != nil {
 		return
@@ -46,74 +46,68 @@ func (r *AiMeasurementRepo) LoadForExec(id uint) (cs domain.AiMeasurement, metri
 	}
 
 	for _, metricsPo := range metricsPos {
-		metrics := domain.AiMetricsAnswerRelevancy{}
-		copier.CopyWithOption(&metrics, metricsPo, copier.Option{DeepCopy: true})
-
 		if metricsPo.EntityType == consts.Summarization {
 			entityPo, err := r.AiMetricsRepo.GetSummarization(metricsPo.EntityId)
 
 			if err == nil {
-				copier.CopyWithOption(&metrics, entityPo, copier.Option{DeepCopy: true})
+				metricsArr = append(metricsArr, entityPo)
 			}
 
 		} else if metricsPo.EntityType == consts.AnswerRelevancy {
 			entityPo, err := r.AiMetricsRepo.GetAnswerRelevancy(metricsPo.EntityId)
 
 			if err == nil {
-				copier.CopyWithOption(&metrics, entityPo, copier.Option{DeepCopy: true})
+				metricsArr = append(metricsArr, entityPo)
 			}
 
 		} else if metricsPo.EntityType == consts.Faithfulness {
 			entityPo, err := r.AiMetricsRepo.GetFaithfulness(metricsPo.EntityId)
 
 			if err == nil {
-				copier.CopyWithOption(&metrics, entityPo, copier.Option{DeepCopy: true})
+				metricsArr = append(metricsArr, entityPo)
 			}
 
 		} else if metricsPo.EntityType == consts.ContextualPrecision {
 			entityPo, err := r.AiMetricsRepo.GetContextualPrecision(metricsPo.EntityId)
 
 			if err == nil {
-				copier.CopyWithOption(&metrics, entityPo, copier.Option{DeepCopy: true})
+				metricsArr = append(metricsArr, entityPo)
 			}
 
 		} else if metricsPo.EntityType == consts.ContextualRecall {
 			entityPo, err := r.AiMetricsRepo.GetContextualRecall(metricsPo.EntityId)
 
 			if err == nil {
-				copier.CopyWithOption(&metrics, entityPo, copier.Option{DeepCopy: true})
+				metricsArr = append(metricsArr, entityPo)
 			}
 
 		} else if metricsPo.EntityType == consts.ContextualRelevancy {
 			entityPo, err := r.AiMetricsRepo.GetContextualRelevancy(metricsPo.EntityId)
 
 			if err == nil {
-				copier.CopyWithOption(&metrics, entityPo, copier.Option{DeepCopy: true})
+				metricsArr = append(metricsArr, entityPo)
 			}
 
 		} else if metricsPo.EntityType == consts.Hallucination {
 			entityPo, err := r.AiMetricsRepo.GetHallucination(metricsPo.EntityId)
 
 			if err == nil {
-				copier.CopyWithOption(&metrics, entityPo, copier.Option{DeepCopy: true})
+				metricsArr = append(metricsArr, entityPo)
 			}
 		} else if metricsPo.EntityType == consts.Bias {
 			entityPo, err := r.AiMetricsRepo.GetBias(metricsPo.EntityId)
 
 			if err == nil {
-				copier.CopyWithOption(&metrics, entityPo, copier.Option{DeepCopy: true})
+				metricsArr = append(metricsArr, entityPo)
 			}
 
 		} else if metricsPo.EntityType == consts.Toxicity {
 			entityPo, err := r.AiMetricsRepo.GetToxicity(metricsPo.EntityId)
 
 			if err == nil {
-				copier.CopyWithOption(&metrics, entityPo, copier.Option{DeepCopy: true})
+				metricsArr = append(metricsArr, entityPo)
 			}
-
 		}
-
-		metricsArr = append(metricsArr, metrics)
 	}
 
 	return

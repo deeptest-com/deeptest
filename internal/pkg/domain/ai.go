@@ -22,8 +22,6 @@ type AiMetrics struct {
 	AiMetricsBase
 }
 
-type AiMetricsAnswerRelevancy struct {
-	BaseObj
-	AiMetricsBase
-	AiMetricsAnswerRelevancyBase
+type AiMetricsInterface interface {
+	Run() (err error)
 }

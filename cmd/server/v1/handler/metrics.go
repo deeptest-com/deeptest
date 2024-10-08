@@ -120,7 +120,7 @@ func (c *MetricsCtrl) Move(ctx iris.Context) {
 func (c *MetricsCtrl) GetEntity(ctx iris.Context) {
 	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
-	typ := consts.MetricsType(ctx.Params().GetString("type"))
+	typ := consts.MetricsType(ctx.URLParam("type"))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return

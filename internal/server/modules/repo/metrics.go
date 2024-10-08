@@ -218,40 +218,49 @@ func (r *MetricsRepo) GetMaxOrder(tenantId consts.TenantId, debugInterfaceId, en
 func (r *MetricsRepo) GetEntity(tenantId consts.TenantId, id uint, typ consts.MetricsType) (entity interface{}, err error) {
 	switch typ {
 	case consts.Summarization:
-		entity = model.AiMetricsSummarization{}
-		err = r.GetDB(tenantId).Where("id = ?", id).First(&entity).Error
+		po := model.AiMetricsSummarization{}
+		err = r.GetDB(tenantId).Where("id = ?", id).First(&po).Error
+		entity = po
 
 	case consts.AnswerRelevancy:
-		entity = model.AiMetricsAnswerRelevancy{}
-		err = r.GetDB(tenantId).Where("id = ?", id).First(&entity).Error
+		po := model.AiMetricsAnswerRelevancy{}
+		err = r.GetDB(tenantId).Where("id = ?", id).First(&po).Error
+		entity = po
 
 	case consts.Faithfulness:
-		entity = model.AiMetricsFaithfulness{}
-		err = r.GetDB(tenantId).Where("id = ?", id).First(&entity).Error
+		po := model.AiMetricsFaithfulness{}
+		err = r.GetDB(tenantId).Where("id = ?", id).First(&po).Error
+		entity = po
 
 	case consts.ContextualPrecision:
-		entity = model.AiMetricsContextualPrecision{}
-		err = r.GetDB(tenantId).Where("id = ?", id).First(&entity).Error
+		po := model.AiMetricsContextualPrecision{}
+		err = r.GetDB(tenantId).Where("id = ?", id).First(&po).Error
+		entity = po
 
 	case consts.ContextualRecall:
-		entity = model.AiMetricsContextualRecall{}
-		err = r.GetDB(tenantId).Where("id = ?", id).First(&entity).Error
+		po := model.AiMetricsContextualRecall{}
+		err = r.GetDB(tenantId).Where("id = ?", id).First(&po).Error
+		entity = po
 
 	case consts.ContextualRelevancy:
-		entity = model.AiMetricsContextualRelevancy{}
-		err = r.GetDB(tenantId).Where("id = ?", id).First(&entity).Error
+		po := model.AiMetricsContextualRelevancy{}
+		err = r.GetDB(tenantId).Where("id = ?", id).First(&po).Error
+		entity = po
 
 	case consts.Hallucination:
-		entity = model.AiMetricsHallucination{}
-		err = r.GetDB(tenantId).Where("id = ?", id).First(&entity).Error
+		po := model.AiMetricsHallucination{}
+		err = r.GetDB(tenantId).Where("id = ?", id).First(&po).Error
+		entity = po
 
 	case consts.Bias:
-		entity = model.AiMetricsBias{}
-		err = r.GetDB(tenantId).Where("id = ?", id).First(&entity).Error
+		po := model.AiMetricsBias{}
+		err = r.GetDB(tenantId).Where("id = ?", id).First(&po).Error
+		entity = po
 
 	case consts.Toxicity:
-		entity = model.AiMetricsToxicity{}
-		err = r.GetDB(tenantId).Where("id = ?", id).First(&entity).Error
+		po := model.AiMetricsToxicity{}
+		err = r.GetDB(tenantId).Where("id = ?", id).First(&po).Error
+		entity = po
 	}
 
 	return
@@ -289,6 +298,7 @@ func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, ty
 			},
 		}
 		err = r.GetDB(tenantId).Save(&entity).Error
+		entityId = entity.ID
 
 	case consts.AnswerRelevancy:
 		entity := model.AiMetricsAnswerRelevancy{
@@ -300,6 +310,7 @@ func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, ty
 			},
 		}
 		err = r.GetDB(tenantId).Save(&entity).Error
+		entityId = entity.ID
 
 	case consts.Faithfulness:
 		entity := model.AiMetricsFaithfulness{
@@ -311,6 +322,7 @@ func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, ty
 			},
 		}
 		err = r.GetDB(tenantId).Save(&entity).Error
+		entityId = entity.ID
 
 	case consts.ContextualPrecision:
 		entity := model.AiMetricsContextualPrecision{
@@ -322,6 +334,7 @@ func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, ty
 			},
 		}
 		err = r.GetDB(tenantId).Save(&entity).Error
+		entityId = entity.ID
 
 	case consts.ContextualRecall:
 		entity := model.AiMetricsContextualRecall{
@@ -333,6 +346,7 @@ func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, ty
 			},
 		}
 		err = r.GetDB(tenantId).Save(&entity).Error
+		entityId = entity.ID
 
 	case consts.ContextualRelevancy:
 		entity := model.AiMetricsContextualRelevancy{
@@ -344,6 +358,7 @@ func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, ty
 			},
 		}
 		err = r.GetDB(tenantId).Save(&entity).Error
+		entityId = entity.ID
 
 	case consts.Hallucination:
 		entity := model.AiMetricsHallucination{
@@ -355,6 +370,7 @@ func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, ty
 			},
 		}
 		err = r.GetDB(tenantId).Save(&entity).Error
+		entityId = entity.ID
 
 	case consts.Bias:
 		entity := model.AiMetricsBias{
@@ -366,6 +382,7 @@ func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, ty
 			},
 		}
 		err = r.GetDB(tenantId).Save(&entity).Error
+		entityId = entity.ID
 
 	case consts.Toxicity:
 		entity := model.AiMetricsToxicity{
@@ -377,6 +394,7 @@ func (r *MetricsRepo) CreateDefault(tenantId consts.TenantId, metricsId uint, ty
 			},
 		}
 		err = r.GetDB(tenantId).Save(&entity).Error
+		entityId = entity.ID
 	}
 
 	return

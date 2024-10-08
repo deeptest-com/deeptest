@@ -65,7 +65,6 @@ type AiMetricsBase struct {
 	Ordr    int         `json:"ordr"`
 
 	EntityType consts.MetricsType `json:"entityType"`
-	EntityId   uint               `json:"entityId"`
 
 	DebugInterfaceId    uint `gorm:"default:0" json:"debugInterfaceId"`
 	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`

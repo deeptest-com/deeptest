@@ -26,13 +26,13 @@ func (s *MetricsService) Get(tenantId consts.TenantId, id uint) (condition model
 }
 
 func (s *MetricsService) Create(tenantId consts.TenantId, metrics *model.AiMetrics) (err error) {
-	err = s.MetricsRepo.Save(tenantId, 0, metrics)
+	err = s.MetricsRepo.Save(tenantId, metrics)
 
 	return
 }
 
 func (s *MetricsService) Update(tenantId consts.TenantId, metrics *model.AiMetrics) (err error) {
-	err = s.MetricsRepo.Save(tenantId, metrics.ID, metrics)
+	err = s.MetricsRepo.Save(tenantId, metrics)
 
 	return
 }

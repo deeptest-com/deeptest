@@ -41,6 +41,15 @@ func (r *MetricsRepo) Get(tenantId consts.TenantId, id uint) (po model.AiMetrics
 	return
 }
 
+func (r *MetricsRepo) Save(tenantId consts.TenantId, po *model.AiMetrics) (err error) {
+	if po.Ordr == 0 {
+		po.Ordr = r.GetMaxOrder(tenantId, po.DebugInterfaceId, po.EndpointInterfaceId)
+	}
+
+	err = r.GetDB(tenantId).Save(po).Error
+	return
+}
+
 func (r *MetricsRepo) Delete(tenantId consts.TenantId, id uint) (err error) {
 	err = r.GetDB(tenantId).Model(&model.AiMetrics{}).
 		Where("id=?", id).

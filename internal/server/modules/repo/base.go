@@ -122,10 +122,6 @@ func (r *BaseRepo) Save(tenantId consts.TenantId, id uint, entity interface{}) (
 	return
 }
 
-func (r *BaseRepo) SaveEntity(tenantId consts.TenantId, category *model.Category) (err error) {
-	return
-}
-
 func (r *BaseRepo) GetAdminRoleName() (roleName consts.RoleType) {
 	roleName = consts.Admin
 	if config.CONFIG.System.SysEnv == "ly" {
@@ -159,5 +155,9 @@ func (r *BaseRepo) MoveEntity(tenantId consts.TenantId, category *model.Category
 }
 
 func (r *BaseRepo) GetEntities(tenantId consts.TenantId, id uint) (entities map[uint]interface{}, err error) {
+	return
+}
+
+func (r *BaseRepo) SaveEntity(tenantId consts.TenantId, category *model.Category) (err error) {
 	return
 }

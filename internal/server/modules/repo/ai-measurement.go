@@ -2,7 +2,6 @@ package repo
 
 import (
 	v1 "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
-	"github.com/deeptest-com/deeptest/internal/pkg/consts"
 	"github.com/deeptest-com/deeptest/internal/pkg/domain"
 	"github.com/deeptest-com/deeptest/internal/server/modules/model"
 	_logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
@@ -32,7 +31,7 @@ func (r *AiMeasurementRepo) Get(id uint) (po model.AiMeasurement, err error) {
 	return
 }
 
-func (r *AiMeasurementRepo) LoadForExec(id uint) (cs domain.AiMeasurement, metricsArr []domain.AiMetricsInterface, err error) {
+func (r *AiMeasurementRepo) LoadForExec(id uint) (cs domain.AiMeasurement, metricsArr []domain.AiMetrics, err error) {
 	casePo, err := r.Get(id)
 	if err != nil {
 		return
@@ -45,69 +44,11 @@ func (r *AiMeasurementRepo) LoadForExec(id uint) (cs domain.AiMeasurement, metri
 		return
 	}
 
-	for _, metricsPo := range metricsPos {
-		if metricsPo.EntityType == consts.Summarization {
-			entityPo, err := r.AiMetricsRepo.GetSummarization(metricsPo.EntityId)
+	for _, po := range metricsPos {
+		to := domain.AiMetrics{}
+		copier.CopyWithOption(&to, po, copier.Option{DeepCopy: true})
 
-			if err == nil {
-				metricsArr = append(metricsArr, entityPo)
-			}
-
-		} else if metricsPo.EntityType == consts.AnswerRelevancy {
-			entityPo, err := r.AiMetricsRepo.GetAnswerRelevancy(metricsPo.EntityId)
-
-			if err == nil {
-				metricsArr = append(metricsArr, entityPo)
-			}
-
-		} else if metricsPo.EntityType == consts.Faithfulness {
-			entityPo, err := r.AiMetricsRepo.GetFaithfulness(metricsPo.EntityId)
-
-			if err == nil {
-				metricsArr = append(metricsArr, entityPo)
-			}
-
-		} else if metricsPo.EntityType == consts.ContextualPrecision {
-			entityPo, err := r.AiMetricsRepo.GetContextualPrecision(metricsPo.EntityId)
-
-			if err == nil {
-				metricsArr = append(metricsArr, entityPo)
-			}
-
-		} else if metricsPo.EntityType == consts.ContextualRecall {
-			entityPo, err := r.AiMetricsRepo.GetContextualRecall(metricsPo.EntityId)
-
-			if err == nil {
-				metricsArr = append(metricsArr, entityPo)
-			}
-
-		} else if metricsPo.EntityType == consts.ContextualRelevancy {
-			entityPo, err := r.AiMetricsRepo.GetContextualRelevancy(metricsPo.EntityId)
-
-			if err == nil {
-				metricsArr = append(metricsArr, entityPo)
-			}
-
-		} else if metricsPo.EntityType == consts.Hallucination {
-			entityPo, err := r.AiMetricsRepo.GetHallucination(metricsPo.EntityId)
-
-			if err == nil {
-				metricsArr = append(metricsArr, entityPo)
-			}
-		} else if metricsPo.EntityType == consts.Bias {
-			entityPo, err := r.AiMetricsRepo.GetBias(metricsPo.EntityId)
-
-			if err == nil {
-				metricsArr = append(metricsArr, entityPo)
-			}
-
-		} else if metricsPo.EntityType == consts.Toxicity {
-			entityPo, err := r.AiMetricsRepo.GetToxicity(metricsPo.EntityId)
-
-			if err == nil {
-				metricsArr = append(metricsArr, entityPo)
-			}
-		}
+		metricsArr = append(metricsArr, to)
 	}
 
 	return

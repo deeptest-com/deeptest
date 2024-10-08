@@ -26,14 +26,13 @@ func (s *MetricsService) Get(tenantId consts.TenantId, id uint) (condition model
 }
 
 func (s *MetricsService) Create(tenantId consts.TenantId, metrics *model.AiMetrics) (err error) {
-	err = s.MetricsRepo.Save(tenantId, metrics)
+	err = s.MetricsRepo.Save(tenantId, 0, metrics)
 
-	entityId, err := s.MetricsRepo.CreateDefault(tenantId, metrics.ID, metrics.EntityType)
-	if err != nil {
-		return
-	}
+	return
+}
 
-	err = s.MetricsRepo.UpdateEntityId(tenantId, metrics.ID, entityId)
+func (s *MetricsService) Update(tenantId consts.TenantId, metrics *model.AiMetrics) (err error) {
+	err = s.MetricsRepo.Save(tenantId, metrics.ID, metrics)
 
 	return
 }
@@ -52,12 +51,6 @@ func (s *MetricsService) Disable(tenantId consts.TenantId, reqId uint) (err erro
 
 func (s *MetricsService) Move(tenantId consts.TenantId, req serverDomain.ConditionMoveReq) (err error) {
 	err = s.MetricsRepo.UpdateOrders(tenantId, req)
-
-	return
-}
-
-func (s *MetricsService) GetEntity(tenantId consts.TenantId, id uint, typ consts.MetricsType) (entity interface{}, err error) {
-	entity, err = s.MetricsRepo.GetEntity(tenantId, id, typ)
 
 	return
 }

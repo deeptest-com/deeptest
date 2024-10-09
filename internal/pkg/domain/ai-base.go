@@ -45,7 +45,6 @@ type AiMetricsEntityBase struct {
 	Success     bool    `json:"success" gorm:"default:false"`
 	VerboseLogs string  `json:"verboseLogs"`
 
-	Name         string              `json:"name"`
 	Output       string              `gorm:"type:longtext;" json:"output"`
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 	ResultMsg    string              `gorm:"type:longtext" json:"resultMsg"`

@@ -23,12 +23,16 @@ func ReadResData(pth string) (ret []byte, err error) {
 //go:embed internal/agent/_prompt_templ
 var promptFileSys embed.FS
 
-func ReadPromptTempl(pth string) (ret []byte, err error) {
+func ReadPromptTempl(pth string) (ret string, err error) {
+	var bytes []byte
+
 	if commonUtils.IsRelease() {
-		ret, err = promptFileSys.ReadFile(pth)
+		bytes, err = promptFileSys.ReadFile(pth)
 	} else {
-		ret, err = os.ReadFile(filepath.Join("internal", "agent", "_prompt_templ", pth))
+		bytes, err = os.ReadFile(filepath.Join("internal", "agent", "_prompt_templ", pth))
 	}
+
+	ret = string(bytes)
 
 	return
 }

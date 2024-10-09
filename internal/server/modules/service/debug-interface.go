@@ -39,6 +39,7 @@ type DebugInterfaceService struct {
 	ServeService             *ServeService             `inject:""`
 
 	ConditionRepo *repo.ConditionRepo `inject:""`
+	MetricsRepo   *repo.MetricsRepo   `inject:""`
 }
 
 func (s *DebugInterfaceService) Load(tenantId consts.TenantId, loadReq domain.DebugInfo) (debugData domain.DebugData, err error) {
@@ -115,6 +116,9 @@ func (s *DebugInterfaceService) loadDetail(tenantId consts.TenantId, loadReq dom
 			ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy, "false", consts.ConditionSrcPre)
 		ret.PostConditions, _ = s.ConditionRepo.ListTo(tenantId,
 			ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy, "false", consts.ConditionSrcPost)
+
+		ret.Metrics, _ = s.MetricsRepo.ListTo(tenantId,
+			ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId)
 	}
 
 	ret.ExecScene.ShareVars = ret.DebugData.EnvDataToView.ShareVars // for execution

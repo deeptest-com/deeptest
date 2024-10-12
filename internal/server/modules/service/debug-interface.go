@@ -40,6 +40,7 @@ type DebugInterfaceService struct {
 
 	ConditionRepo *repo.ConditionRepo `inject:""`
 	MetricsRepo   *repo.MetricsRepo   `inject:""`
+	LlmToolRepo   *repo.LlmToolRepo   `inject:""`
 }
 
 func (s *DebugInterfaceService) Load(tenantId consts.TenantId, loadReq domain.DebugInfo) (debugData domain.DebugData, err error) {
@@ -119,6 +120,7 @@ func (s *DebugInterfaceService) loadDetail(tenantId consts.TenantId, loadReq dom
 
 		ret.Metrics, _ = s.MetricsRepo.ListTo(tenantId,
 			ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId)
+		ret.ToolLlm, _ = s.LlmToolRepo.GetDefault(tenantId, uint(loadReq.ProjectId))
 	}
 
 	ret.ExecScene.ShareVars = ret.DebugData.EnvDataToView.ShareVars // for execution

@@ -139,8 +139,6 @@ func getWorkdir() {
 	}
 
 	if consts.WorkDir == "" {
-		//userHome, _ := _fileUtils.GetUserHome()
-		//consts.WorkDir = filepath.Join(userHome, consts.App)
 		consts.WorkDir = commUtils.GetWorkDir()
 	}
 

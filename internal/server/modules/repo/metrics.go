@@ -84,7 +84,7 @@ func (r *MetricsRepo) UpdateOrders(tenantId consts.TenantId, req serverDomain.Co
 }
 
 func (r *MetricsRepo) ListTo(tenantId consts.TenantId, debugInterfaceId, endpointInterfaceId uint) (
-	ret []domain.AiMetrics, err error) {
+	ret []*domain.AiMetrics, err error) {
 
 	pos, err := r.List(tenantId, debugInterfaceId, endpointInterfaceId)
 
@@ -92,7 +92,9 @@ func (r *MetricsRepo) ListTo(tenantId consts.TenantId, debugInterfaceId, endpoin
 		to := domain.AiMetrics{}
 		copier.CopyWithOption(&to, po, copier.Option{DeepCopy: true})
 
-		ret = append(ret, to)
+		to.MetricsType = to.EntityType
+
+		ret = append(ret, &to)
 	}
 
 	return

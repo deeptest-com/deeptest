@@ -3,6 +3,7 @@ package deeptest
 import (
 	"embed"
 	commonUtils "github.com/deeptest-com/deeptest/pkg/lib/comm"
+	_logUtils "github.com/deeptest-com/deeptest/pkg/lib/log"
 	"os"
 	"path/filepath"
 )
@@ -29,7 +30,14 @@ func ReadPromptTempl(pth string) (ret string, err error) {
 	if commonUtils.IsRelease() {
 		bytes, err = promptFileSys.ReadFile(pth)
 	} else {
-		bytes, err = os.ReadFile(filepath.Join("internal", "agent", "_prompt_templ", pth))
+		currentPath, _ := os.Getwd()
+
+		fullPath := filepath.Join(currentPath, "internal", "agent", "_prompt_templ", pth)
+		bytes, err = os.ReadFile(fullPath)
+	}
+
+	if err != nil {
+		_logUtils.Infof(err.Error())
 	}
 
 	ret = string(bytes)

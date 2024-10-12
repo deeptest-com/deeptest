@@ -1,18 +1,11 @@
 package model
 
+import "github.com/deeptest-com/deeptest/internal/pkg/domain"
+
 type LlmTool struct {
 	BaseModel
 
-	Name string `json:"name"`
-	Desc string `gorm:"type:text" json:"desc"`
-
-	Model   string `json:"model"`
-	ApiBase string `json:"apiBase"`
-	ApiKey  string `json:"apiKey"`
-	Version string `json:"version"`
-
-	IsDefault bool `json:"isDefault"`
-	ProjectId uint `json:"projectId"`
+	domain.ToolModelBase
 
 	CreateUser string `json:"createUser"`
 	UpdateUser string `json:"updateUser"`

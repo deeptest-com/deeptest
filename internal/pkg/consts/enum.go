@@ -980,3 +980,14 @@ func (e SeverityLevel) String() (ret string) {
 	}
 	return ret
 }
+
+type LlmType string
+
+const (
+	Azure  LlmType = "azure"
+	OpenAI LlmType = "openai"
+)
+
+func (e LlmType) String() string {
+	return string(e)
+}

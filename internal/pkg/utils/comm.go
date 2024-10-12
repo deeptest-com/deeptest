@@ -34,6 +34,7 @@ func GetWorkDir() (dir string) {
 	if consts.WorkDir != "" {
 		return consts.WorkDir
 	}
+
 	home, _ := fileUtils.GetUserHome()
 	dir = filepath.Join(home, consts.App)
 	dir = fileUtils.AddSepIfNeeded(dir)

@@ -146,7 +146,6 @@ var (
 
 		&AiMeasurement{},
 		&AiMetrics{},
-		&AiModel{},
 		&AiTemplate{},
 	}
 )

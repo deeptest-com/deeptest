@@ -5,7 +5,9 @@ import (
 	"fmt"
 	v1 "github.com/deeptest-com/deeptest/cmd/server/v1/domain"
 	"github.com/deeptest-com/deeptest/internal/pkg/consts"
+	"github.com/deeptest-com/deeptest/internal/pkg/domain"
 	model "github.com/deeptest-com/deeptest/internal/server/modules/model"
+	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
 
@@ -41,6 +43,17 @@ func (r *LlmToolRepo) Get(tenantId consts.TenantId, id uint) (po model.LlmTool, 
 func (r *LlmToolRepo) GetByName(tenantId consts.TenantId, id, projectId uint, name string) (po model.LlmTool, err error) {
 	err = r.GetDB(tenantId).Model(&model.LlmTool{}).
 		Where("id != ? AND project_id = ? AND name = ? and not deleted", id, projectId, name).First(&po).Error
+
+	return
+}
+
+func (r *LlmToolRepo) GetDefault(tenantId consts.TenantId, projectId uint) (ret domain.ToolModel, err error) {
+	po := model.LlmTool{}
+
+	err = r.GetDB(tenantId).Model(&po).
+		Where("project_id = ? AND is_default AND not deleted", projectId).First(&po).Error
+
+	copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
 
 	return
 }

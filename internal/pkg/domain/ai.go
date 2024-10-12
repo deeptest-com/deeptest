@@ -1,5 +1,10 @@
 package domain
 
+type ToolModel struct {
+	BaseObj
+	ToolModelBase
+}
+
 type AiMeasurement struct {
 	BaseObj
 	AiMeasurementBase
@@ -8,11 +13,6 @@ type AiMeasurement struct {
 type AiTemplate struct {
 	BaseObj
 	AiTemplateBase
-}
-
-type AiModel struct {
-	BaseObj
-	AiModelBase
 }
 
 type AiMetrics struct {

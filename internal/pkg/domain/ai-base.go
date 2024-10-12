@@ -5,32 +5,13 @@ import (
 )
 
 type AiMeasurementBase struct {
-	Name             string `json:"name"`
-	Desc             string `json:"desc"`
 	Input            string `json:"input"`
 	ActualOutput     string `json:"actualOutput"`
-	ExpectedOutput   string `json:"expectedOutput"`
-	Context          string `json:"context"`
 	RetrievalContext string `json:"retrievalContext"`
-	ToolsCalled      string `json:"toolsCalled"`
-	ExpectedTools    string `json:"expectedTools"`
-	Reasoning        string `json:"reasoning"`
-
-	MetricsIds string `json:"metricsIds"`
 }
 
 type AiTemplateBase struct {
 	Name string `json:"name"`
-}
-
-type AiModelBase struct {
-	Name string `json:"name"`
-
-	ModelType string `json:"modelType"`
-	ModelName string `json:"modelName"`
-
-	ApiUrl string `json:"apiUrl"`
-	ApiKey string `json:"apiKey"`
 }
 
 type AiMetricsEntityBase struct {
@@ -59,9 +40,8 @@ type AiMetricsEntityBase struct {
 type AiMetricsBase struct {
 	Name string `json:"name"`
 
-	ModelId uint        `json:"modelId"`
-	Model   AiModelBase `gorm:"-" json:"model"`
-	Ordr    int         `json:"ordr"`
+	ModelId uint `json:"modelId"`
+	Ordr    int  `json:"ordr"`
 
 	EntityType consts.MetricsType `json:"entityType"`
 
@@ -69,4 +49,18 @@ type AiMetricsBase struct {
 	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
 
 	//EntityObj interface{} `json:"entityObj" gorm:"-"`
+}
+
+type ToolModelBase struct {
+	ModelProvider consts.LlmType `json:"modelProvider"`
+	Name          string         `json:"name"`
+	Desc          string         `gorm:"type:text" json:"desc"`
+
+	ApiBase string `json:"apiBase"`
+	ApiKey  string `json:"apiKey"`
+	Model   string `json:"model"`
+	Version string `json:"version"`
+
+	IsDefault bool `json:"isDefault"`
+	ProjectId uint `json:"projectId"`
 }

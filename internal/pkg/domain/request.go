@@ -17,6 +17,7 @@ type DebugResponse struct {
 	Content     string                 `gorm:"default:''" json:"content,omitempty"`
 	Data        interface{}            `gorm:"-" json:"data"` // Content obj in goja
 	ContentType consts.HttpContentType `json:"contentType"`
+	IsStream    bool                   `json:"isStream"`
 
 	ContentLang    consts.HttpRespLangType `json:"contentLang"`
 	ContentCharset consts.HttpRespCharset  `json:"contentCharset"`

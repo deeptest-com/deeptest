@@ -8,6 +8,7 @@ type AiMeasurementBase struct {
 	Input            string `json:"input"`
 	ActualOutput     string `json:"actualOutput"`
 	RetrievalContext string `json:"retrievalContext"`
+	Context          string `json:"context"`
 }
 
 type AiTemplateBase struct {
